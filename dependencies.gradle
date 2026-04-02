@@ -1,0 +1,6 @@
+dependencies {
+    modImplementation(project(":modules:CTNH-Lib")){transitive = false}
+
+    // modImplementation(ctnh.avaritia)
+
+}

@@ -1,0 +1,11 @@
+{
+  "type": "ctnhrogue:stronghold_type",
+  "generator": {
+    "type": "minecraft:noise",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "ctnhrogue:dungeon"
+    },
+    "settings": "ctnhrogue:underground"
+  }
+}
