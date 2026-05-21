@@ -1,7 +1,5 @@
 package com.ctnh.ctnhastral.data.worldgen;
 
-import com.ctnh.ctnhastral.CTNHAstral;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstapContext;
@@ -15,9 +13,13 @@ import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 
+import com.ctnh.ctnhastral.CTNHAstral;
+import com.mojang.datafixers.util.Pair;
+
 import java.util.List;
 
 public class CADimensions {
+
     public static final ResourceKey<LevelStem> ASTRAL_PLANET = ResourceKey.create(Registries.LEVEL_STEM,
             CTNHAstral.id("astral_planet"));
     public static final Climate.ParameterPoint PLAGUE_WASTELAND_PARAMETER = createParameter(0.1F, 0, 0, 0, 0, 0, 0);
@@ -38,7 +40,7 @@ public class CADimensions {
                 new NoiseBasedChunkGenerator(
                         MultiNoiseBiomeSource.createFromList(new Climate.ParameterList<>(
                                 List.of(Pair.of(PLAGUE_WASTELAND_PARAMETER,
-                                                biomes.getOrThrow(CABiomes.PLAGUE_WASTELAND)),
+                                        biomes.getOrThrow(CABiomes.PLAGUE_WASTELAND)),
                                         Pair.of(PLAGUE_DESERT_PARAMETER,
                                                 biomes.getOrThrow(CABiomes.PLAGUE_DESERT))))),
                         noiseSettings.getOrThrow(CANoiseSetting.ASTRAL_PLANET))));

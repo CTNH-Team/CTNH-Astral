@@ -1,13 +1,10 @@
 package com.ctnh.ctnhastral.data.worldgen.feature;
 
-import com.ctnh.ctnhastral.CTNHAstral;
-import com.ctnh.ctnhastral.data.worldgen.CAMaterials;
-import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
 import com.gregtechceu.gtceu.api.fluids.store.FluidStorageKeys;
 import com.gregtechceu.gtceu.common.data.GTFeatures;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.worldgen.feature.configurations.FluidSproutConfiguration;
-import earth.terrarium.adastra.common.registry.ModBlocks;
+
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.data.worldgen.features.FeatureUtils;
@@ -31,6 +28,11 @@ import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvi
 import net.minecraft.world.level.levelgen.feature.stateproviders.WeightedStateProvider;
 import net.minecraft.world.level.levelgen.feature.trunkplacers.ForkingTrunkPlacer;
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTest;
+
+import com.ctnh.ctnhastral.CTNHAstral;
+import com.ctnh.ctnhastral.data.worldgen.CAMaterials;
+import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
+import earth.terrarium.adastra.common.registry.ModBlocks;
 
 import static com.simibubi.create.content.decoration.palettes.AllPaletteStoneTypes.OCHRUM;
 

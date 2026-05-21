@@ -1,6 +1,5 @@
 package com.ctnh.ctnhastral.data.worldgen;
 
-import com.ctnh.ctnhastral.CTNHAstral;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.resources.ResourceKey;
@@ -12,10 +11,12 @@ import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.dimension.DimensionType;
 
+import com.ctnh.ctnhastral.CTNHAstral;
+
 import java.util.OptionalLong;
 
-
 public class CADimensionTypes {
+
     public static final ResourceKey<DimensionType> ASTRAL_PLANET = ResourceKey.create(Registries.DIMENSION_TYPE,
             CTNHAstral.id("astral_planet"));
     public static final ResourceKey<DimensionType> ASTRAL_ORBIT = ResourceKey.create(Registries.DIMENSION_TYPE,

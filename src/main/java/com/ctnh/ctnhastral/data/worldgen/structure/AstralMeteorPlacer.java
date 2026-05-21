@@ -1,11 +1,8 @@
 package com.ctnh.ctnhastral.data.worldgen.structure;
 
-
-import com.ctnh.ctnhastral.data.worldgen.CAMaterials;
-import com.ctnh.ctnhastral.data.worldgen.CATagPrefixes;
-import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.util.RandomSource;
@@ -16,6 +13,10 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
+
+import com.ctnh.ctnhastral.data.worldgen.CAMaterials;
+import com.ctnh.ctnhastral.data.worldgen.CATagPrefixes;
+import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
 
 public class AstralMeteorPlacer {
 

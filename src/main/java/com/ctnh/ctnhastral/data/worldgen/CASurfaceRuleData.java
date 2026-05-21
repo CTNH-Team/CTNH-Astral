@@ -1,9 +1,10 @@
 package com.ctnh.ctnhastral.data.worldgen;
 
-import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
 import net.minecraft.world.level.levelgen.SurfaceRules;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.placement.CaveSurface;
+
+import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
 
 public class CASurfaceRuleData {
 

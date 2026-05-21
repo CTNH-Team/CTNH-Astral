@@ -1,12 +1,13 @@
 package com.ctnh.ctnhastral;
 
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.common.Mod;
+
 import com.ctnh.ctnhastral.client.ClientProxy;
 import com.ctnh.ctnhastral.common.CommonProxy;
 import com.ctnh.ctnhastral.registry.CARegistrate;
 import com.mojang.logging.LogUtils;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
 import org.slf4j.Logger;
 import tech.vixhentx.mcmod.ctnhlib.langprovider.LangProcessor;
 
@@ -27,12 +28,4 @@ public class CTNHAstral {
     public static ResourceLocation id(String name) {
         return ResourceLocation.tryParse(MODID + ":" + name);
     }
-
-
-
-
-
-
-
-
 }

@@ -1,6 +1,5 @@
 package com.ctnh.ctnhastral.data.worldgen;
 
-import com.ctnh.ctnhastral.CTNHAstral;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
@@ -8,6 +7,8 @@ import com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIconSet;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.api.fluids.FluidBuilder;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
+
+import com.ctnh.ctnhastral.CTNHAstral;
 import earth.terrarium.adastra.common.registry.ModBlocks;
 
 import static com.ctnh.ctnhastral.CTNHAstral.REGISTRATE;
@@ -17,6 +18,7 @@ import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialIcon
 import static com.gregtechceu.gtceu.api.data.chemical.material.properties.BlastProperty.GasTier.HIGHEST;
 
 public class CAMaterials {
+
     // Ad Astra
     public static Material Moonstone;
     public static Material Marsstone;
@@ -91,6 +93,7 @@ public class CAMaterials {
                 .cableProperties(GTValues.V[GTValues.OpV], 4, 256)
                 .buildAndRegister();
     }
+
     public static void tagPrefixIgnore() {
         TagPrefix.block.setIgnored(Moonstone, ModBlocks.MOON_STONE);
         TagPrefix.block.setIgnored(Marsstone, ModBlocks.MARS_STONE);
@@ -98,7 +101,9 @@ public class CAMaterials {
         TagPrefix.block.setIgnored(Mercurystone, ModBlocks.MERCURY_STONE);
         TagPrefix.block.setIgnored(Glaciostone, ModBlocks.GLACIO_STONE);
     }
+
     public static class MaterialIcons {
+
         public static MaterialIconSet StarsteelIcon = new MaterialIconSet("starsteel", METALLIC);
     }
 }

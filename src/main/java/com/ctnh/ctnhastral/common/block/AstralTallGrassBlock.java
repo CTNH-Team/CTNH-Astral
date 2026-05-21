@@ -1,10 +1,11 @@
 package com.ctnh.ctnhastral.common.block;
 
-import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.state.BlockState;
+
+import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
 
 public class AstralTallGrassBlock extends DoublePlantBlock {
 

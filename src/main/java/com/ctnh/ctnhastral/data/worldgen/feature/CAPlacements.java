@@ -1,10 +1,8 @@
 package com.ctnh.ctnhastral.data.worldgen.feature;
 
-import com.ctnh.ctnhastral.CTNHAstral;
-import com.ctnh.ctnhastral.data.worldgen.CABiomes;
-import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
 import com.gregtechceu.gtceu.api.data.worldgen.BiomeWeightModifier;
 import com.gregtechceu.gtceu.api.data.worldgen.modifier.BiomePlacement;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderGetter;
@@ -21,6 +19,10 @@ import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.heightproviders.UniformHeight;
 import net.minecraft.world.level.levelgen.placement.*;
+
+import com.ctnh.ctnhastral.CTNHAstral;
+import com.ctnh.ctnhastral.data.worldgen.CABiomes;
+import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
 
 import java.util.List;
 

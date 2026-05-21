@@ -1,12 +1,12 @@
 package com.ctnh.ctnhastral.registry.sound;
 
-import com.ctnh.ctnhastral.CTNHAstral;
 import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.SoundDefinitionsProvider;
 
-import static com.ctnh.ctnhastral.registry.sound.CASoundEvents.AMBIENT_ASTRAL;
+import com.ctnh.ctnhastral.CTNHAstral;
 
+import static com.ctnh.ctnhastral.registry.sound.CASoundEvents.AMBIENT_ASTRAL;
 
 public class CASoundDefinitionsProvider extends SoundDefinitionsProvider {
 

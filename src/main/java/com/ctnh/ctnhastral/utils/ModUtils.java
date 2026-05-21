@@ -1,7 +1,8 @@
 package com.ctnh.ctnhastral.utils;
 
-import earth.terrarium.adastra.AdAstra;
 import net.minecraft.resources.ResourceLocation;
+
+import earth.terrarium.adastra.AdAstra;
 
 public class ModUtils {
 

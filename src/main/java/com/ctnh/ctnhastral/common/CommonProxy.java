@@ -1,16 +1,7 @@
 package com.ctnh.ctnhastral.common;
 
-import com.ctnh.ctnhastral.CTNHAstral;
-import com.ctnh.ctnhastral.data.worldgen.*;
-import com.ctnh.ctnhastral.data.worldgen.feature.CAConfiguredFeatures;
-import com.ctnh.ctnhastral.data.worldgen.feature.CAPlacements;
-import com.ctnh.ctnhastral.data.worldgen.structure.AstralMeteorStructure;
-import com.ctnh.ctnhastral.data.worldgen.structure.CAStructureSets;
-import com.ctnh.ctnhastral.data.worldgen.structure.CAStructures;
-import com.ctnh.ctnhastral.registry.sound.CASoundDefinitionsProvider;
-import com.ctnh.ctnhastral.registry.sound.CASoundEvents;
-import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
 import com.gregtechceu.gtceu.api.data.chemical.material.event.MaterialEvent;
+
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
@@ -23,6 +14,16 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegisterEvent;
+
+import com.ctnh.ctnhastral.CTNHAstral;
+import com.ctnh.ctnhastral.data.worldgen.*;
+import com.ctnh.ctnhastral.data.worldgen.feature.CAConfiguredFeatures;
+import com.ctnh.ctnhastral.data.worldgen.feature.CAPlacements;
+import com.ctnh.ctnhastral.data.worldgen.structure.AstralMeteorStructure;
+import com.ctnh.ctnhastral.data.worldgen.structure.CAStructureSets;
+import com.ctnh.ctnhastral.data.worldgen.structure.CAStructures;
+import com.ctnh.ctnhastral.registry.sound.CASoundDefinitionsProvider;
+import com.ctnh.ctnhastral.registry.sound.CASoundEvents;
 import terrablender.api.Regions;
 import terrablender.api.SurfaceRuleManager;
 
@@ -44,6 +45,7 @@ public class CommonProxy {
         CASoundEvents.SOUND_EVENTS.register(eventBus);
         REGISTRATE.registerRegistrate();
     }
+
     @SubscribeEvent
     public static void registerMaterials(MaterialEvent event) {
         CAMaterials.init();
@@ -75,19 +77,18 @@ public class CommonProxy {
             var set = Set.of(CTNHAstral.MODID);
             generator.addProvider(true, new DatapackBuiltinEntriesProvider(
                     packOutput, registries, new RegistrySetBuilder()
-                    .add(Registries.BIOME, CABiomes::bootstrap)
-                    .add(Registries.CONFIGURED_FEATURE, CAConfiguredFeatures::bootstrap)
-                    .add(Registries.PLACED_FEATURE, CAPlacements::bootstrap)
-                    .add(Registries.DIMENSION_TYPE, CADimensionTypes::bootstrap)
-                    .add(Registries.LEVEL_STEM, CADimensions::bootstrap)
-                    .add(Registries.NOISE_SETTINGS, CANoiseSetting::bootstrap)
-                    .add(Registries.DENSITY_FUNCTION, CADensityFunctions::bootstrap)
-//                    .add(Registries.DAMAGE_TYPE, CTNHDamageTypes::bootstrap)
-                    .add(Registries.STRUCTURE, CAStructures::bootstrap)
+                            .add(Registries.BIOME, CABiomes::bootstrap)
+                            .add(Registries.CONFIGURED_FEATURE, CAConfiguredFeatures::bootstrap)
+                            .add(Registries.PLACED_FEATURE, CAPlacements::bootstrap)
+                            .add(Registries.DIMENSION_TYPE, CADimensionTypes::bootstrap)
+                            .add(Registries.LEVEL_STEM, CADimensions::bootstrap)
+                            .add(Registries.NOISE_SETTINGS, CANoiseSetting::bootstrap)
+                            .add(Registries.DENSITY_FUNCTION, CADensityFunctions::bootstrap)
+                            // .add(Registries.DAMAGE_TYPE, CTNHDamageTypes::bootstrap)
+                            .add(Registries.STRUCTURE, CAStructures::bootstrap)
 
-                    .add(Registries.STRUCTURE_SET, CAStructureSets::bootstrap),
+                            .add(Registries.STRUCTURE_SET, CAStructureSets::bootstrap),
                     set));
         }
-
     }
 }

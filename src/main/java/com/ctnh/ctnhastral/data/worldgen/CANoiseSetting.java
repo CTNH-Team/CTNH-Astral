@@ -1,7 +1,5 @@
 package com.ctnh.ctnhastral.data.worldgen;
 
-import com.ctnh.ctnhastral.CTNHAstral;
-import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.data.worldgen.SurfaceRuleData;
@@ -11,11 +9,15 @@ import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.placement.CaveSurface;
 import net.minecraft.world.level.material.Fluids;
 
+import com.ctnh.ctnhastral.CTNHAstral;
+import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
+
 import java.util.List;
 
 import static net.minecraft.world.level.levelgen.NoiseRouterData.*;
 
 public class CANoiseSetting {
+
     public static final ResourceKey<NoiseGeneratorSettings> ORBIT = ResourceKey.create(Registries.NOISE_SETTINGS,
             CTNHAstral.id("orbit"));
     public static final ResourceKey<NoiseGeneratorSettings> ASTRAL_PLANET = ResourceKey
@@ -75,17 +77,17 @@ public class CANoiseSetting {
                                 0.7142857142857143),
                         DensityFunctions.noise(holderGetter2.getOrThrow(Noises.AQUIFER_LAVA)),
                         DensityFunctions.shiftedNoise2d(DensityFunctions
-                                        .flatCache(DensityFunctions.cache2d(DensityFunctions
-                                                .shiftA(holderGetter2.getOrThrow(
-                                                        Noises.SHIFT)))),
+                                .flatCache(DensityFunctions.cache2d(DensityFunctions
+                                        .shiftA(holderGetter2.getOrThrow(
+                                                Noises.SHIFT)))),
                                 DensityFunctions.flatCache(DensityFunctions.cache2d(
                                         DensityFunctions.shiftB(holderGetter2
                                                 .getOrThrow(Noises.SHIFT)))),
                                 0.25, holderGetter2.getOrThrow(Noises.TEMPERATURE)),
                         DensityFunctions.shiftedNoise2d(DensityFunctions
-                                        .flatCache(DensityFunctions.cache2d(DensityFunctions
-                                                .shiftA(holderGetter2.getOrThrow(
-                                                        Noises.SHIFT)))),
+                                .flatCache(DensityFunctions.cache2d(DensityFunctions
+                                        .shiftA(holderGetter2.getOrThrow(
+                                                Noises.SHIFT)))),
                                 DensityFunctions.flatCache(DensityFunctions.cache2d(
                                         DensityFunctions.shiftB(holderGetter2
                                                 .getOrThrow(Noises.SHIFT)))),
@@ -96,12 +98,12 @@ public class CANoiseSetting {
                                 holderGetter.getOrThrow(CADensityFunctions.DEPTH)),
                         new DensityFunctions.HolderHolder(holderGetter.getOrThrow(RIDGES)),
                         DensityFunctions.mul(DensityFunctions.constant(4), DensityFunctions.mul(
-                                        new DensityFunctions.HolderHolder(holderGetter
-                                                .getOrThrow(CADensityFunctions.DEPTH)),
-                                        DensityFunctions.cache2d(
-                                                new DensityFunctions.HolderHolder(
-                                                        holderGetter.getOrThrow(
-                                                                CADensityFunctions.FACTOR))))
+                                new DensityFunctions.HolderHolder(holderGetter
+                                        .getOrThrow(CADensityFunctions.DEPTH)),
+                                DensityFunctions.cache2d(
+                                        new DensityFunctions.HolderHolder(
+                                                holderGetter.getOrThrow(
+                                                        CADensityFunctions.FACTOR))))
                                 .quarterNegative()),
                         new DensityFunctions.HolderHolder(holderGetter
                                 .getOrThrow(CADensityFunctions.FINAL_DENSITY)),
@@ -118,7 +120,7 @@ public class CANoiseSetting {
                         SurfaceRules.ifTrue(SurfaceRules.abovePreliminarySurface(),
                                 SurfaceRules.sequence(
                                         SurfaceRules.ifTrue(SurfaceRules
-                                                        .isBiome(CABiomes.PLAGUE_WASTELAND),
+                                                .isBiome(CABiomes.PLAGUE_WASTELAND),
                                                 SurfaceRules.sequence(
                                                         SurfaceRules.ifTrue(
                                                                 SurfaceRules.stoneDepthCheck(
@@ -139,7 +141,7 @@ public class CANoiseSetting {
                                                                                 ASTRAL_DIRT))),
                                                         ASTRAL_STONE)),
                                         SurfaceRules.ifTrue(SurfaceRules
-                                                        .isBiome(CABiomes.PLAGUE_DESERT),
+                                                .isBiome(CABiomes.PLAGUE_DESERT),
                                                 SurfaceRules.ifTrue(
                                                         SurfaceRules.yBlockCheck(
                                                                 VerticalAnchor.absolute(
@@ -172,17 +174,17 @@ public class CANoiseSetting {
                                 0.7142857142857143),
                         DensityFunctions.noise(holderGetter2.getOrThrow(Noises.AQUIFER_LAVA)),
                         DensityFunctions.shiftedNoise2d(DensityFunctions
-                                        .flatCache(DensityFunctions.cache2d(DensityFunctions
-                                                .shiftA(holderGetter2.getOrThrow(
-                                                        Noises.SHIFT)))),
+                                .flatCache(DensityFunctions.cache2d(DensityFunctions
+                                        .shiftA(holderGetter2.getOrThrow(
+                                                Noises.SHIFT)))),
                                 DensityFunctions.flatCache(DensityFunctions.cache2d(
                                         DensityFunctions.shiftB(holderGetter2
                                                 .getOrThrow(Noises.SHIFT)))),
                                 0.25, holderGetter2.getOrThrow(Noises.TEMPERATURE)),
                         DensityFunctions.shiftedNoise2d(DensityFunctions
-                                        .flatCache(DensityFunctions.cache2d(DensityFunctions
-                                                .shiftA(holderGetter2.getOrThrow(
-                                                        Noises.SHIFT)))),
+                                .flatCache(DensityFunctions.cache2d(DensityFunctions
+                                        .shiftA(holderGetter2.getOrThrow(
+                                                Noises.SHIFT)))),
                                 DensityFunctions.flatCache(DensityFunctions.cache2d(
                                         DensityFunctions.shiftB(holderGetter2
                                                 .getOrThrow(Noises.SHIFT)))),

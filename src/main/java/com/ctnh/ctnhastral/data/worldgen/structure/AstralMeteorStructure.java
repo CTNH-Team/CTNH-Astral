@@ -1,12 +1,13 @@
 package com.ctnh.ctnhastral.data.worldgen.structure;
 
-import com.google.common.math.StatsAccumulator;
-import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilder;
+
+import com.google.common.math.StatsAccumulator;
+import com.mojang.serialization.Codec;
 
 import java.util.Optional;
 

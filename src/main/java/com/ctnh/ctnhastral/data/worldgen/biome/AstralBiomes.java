@@ -1,12 +1,13 @@
 package com.ctnh.ctnhastral.data.worldgen.biome;
 
-import com.ctnh.ctnhastral.data.worldgen.feature.CAPlacements;
-import com.ctnh.ctnhastral.registry.sound.CAMusics;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.world.level.biome.*;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+
+import com.ctnh.ctnhastral.data.worldgen.feature.CAPlacements;
+import com.ctnh.ctnhastral.registry.sound.CAMusics;
 
 public class AstralBiomes {
 

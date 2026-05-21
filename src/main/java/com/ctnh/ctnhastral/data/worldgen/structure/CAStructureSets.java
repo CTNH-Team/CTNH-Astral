@@ -1,6 +1,5 @@
 package com.ctnh.ctnhastral.data.worldgen.structure;
 
-import com.ctnh.ctnhastral.CTNHAstral;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.resources.ResourceKey;
@@ -8,9 +7,12 @@ import net.minecraft.world.level.levelgen.structure.StructureSet;
 import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadStructurePlacement;
 import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadType;
 
+import com.ctnh.ctnhastral.CTNHAstral;
+
 import java.util.List;
 
 public class CAStructureSets {
+
     public static final ResourceKey<StructureSet> ASTRAL_METEOR_SET = ResourceKey
             .create(Registries.STRUCTURE_SET, CTNHAstral.id("meteorite"));
 

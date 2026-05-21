@@ -1,14 +1,7 @@
 package com.ctnh.ctnhastral.registry.worldgen;
 
-import com.ctnh.ctnhastral.CTNHAstral;
-import com.ctnh.ctnhastral.api.loot.LootBuilder;
-import com.ctnh.ctnhastral.common.block.AstralFlowerBlock;
-import com.ctnh.ctnhastral.common.block.AstralGrassBlock;
-import com.ctnh.ctnhastral.common.block.AstralSaplingBlock;
-import com.ctnh.ctnhastral.common.block.AstralTallGrassBlock;
-import com.ctnh.ctnhastral.data.worldgen.feature.CAConfiguredFeatures;
 import com.gregtechceu.gtceu.common.data.models.GTModels;
-import com.tterrag.registrate.util.entry.BlockEntry;
+
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
@@ -19,6 +12,15 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.grower.AbstractTreeGrower;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+
+import com.ctnh.ctnhastral.CTNHAstral;
+import com.ctnh.ctnhastral.api.loot.LootBuilder;
+import com.ctnh.ctnhastral.common.block.AstralFlowerBlock;
+import com.ctnh.ctnhastral.common.block.AstralGrassBlock;
+import com.ctnh.ctnhastral.common.block.AstralSaplingBlock;
+import com.ctnh.ctnhastral.common.block.AstralTallGrassBlock;
+import com.ctnh.ctnhastral.data.worldgen.feature.CAConfiguredFeatures;
+import com.tterrag.registrate.util.entry.BlockEntry;
 import org.jetbrains.annotations.NotNull;
 
 import static com.ctnh.ctnhastral.CTNHAstral.REGISTRATE;
@@ -29,12 +31,13 @@ public class AstralBlocks {
     public static void init() {}
 
     public static final BlockEntry<RotatedPillarBlock> ASTRAL_LOG = createLogLikeBlock("astral_log", "星辉原木");
-//    public static final BlockEntry<RotatedPillarBlock> PEPPER_CRATE = createLogLikeBlock("pepper_crate", "箱装辣椒");
-//    public static final BlockEntry<RotatedPillarBlock> GARLIC_CRATE = createLogLikeBlock("garlic_crate", "箱装大蒜");
-//    public static final BlockEntry<RotatedPillarBlock> CASSAVA_CRATE = createLogLikeBlock("cassava_crate", "箱装木薯");
-//    public static final BlockEntry<RotatedPillarBlock> FRUIT_CAFE_CRATE = createLogLikeBlock("fruit_cafe_crate",
-//            "箱装水果");
-//    public static final BlockEntry<RotatedPillarBlock> ASPARAGUS_CRATE = createLogLikeBlock("asparagus_crate", "箱装芦荟");
+    // public static final BlockEntry<RotatedPillarBlock> PEPPER_CRATE = createLogLikeBlock("pepper_crate", "箱装辣椒");
+    // public static final BlockEntry<RotatedPillarBlock> GARLIC_CRATE = createLogLikeBlock("garlic_crate", "箱装大蒜");
+    // public static final BlockEntry<RotatedPillarBlock> CASSAVA_CRATE = createLogLikeBlock("cassava_crate", "箱装木薯");
+    // public static final BlockEntry<RotatedPillarBlock> FRUIT_CAFE_CRATE = createLogLikeBlock("fruit_cafe_crate",
+    // "箱装水果");
+    // public static final BlockEntry<RotatedPillarBlock> ASPARAGUS_CRATE = createLogLikeBlock("asparagus_crate",
+    // "箱装芦荟");
     public static final BlockEntry<Block> ASTRAL_COBBLESTONE = createStoneLikeBlock("astral_cobblestone", "星辉圆石",
             CTNHAstral.id("block/stones/astral_cobblestone"));
     public static BlockEntry<Block> ASTRAL_STONE = REGISTRATE.block("astral_stone", Block::new)
@@ -85,6 +88,4 @@ public class AstralBlocks {
     public static BlockEntry<AstralGrassBlock> ASTRAL_GRASS = createTallGrassBlock("astral_grass", "星辉草");
     public static BlockEntry<AstralTallGrassBlock> ASTRAL_TALL_GRASS = createDoublePlantBlock("astral_tall_grass",
             "星辉高草丛");
-
-
 }
