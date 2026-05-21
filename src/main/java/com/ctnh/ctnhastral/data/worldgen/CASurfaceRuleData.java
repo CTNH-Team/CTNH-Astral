@@ -1,0 +1,26 @@
+package com.ctnh.ctnhastral.data.worldgen;
+
+import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
+import net.minecraft.world.level.levelgen.SurfaceRules;
+import net.minecraft.world.level.levelgen.VerticalAnchor;
+import net.minecraft.world.level.levelgen.placement.CaveSurface;
+
+public class CASurfaceRuleData {
+
+    public static SurfaceRules.RuleSource customSurface() {
+        SurfaceRules.ConditionSource biome = SurfaceRules.isBiome(CABiomes.PLAGUE_WASTELAND);
+        SurfaceRules.ConditionSource surface4 = SurfaceRules.stoneDepthCheck(0, true, 4, CaveSurface.FLOOR);
+        SurfaceRules.ConditionSource surface1 = SurfaceRules.stoneDepthCheck(0, true, 1, CaveSurface.FLOOR);
+        SurfaceRules.ConditionSource belowWater = SurfaceRules.waterBlockCheck(0, 0);
+        SurfaceRules.ConditionSource surface20 = SurfaceRules.stoneDepthCheck(0, true, 20, CaveSurface.FLOOR);
+        SurfaceRules.ConditionSource hole = SurfaceRules.hole();
+        SurfaceRules.ConditionSource gradient = SurfaceRules.verticalGradient("ctnhcore:astral_stone",
+                VerticalAnchor.belowTop(13), VerticalAnchor.belowTop(9));
+        return SurfaceRules.ifTrue(biome, SurfaceRules.sequence(
+                SurfaceRules.ifTrue(surface4, SurfaceRules.sequence(
+                        SurfaceRules.ifTrue(surface1,
+                                SurfaceRules.state(AstralBlocks.ASTRAL_GRASS_BLOCK.getDefaultState())),
+                        SurfaceRules.state(AstralBlocks.ASTRAL_DIRT.getDefaultState()))),
+                SurfaceRules.ifTrue(surface20, SurfaceRules.state(AstralBlocks.ASTRAL_STONE.getDefaultState()))));
+    }
+}

@@ -1,6 +1,7 @@
-package com.ctnh.ctnhrogue.client;
+package com.ctnh.ctnhastral.client;
 
-import com.ctnh.ctnhrogue.common.CommonProxy;
+
+import com.ctnh.ctnhastral.common.CommonProxy;
 
 public class ClientProxy extends CommonProxy {
 

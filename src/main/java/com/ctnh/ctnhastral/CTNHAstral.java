@@ -1,32 +1,24 @@
-package com.ctnh.ctnhrogue;
+package com.ctnh.ctnhastral;
 
-import com.ctnh.ctnhrogue.client.ClientProxy;
-import com.ctnh.ctnhrogue.common.CommonProxy;
-import com.ctnh.ctnhrogue.registry.CRRegistrate;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
+import com.ctnh.ctnhastral.client.ClientProxy;
+import com.ctnh.ctnhastral.common.CommonProxy;
+import com.ctnh.ctnhastral.registry.CARegistrate;
+import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.dimension.DimensionType;
-import net.minecraft.world.level.dimension.LevelStem;
-import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
-import net.minecraft.world.level.levelgen.structure.StructureSet;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-
-import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
 import tech.vixhentx.mcmod.ctnhlib.langprovider.LangProcessor;
 
 @SuppressWarnings("removal")
-@Mod(CTNHRogue.MODID)
-public class CTNHRogue {
+@Mod(CTNHAstral.MODID)
+public class CTNHAstral {
 
-    public static final String MODID = "ctnhrogue";
+    public static final String MODID = "ctnhastral";
     private static final Logger LOGGER = LogUtils.getLogger();
-    public static final CRRegistrate REGISTRATE = CRRegistrate.create();
+    public static final CARegistrate REGISTRATE = CARegistrate.create();
 
-    public CTNHRogue() {
+    public CTNHAstral() {
         LangProcessor langProcessor = new LangProcessor(REGISTRATE);
         langProcessor.processAll();
         DistExecutor.unsafeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);

@@ -1,0 +1,68 @@
+package com.ctnh.ctnhastral.registry;
+
+import com.ctnh.ctnhastral.CTNHAstral;
+import com.ctnh.ctnhastral.api.loot.LootBuilder;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.GrassBlock;
+
+import static com.ctnh.ctnhastral.CTNHAstral.REGISTRATE;
+import static com.ctnh.ctnhastral.registry.worldgen.AstralBlocks.*;
+
+@SuppressWarnings("removal")
+public class CTNHBlockInfo {
+
+    public static void init() {}
+
+    static {
+//         ASTRAL_STONE = REGISTRATE.block("astral_stone", Block::new)
+//         .initialProperties(() -> Blocks.STONE)
+//         .blockstate((ctx, prov) -> {
+//         prov.simpleBlock(ctx.getEntry(), prov.models().cubeAll("astral_stone",
+//         CTNHAstral.id("block/stones/astral_stone")));
+//         })
+//         .properties(p -> p.isValidSpawn((state, level, pos, ent) -> false)).addLayer(() -> RenderType::cutoutMipped)
+//         .tag(BlockTags.MINEABLE_WITH_PICKAXE)
+//         .loot((registrateBlockLootTables, block) -> {
+//         registrateBlockLootTables.add(block, LootBuilder.createSingleItemTableWithSilkTouch(block,
+//         ASTRAL_COBBLESTONE.asItem()));
+//         })
+//         .item(BlockItem::new)
+//         .build()
+//         .register();
+        ASTRAL_DIRT = REGISTRATE.block("astral_dirt", Block::new)
+                .cnlang("星辉泥土")
+                .initialProperties(() -> Blocks.DIRT)
+                .blockstate((ctx, prov) -> {
+                    prov.simpleBlock(ctx.getEntry(),
+                            prov.models().cubeAll("astral_dirt", CTNHAstral.id("block/dirts/astral_dirt")));
+                })
+                .properties(p -> p.isValidSpawn((state, level, pos, ent) -> false))
+                .addLayer(() -> RenderType::cutoutMipped)
+                .tag(BlockTags.MINEABLE_WITH_SHOVEL)
+                .item(BlockItem::new)
+                .build()
+                .register();
+        ASTRAL_GRASS_BLOCK = REGISTRATE.block("astral_grass_block", GrassBlock::new)
+                .cnlang("星辉草方块")
+                .initialProperties(() -> Blocks.GRASS_BLOCK)
+                .blockstate((ctx, prov) -> {
+                    prov.simpleBlock(ctx.getEntry(), prov.models().cubeBottomTop("astral_grass_block",
+                            CTNHAstral.id("block/dirts/astral_grass_block_side"), CTNHAstral.id("block/dirts/astral_dirt"),
+                            CTNHAstral.id("block/dirts/astral_grass_block_top")));
+                })
+                .properties(p -> p.isValidSpawn((state, level, pos, ent) -> false))
+                .addLayer(() -> RenderType::cutoutMipped)
+                .tag(BlockTags.MINEABLE_WITH_SHOVEL)
+                .loot((loottable, block) -> {
+                    loottable.add(block, LootBuilder.createSingleItemTableWithSilkTouch(ASTRAL_GRASS_BLOCK.get(),
+                            ASTRAL_DIRT.asItem()));
+                })
+                .item(BlockItem::new)
+                .build()
+                .register();
+    }
+}
