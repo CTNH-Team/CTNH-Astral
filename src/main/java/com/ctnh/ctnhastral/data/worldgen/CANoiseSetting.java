@@ -122,23 +122,24 @@ public class CANoiseSetting {
                                         SurfaceRules.ifTrue(SurfaceRules
                                                 .isBiome(CABiomes.PLAGUE_WASTELAND),
                                                 SurfaceRules.sequence(
+                                                        // If near-surface (up to depth 4) place astral grass on the
+                                                        // very top
+                                                        // when the water surface check passes, and always place astral
+                                                        // dirt
+                                                        // as the filler under that surface so vanilla dirt isn't used.
                                                         SurfaceRules.ifTrue(
                                                                 SurfaceRules.stoneDepthCheck(
                                                                         0,
                                                                         false,
                                                                         4,
                                                                         CaveSurface.FLOOR),
-                                                                SurfaceRules.ifTrue(
-                                                                        SurfaceRules.waterBlockCheck(
-                                                                                -1,
-                                                                                0),
-                                                                        SurfaceRules.sequence(
-                                                                                SurfaceRules.ifTrue(
-                                                                                        SurfaceRules.waterBlockCheck(
-                                                                                                0,
-                                                                                                0),
-                                                                                        ASTRAL_GRASS_BLOCK),
-                                                                                ASTRAL_DIRT))),
+                                                                SurfaceRules.sequence(
+                                                                        SurfaceRules.ifTrue(
+                                                                                SurfaceRules.waterBlockCheck(
+                                                                                        0,
+                                                                                        0),
+                                                                                ASTRAL_GRASS_BLOCK),
+                                                                        ASTRAL_DIRT)),
                                                         ASTRAL_STONE)),
                                         SurfaceRules.ifTrue(SurfaceRules
                                                 .isBiome(CABiomes.PLAGUE_DESERT),

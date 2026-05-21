@@ -15,10 +15,7 @@ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 
 import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.api.loot.LootBuilder;
-import com.ctnh.ctnhastral.common.block.AstralFlowerBlock;
-import com.ctnh.ctnhastral.common.block.AstralGrassBlock;
-import com.ctnh.ctnhastral.common.block.AstralSaplingBlock;
-import com.ctnh.ctnhastral.common.block.AstralTallGrassBlock;
+import com.ctnh.ctnhastral.common.block.*;
 import com.ctnh.ctnhastral.data.worldgen.feature.CAConfiguredFeatures;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import org.jetbrains.annotations.NotNull;
@@ -80,7 +77,7 @@ public class AstralBlocks {
             .tag(ItemTags.SAPLINGS)
             .build()
             .register();
-    public static BlockEntry<GrassBlock> ASTRAL_GRASS_BLOCK;
+    public static BlockEntry<AstralGrass> ASTRAL_GRASS_BLOCK;
     public static BlockEntry<AstralFlowerBlock> BLUE_FLOWER = createFlowerBlock("blue_flower", "蓝焰花",
             MobEffects.ABSORPTION);
     public static BlockEntry<AstralFlowerBlock> PINK_FLOWER = createFlowerBlock("pink_flower", "粉球花",

@@ -5,10 +5,10 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.GrassBlock;
 
 import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.api.loot.LootBuilder;
+import com.ctnh.ctnhastral.common.block.AstralGrass;
 
 import static com.ctnh.ctnhastral.CTNHAstral.REGISTRATE;
 import static com.ctnh.ctnhastral.registry.worldgen.AstralBlocks.*;
@@ -47,7 +47,7 @@ public class CTNHBlockInfo {
                 .item(BlockItem::new)
                 .build()
                 .register();
-        ASTRAL_GRASS_BLOCK = REGISTRATE.block("astral_grass_block", GrassBlock::new)
+        ASTRAL_GRASS_BLOCK = REGISTRATE.block("astral_grass_block", AstralGrass::new)
                 .cnlang("星辉草方块")
                 .initialProperties(() -> Blocks.GRASS_BLOCK)
                 .blockstate((ctx, prov) -> {
