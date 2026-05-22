@@ -4,6 +4,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.CubicSpline;
+import net.minecraft.util.KeyDispatchDataCodec;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.levelgen.DensityFunction;
 import net.minecraft.world.level.levelgen.DensityFunctions;
 import net.minecraft.world.level.levelgen.NoiseRouterData;
@@ -11,6 +13,8 @@ import net.minecraft.world.level.levelgen.Noises;
 import net.minecraft.world.level.levelgen.synth.BlendedNoise;
 
 import com.ctnh.ctnhastral.CTNHAstral;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import java.lang.reflect.Field;
 
@@ -26,6 +30,8 @@ public class CADensityFunctions {
             CTNHAstral.id("base_3d_noise"));
     public static final ResourceKey<DensityFunction> FINAL_DENSITY = ResourceKey.create(Registries.DENSITY_FUNCTION,
             CTNHAstral.id("final_density"));
+    public static final ResourceKey<DensityFunction> ORIGIN_HEIGHT_FALLOFF = ResourceKey.create(
+            Registries.DENSITY_FUNCTION, CTNHAstral.id("origin_height_falloff"));
 
     public static void bootstrap(BootstapContext<DensityFunction> ctx) {
         Class<?> noiseRouter = NoiseRouterData.class;
@@ -141,7 +147,67 @@ public class CADensityFunctions {
                                                         DensityFunctions.yClampedGradient(296, 320, 1, 0))))))
                         .squeeze());
 
+        ctx.register(ORIGIN_HEIGHT_FALLOFF, new OriginHeightFalloff(50000.0D, 24.0D, -880.0D));
+
         ctx.register(FINAL_DENSITY,
-                DensityFunctions.max(DensityFunctions.yClampedGradient(-64, -63, 1, -1), densityFunction13));
+                DensityFunctions.add(densityFunction13,
+                        DensityFunctions.flatCache(DensityFunctions.cache2d(
+                                new DensityFunctions.HolderHolder(holderGetter2.getOrThrow(ORIGIN_HEIGHT_FALLOFF))))));
+    }
+
+    public static final class OriginHeightFalloff implements DensityFunction {
+
+        public static final KeyDispatchDataCodec<OriginHeightFalloff> CODEC = KeyDispatchDataCodec.of(
+                RecordCodecBuilder.mapCodec(instance -> instance.group(
+                        Codec.DOUBLE.optionalFieldOf("radius", 50000.0D).forGetter(function -> function.radius),
+                        Codec.DOUBLE.optionalFieldOf("start_offset", 8.0D).forGetter(function -> function.startOffset),
+                        Codec.DOUBLE.optionalFieldOf("end_offset", -8.0D).forGetter(function -> function.endOffset))
+                        .apply(instance, OriginHeightFalloff::new)));
+
+        private final double radius;
+        private final double startOffset;
+        private final double endOffset;
+
+        public OriginHeightFalloff(double radius, double startOffset, double endOffset) {
+            this.radius = radius;
+            this.startOffset = startOffset;
+            this.endOffset = endOffset;
+        }
+
+        @Override
+        public double compute(FunctionContext context) {
+            double x = context.blockX();
+            double z = context.blockZ();
+            double distance = Math.sqrt(x * x + z * z);
+            double t = Mth.clamp(distance / this.radius, 0.0D, 1.0D);
+            return Mth.lerp(t, this.startOffset, this.endOffset);
+        }
+
+        @Override
+        public void fillArray(double[] densities, ContextProvider provider) {
+            for (int i = 0; i < densities.length; i++) {
+                densities[i] = this.compute(provider.forIndex(i));
+            }
+        }
+
+        @Override
+        public DensityFunction mapAll(Visitor visitor) {
+            return visitor.apply(this);
+        }
+
+        @Override
+        public double minValue() {
+            return Math.min(this.startOffset, this.endOffset);
+        }
+
+        @Override
+        public double maxValue() {
+            return Math.max(this.startOffset, this.endOffset);
+        }
+
+        @Override
+        public KeyDispatchDataCodec<? extends DensityFunction> codec() {
+            return CODEC;
+        }
     }
 }

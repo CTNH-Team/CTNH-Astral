@@ -14,8 +14,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
 
-import com.ctnh.ctnhastral.data.worldgen.CAMaterials;
-import com.ctnh.ctnhastral.data.worldgen.CATagPrefixes;
+import com.ctnh.ctnhastral.data.CAMaterials;
+import com.ctnh.ctnhastral.data.CATagPrefixes;
 import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
 
 public class AstralMeteorPlacer {

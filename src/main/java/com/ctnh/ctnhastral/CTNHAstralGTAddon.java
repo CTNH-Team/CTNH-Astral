@@ -4,8 +4,8 @@ import com.gregtechceu.gtceu.api.addon.GTAddon;
 import com.gregtechceu.gtceu.api.addon.IGTAddon;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 
-import com.ctnh.ctnhastral.data.worldgen.CAElements;
-import com.ctnh.ctnhastral.data.worldgen.CATagPrefixes;
+import com.ctnh.ctnhastral.data.CAElements;
+import com.ctnh.ctnhastral.data.CATagPrefixes;
 import com.ctnh.ctnhastral.registry.CTNHBlockInfo;
 import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
 

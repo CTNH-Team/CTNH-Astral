@@ -69,4 +69,28 @@ public class AstralBiomes {
         BiomeGenerationSettings.Builder biomeBuilder = new BiomeGenerationSettings.Builder(holderGetter, holderGetter2);
         return baseOrbitSetting(biomeBuilder);
     }
+
+    public static Biome subnautics_ocean(HolderGetter<PlacedFeature> holderGetter,
+                                         HolderGetter<ConfiguredWorldCarver<?>> holderGetter2) {
+        BiomeGenerationSettings.Builder biomeBuilder = new BiomeGenerationSettings.Builder(holderGetter, holderGetter2);
+        // Ocean base: sand floor, add seagrass, coral and red algae placements
+        biomeBuilder.addFeature(GenerationStep.Decoration.VEGETAL_DECORATION, CAPlacements.SEAGRASS_PATCH)
+                .addFeature(GenerationStep.Decoration.VEGETAL_DECORATION, CAPlacements.CORAL_PATCH)
+                .addFeature(GenerationStep.Decoration.VEGETAL_DECORATION, CAPlacements.RED_ALGAE_PATCH);
+        return baseAstralSetting(biomeBuilder);
+    }
+
+    public static Biome seagrass_field(HolderGetter<PlacedFeature> holderGetter,
+                                       HolderGetter<ConfiguredWorldCarver<?>> holderGetter2) {
+        BiomeGenerationSettings.Builder biomeBuilder = new BiomeGenerationSettings.Builder(holderGetter, holderGetter2);
+        biomeBuilder.addFeature(GenerationStep.Decoration.VEGETAL_DECORATION, CAPlacements.SEAGRASS_PATCH);
+        return baseAstralSetting(biomeBuilder);
+    }
+
+    public static Biome red_algae_bed(HolderGetter<PlacedFeature> holderGetter,
+                                      HolderGetter<ConfiguredWorldCarver<?>> holderGetter2) {
+        BiomeGenerationSettings.Builder biomeBuilder = new BiomeGenerationSettings.Builder(holderGetter, holderGetter2);
+        biomeBuilder.addFeature(GenerationStep.Decoration.VEGETAL_DECORATION, CAPlacements.RED_ALGAE_PATCH);
+        return baseAstralSetting(biomeBuilder);
+    }
 }

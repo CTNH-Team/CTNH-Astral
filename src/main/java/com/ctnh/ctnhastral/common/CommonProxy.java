@@ -16,7 +16,12 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegisterEvent;
 
 import com.ctnh.ctnhastral.CTNHAstral;
+import com.ctnh.ctnhastral.data.CAEnchantments;
+import com.ctnh.ctnhastral.data.CAMaterials;
+import com.ctnh.ctnhastral.data.lang.ChineseLangHandler;
+import com.ctnh.ctnhastral.data.lang.EnglishLangHandler;
 import com.ctnh.ctnhastral.data.worldgen.*;
+import com.ctnh.ctnhastral.data.worldgen.biome.CASubnauticsBiomeSource;
 import com.ctnh.ctnhastral.data.worldgen.feature.CAConfiguredFeatures;
 import com.ctnh.ctnhastral.data.worldgen.feature.CAPlacements;
 import com.ctnh.ctnhastral.data.worldgen.structure.AstralMeteorStructure;
@@ -24,12 +29,14 @@ import com.ctnh.ctnhastral.data.worldgen.structure.CAStructureSets;
 import com.ctnh.ctnhastral.data.worldgen.structure.CAStructures;
 import com.ctnh.ctnhastral.registry.sound.CASoundDefinitionsProvider;
 import com.ctnh.ctnhastral.registry.sound.CASoundEvents;
+import com.tterrag.registrate.providers.ProviderType;
 import terrablender.api.Regions;
 import terrablender.api.SurfaceRuleManager;
 
 import java.util.Set;
 
 import static com.ctnh.ctnhastral.CTNHAstral.REGISTRATE;
+import static tech.vixhentx.mcmod.ctnhlib.registrate.data.ProviderTypes.CNLANG;
 
 @Mod.EventBusSubscriber(modid = CTNHAstral.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 @SuppressWarnings("removal")
@@ -42,14 +49,35 @@ public class CommonProxy {
     public static void init() {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         eventBus.addListener((RegisterEvent event) -> AstralMeteorStructure.init());
+        eventBus.addListener(CommonProxy::registerBiomeSources);
+        eventBus.addListener(CommonProxy::registerDensityFunctionTypes);
         CASoundEvents.SOUND_EVENTS.register(eventBus);
+        CAEnchantments.Enchantments.register(eventBus);
         REGISTRATE.registerRegistrate();
+        REGISTRATE.addDataGenerator(CNLANG, ChineseLangHandler::init);
+        REGISTRATE.addDataGenerator(ProviderType.LANG, EnglishLangHandler::init);
     }
 
     @SubscribeEvent
     public static void registerMaterials(MaterialEvent event) {
         CAMaterials.init();
         CAMaterials.tagPrefixIgnore();
+    }
+
+    @SubscribeEvent
+    public static void registerBiomeSources(RegisterEvent event) {
+        if (event.getRegistryKey().equals(Registries.BIOME_SOURCE)) {
+            event.register(Registries.BIOME_SOURCE, CABiomeSources.SUBNAUTICS_OCEAN.location(),
+                    () -> CASubnauticsBiomeSource.CODEC);
+        }
+    }
+
+    @SubscribeEvent
+    public static void registerDensityFunctionTypes(RegisterEvent event) {
+        if (event.getRegistryKey().equals(Registries.DENSITY_FUNCTION_TYPE)) {
+            event.register(Registries.DENSITY_FUNCTION_TYPE, CADensityFunctionTypes.ORIGIN_HEIGHT_FALLOFF.location(),
+                    () -> CADensityFunctions.OriginHeightFalloff.CODEC.codec());
+        }
     }
 
     @SubscribeEvent
@@ -86,7 +114,6 @@ public class CommonProxy {
                             .add(Registries.DENSITY_FUNCTION, CADensityFunctions::bootstrap)
                             // .add(Registries.DAMAGE_TYPE, CTNHDamageTypes::bootstrap)
                             .add(Registries.STRUCTURE, CAStructures::bootstrap)
-
                             .add(Registries.STRUCTURE_SET, CAStructureSets::bootstrap),
                     set));
         }

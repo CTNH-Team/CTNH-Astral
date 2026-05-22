@@ -42,6 +42,13 @@ public class CAPlacements {
             CTNHAstral.id("venus_ochrum"));
     public static final ResourceKey<PlacedFeature> GAS_SPROUT = ResourceKey.create(Registries.PLACED_FEATURE,
             CTNHAstral.id("gas_sprout"));
+    // Ocean placements
+    public static final ResourceKey<PlacedFeature> SEAGRASS_PATCH = ResourceKey.create(Registries.PLACED_FEATURE,
+            CTNHAstral.id("seagrass_patch"));
+    public static final ResourceKey<PlacedFeature> CORAL_PATCH = ResourceKey.create(Registries.PLACED_FEATURE,
+            CTNHAstral.id("coral_patch"));
+    public static final ResourceKey<PlacedFeature> RED_ALGAE_PATCH = ResourceKey.create(Registries.PLACED_FEATURE,
+            CTNHAstral.id("red_algae_patch"));
 
     public static void bootstrap(BootstapContext<PlacedFeature> ctx) {
         HolderGetter<ConfiguredFeature<?, ?>> featureLookup = ctx.lookup(Registries.CONFIGURED_FEATURE);
@@ -93,6 +100,28 @@ public class CAPlacements {
                 InSquarePlacement.spread(),
                 PlacementUtils.HEIGHTMAP_WORLD_SURFACE,
                 BiomeFilter.biome());
+        // Ocean placements: add seagrass, coral and red algae to our new subnautics ocean biome
+        PlacementUtils.register(ctx, SEAGRASS_PATCH, featureLookup.getOrThrow(CAConfiguredFeatures.SEAGRASS_PATCH),
+                new BiomePlacement(List.of(new BiomeWeightModifier(
+                        () -> HolderSet.direct(biomeLookup
+                                .getOrThrow(ResourceKey.create(Registries.BIOME, CTNHAstral.id("subnautics_ocean")))),
+                        50))),
+                CountPlacement.of(20), InSquarePlacement.spread(), SurfaceWaterDepthFilter.forMaxDepth(16),
+                PlacementUtils.HEIGHTMAP, BiomeFilter.biome());
+        PlacementUtils.register(ctx, CORAL_PATCH, featureLookup.getOrThrow(CAConfiguredFeatures.CORAL_PATCH),
+                new BiomePlacement(List.of(new BiomeWeightModifier(
+                        () -> HolderSet.direct(biomeLookup
+                                .getOrThrow(ResourceKey.create(Registries.BIOME, CTNHAstral.id("subnautics_ocean")))),
+                        30))),
+                CountPlacement.of(6), InSquarePlacement.spread(), SurfaceWaterDepthFilter.forMaxDepth(4),
+                PlacementUtils.HEIGHTMAP, BiomeFilter.biome());
+        PlacementUtils.register(ctx, RED_ALGAE_PATCH, featureLookup.getOrThrow(CAConfiguredFeatures.RED_ALGAE_PATCH),
+                new BiomePlacement(List.of(new BiomeWeightModifier(
+                        () -> HolderSet.direct(biomeLookup
+                                .getOrThrow(ResourceKey.create(Registries.BIOME, CTNHAstral.id("subnautics_ocean")))),
+                        40))),
+                CountPlacement.of(12), InSquarePlacement.spread(), SurfaceWaterDepthFilter.forMaxDepth(24),
+                PlacementUtils.HEIGHTMAP, BiomeFilter.biome());
         PlacementUtils.register(ctx, VENUS_OCHRUM, featureLookup.getOrThrow(CAConfiguredFeatures.VENUS_OCHRUM),
                 HeightRangePlacement.triangle(VerticalAnchor.aboveBottom(15), VerticalAnchor.absolute(70)),
                 InSquarePlacement.spread(),

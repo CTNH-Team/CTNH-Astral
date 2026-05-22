@@ -14,6 +14,7 @@ import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
 import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 
 import com.ctnh.ctnhastral.CTNHAstral;
+import com.ctnh.ctnhastral.data.worldgen.biome.CASubnauticsBiomeSource;
 import com.mojang.datafixers.util.Pair;
 
 import java.util.List;
@@ -26,6 +27,8 @@ public class CADimensions {
     public static final Climate.ParameterPoint PLAGUE_DESERT_PARAMETER = createParameter(0.2F, 0, 0, 0, 0, 0, 0);
     public static final ResourceKey<LevelStem> ASTRAL_ORBIT = ResourceKey.create(Registries.LEVEL_STEM,
             CTNHAstral.id("astral_orbit"));
+    public static final ResourceKey<LevelStem> SUBNAUTICS_OCEAN = ResourceKey.create(Registries.LEVEL_STEM,
+            CTNHAstral.id("subnautics_ocean"));
 
     public static void bootstrap(BootstapContext<LevelStem> ctx) {
         HolderGetter<Biome> biomes = ctx.lookup(Registries.BIOME);
@@ -36,6 +39,13 @@ public class CADimensions {
                         new FixedBiomeSource(
                                 biomes.getOrThrow(CABiomes.ASTRAL_ORBIT)),
                         noiseSettings.getOrThrow(CANoiseSetting.ORBIT))));
+        ctx.register(SUBNAUTICS_OCEAN, new LevelStem(dimensionTypes.getOrThrow(CADimensionTypes.SUBNAUTICS_OCEAN),
+                new NoiseBasedChunkGenerator(
+                        new CASubnauticsBiomeSource(
+                                biomes.getOrThrow(CABiomes.SUBNAUTICS_OCEAN),
+                                biomes.getOrThrow(CABiomes.SEAGRASS_FIELD),
+                                biomes.getOrThrow(CABiomes.RED_ALGAE_BED)),
+                        noiseSettings.getOrThrow(CANoiseSetting.SUBNAUTICS_OCEAN))));
         ctx.register(ASTRAL_PLANET, new LevelStem(dimensionTypes.getOrThrow(CADimensionTypes.ASTRAL_PLANET),
                 new NoiseBasedChunkGenerator(
                         MultiNoiseBiomeSource.createFromList(new Climate.ParameterList<>(

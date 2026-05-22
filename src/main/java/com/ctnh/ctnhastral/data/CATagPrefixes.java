@@ -1,4 +1,4 @@
-package com.ctnh.ctnhastral.data.worldgen;
+package com.ctnh.ctnhastral.data;
 
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialStack;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
