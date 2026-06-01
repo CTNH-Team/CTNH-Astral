@@ -21,8 +21,6 @@ public class CADimensionTypes {
             CTNHAstral.id("astral_planet"));
     public static final ResourceKey<DimensionType> ASTRAL_ORBIT = ResourceKey.create(Registries.DIMENSION_TYPE,
             CTNHAstral.id("astral_orbit"));
-    public static final ResourceKey<DimensionType> SUBNAUTICS_OCEAN = ResourceKey.create(Registries.DIMENSION_TYPE,
-            CTNHAstral.id("subnautics_ocean"));
 
     public static void bootstrap(BootstapContext<DimensionType> ctx) {
         ctx.register(
@@ -63,28 +61,6 @@ public class CADimensionTypes {
                         384,
                         BlockTags.INFINIBURN_OVERWORLD,
                         CTNHAstral.id("astral_orbit"),
-                        0.0f,
-                        createMonsterSettings(
-                                false,
-                                false,
-                                UniformInt.of(0, 7),
-                                0)));
-        ctx.register(
-                SUBNAUTICS_OCEAN,
-                create(
-                        OptionalLong.empty(),
-                        true,
-                        false,
-                        false,
-                        true,
-                        1.0,
-                        true,
-                        false,
-                        -1024,
-                        1280,
-                        1280,
-                        BlockTags.INFINIBURN_OVERWORLD,
-                        CTNHAstral.id("subnautics_ocean"),
                         0.0f,
                         createMonsterSettings(
                                 false,

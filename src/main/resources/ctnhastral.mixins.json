@@ -5,7 +5,8 @@
   "refmap": "mixins.ctnhastral.refmap.json",
   "mixins": [
     "adastra.OxygenApilmplMixin",
-    "adastra.TemperatureApilmplMixin"
+    "adastra.TemperatureApilmplMixin",
+    "minecraft.NoiseBasedChunkGeneratorMixin"
   ],
   "client": [],
   "minVersion": "0.8"

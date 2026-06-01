@@ -8,4 +8,6 @@ dependencies {
     modImplementation(ctnh.adastra)
 
     modImplementation(ctnh.terrablender)
+
+    modImplementation("extra-mods:worldgenrender-1.0.0:1.0.0")
 }
