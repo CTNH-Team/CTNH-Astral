@@ -24,9 +24,6 @@ public class CANoiseSetting {
             .create(Registries.NOISE_SETTINGS, CTNHAstral.id("astral_planet"));
     public static final ResourceKey<NoiseGeneratorSettings> ABYSS = ResourceKey.create(Registries.NOISE_SETTINGS,
             CTNHAstral.id("abyss"));
-    public static final ResourceKey<NoiseGeneratorSettings> SUBNAUTICS_OCEAN = ResourceKey.create(
-            Registries.NOISE_SETTINGS,
-            CTNHAstral.id("subnautics_ocean"));
     public static final SurfaceRules.RuleSource ASTRAL_GRASS_BLOCK = SurfaceRules
             .state(AstralBlocks.ASTRAL_GRASS_BLOCK.getDefaultState());
     public static final SurfaceRules.RuleSource ASTRAL_DIRT = SurfaceRules
@@ -78,7 +75,7 @@ public class CANoiseSetting {
                                 holderGetter2.getOrThrow(
                                         Noises.AQUIFER_FLUID_LEVEL_SPREAD),
                                 0.7142857142857143),
-                        DensityFunctions.noise(holderGetter2.getOrThrow(Noises.AQUIFER_LAVA)),
+                        DensityFunctions.yClampedGradient(-1014, -1024, 0.0D, 1.0D),
                         DensityFunctions.shiftedNoise2d(DensityFunctions
                                 .flatCache(DensityFunctions.cache2d(DensityFunctions
                                         .shiftA(holderGetter2.getOrThrow(
@@ -109,7 +106,7 @@ public class CANoiseSetting {
                                                         CADensityFunctions.FACTOR))))
                                 .quarterNegative()),
                         new DensityFunctions.HolderHolder(holderGetter
-                                .getOrThrow(CADensityFunctions.FINAL_DENSITY)),
+                                .getOrThrow(CADensityFunctions.ASTRAL_DENSITY)),
                         DensityFunctions.zero(),
                         DensityFunctions.zero(),
                         DensityFunctions.zero()),
@@ -163,61 +160,6 @@ public class CANoiseSetting {
                 false,
                 false,
                 false));
-        ctx.register(SUBNAUTICS_OCEAN, new NoiseGeneratorSettings(NoiseSettings.create(-1024, 1280, 1, 2),
-                Blocks.STONE.defaultBlockState(),
-                Blocks.WATER.defaultBlockState(),
-                new NoiseRouter(DensityFunctions.noise(holderGetter2.getOrThrow(Noises.AQUIFER_BARRIER),
-                        0.5),
-                        DensityFunctions.noise(
-                                holderGetter2.getOrThrow(
-                                        Noises.AQUIFER_FLUID_LEVEL_FLOODEDNESS),
-                                0.67),
-                        DensityFunctions.noise(
-                                holderGetter2.getOrThrow(
-                                        Noises.AQUIFER_FLUID_LEVEL_SPREAD),
-                                0.7142857142857143),
-                        DensityFunctions.noise(holderGetter2.getOrThrow(Noises.AQUIFER_LAVA)),
-                        DensityFunctions.shiftedNoise2d(DensityFunctions
-                                .flatCache(DensityFunctions.cache2d(DensityFunctions
-                                        .shiftA(holderGetter2.getOrThrow(
-                                                Noises.SHIFT)))),
-                                DensityFunctions.flatCache(DensityFunctions.cache2d(
-                                        DensityFunctions.shiftB(holderGetter2
-                                                .getOrThrow(Noises.SHIFT)))),
-                                0.25, holderGetter2.getOrThrow(Noises.TEMPERATURE)),
-                        DensityFunctions.shiftedNoise2d(DensityFunctions
-                                .flatCache(DensityFunctions.cache2d(DensityFunctions
-                                        .shiftA(holderGetter2.getOrThrow(
-                                                Noises.SHIFT)))),
-                                DensityFunctions.flatCache(DensityFunctions.cache2d(
-                                        DensityFunctions.shiftB(holderGetter2
-                                                .getOrThrow(Noises.SHIFT)))),
-                                0.25, holderGetter2.getOrThrow(Noises.VEGETATION)),
-                        new DensityFunctions.HolderHolder(holderGetter.getOrThrow(CONTINENTS)),
-                        new DensityFunctions.HolderHolder(holderGetter.getOrThrow(EROSION)),
-                        new DensityFunctions.HolderHolder(
-                                holderGetter.getOrThrow(CADensityFunctions.DEPTH)),
-                        new DensityFunctions.HolderHolder(holderGetter.getOrThrow(RIDGES)),
-                        DensityFunctions.mul(DensityFunctions.constant(4), DensityFunctions.mul(
-                                new DensityFunctions.HolderHolder(holderGetter
-                                        .getOrThrow(CADensityFunctions.DEPTH)),
-                                DensityFunctions.cache2d(
-                                        new DensityFunctions.HolderHolder(
-                                                holderGetter.getOrThrow(
-                                                        CADensityFunctions.FACTOR))))
-                                .quarterNegative()),
-                        new DensityFunctions.HolderHolder(holderGetter
-                                .getOrThrow(CADensityFunctions.FINAL_DENSITY)),
-                        DensityFunctions.zero(),
-                        DensityFunctions.zero(),
-                        DensityFunctions.zero()),
-                CASubnauticsSurfaceRuleData.customSurface(),
-                List.of(),
-                64,
-                false,
-                false,
-                false,
-                false));
         ctx.register(ABYSS, new NoiseGeneratorSettings(NoiseSettings.create(-64, 384, 1, 2),
                 Blocks.STONE.defaultBlockState(),
                 Fluids.WATER.defaultFluidState().createLegacyBlock(),
@@ -231,7 +173,7 @@ public class CANoiseSetting {
                                 holderGetter2.getOrThrow(
                                         Noises.AQUIFER_FLUID_LEVEL_SPREAD),
                                 0.7142857142857143),
-                        DensityFunctions.noise(holderGetter2.getOrThrow(Noises.AQUIFER_LAVA)),
+                        DensityFunctions.zero(),
                         DensityFunctions.shiftedNoise2d(DensityFunctions
                                 .flatCache(DensityFunctions.cache2d(DensityFunctions
                                         .shiftA(holderGetter2.getOrThrow(
@@ -259,7 +201,7 @@ public class CANoiseSetting {
                                 new DensityFunctions.HolderHolder(holderGetter
                                         .getOrThrow(CADensityFunctions.FACTOR)))),
                         new DensityFunctions.HolderHolder(holderGetter
-                                .getOrThrow(CADensityFunctions.FINAL_DENSITY)),
+                                .getOrThrow(CADensityFunctions.ASTRAL_DENSITY)),
                         DensityFunctions.zero(),
                         DensityFunctions.zero(),
                         DensityFunctions.zero()),

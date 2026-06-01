@@ -50,13 +50,6 @@ public class CAConfiguredFeatures {
             .create(Registries.CONFIGURED_FEATURE, CTNHAstral.id("venus_ochrum"));
     public static final ResourceKey<ConfiguredFeature<?, ?>> GAS_SPROUT = ResourceKey
             .create(Registries.CONFIGURED_FEATURE, CTNHAstral.id("gas_sprout"));
-    // New ocean features
-    public static final ResourceKey<ConfiguredFeature<?, ?>> SEAGRASS_PATCH = ResourceKey
-            .create(Registries.CONFIGURED_FEATURE, CTNHAstral.id("seagrass_patch"));
-    public static final ResourceKey<ConfiguredFeature<?, ?>> CORAL_PATCH = ResourceKey
-            .create(Registries.CONFIGURED_FEATURE, CTNHAstral.id("coral_patch"));
-    public static final ResourceKey<ConfiguredFeature<?, ?>> RED_ALGAE_PATCH = ResourceKey
-            .create(Registries.CONFIGURED_FEATURE, CTNHAstral.id("red_algae_patch"));
 
     public static void bootstrap(BootstapContext<ConfiguredFeature<?, ?>> ctx) {
         FeatureUtils.register(ctx, ASTRAL_TREE, Feature.TREE, new TreeConfiguration.TreeConfigurationBuilder(
@@ -89,16 +82,6 @@ public class CAConfiguredFeatures {
                 new FluidSproutConfiguration(GTMaterials.RefineryGas.getFluid(FluidStorageKeys.GAS),
                         UniformInt.of(12, 16), UniformInt.of(6, 9),
                         0.4f));
-        // Seagrass patch using vanilla seagrass as placeholder
-        FeatureUtils.register(ctx, SEAGRASS_PATCH, Feature.RANDOM_PATCH,
-                CAConfiguredFeatures.grassPatch(BlockStateProvider.simple(Blocks.SEAGRASS.defaultBlockState()), 64));
-        // Coral patch - use SIMPLE_BLOCK random patch of coral block as placeholder (vanilla coral blocks require
-        // water)
-        FeatureUtils.register(ctx, CORAL_PATCH, Feature.RANDOM_PATCH,
-                CAConfiguredFeatures.grassPatch(BlockStateProvider.simple(Blocks.TUBE_CORAL.defaultBlockState()), 32));
-        // Red algae placeholder using seagrass for now
-        FeatureUtils.register(ctx, RED_ALGAE_PATCH, Feature.RANDOM_PATCH,
-                CAConfiguredFeatures.grassPatch(BlockStateProvider.simple(Blocks.SEAGRASS.defaultBlockState()), 48));
     }
 
     private static RandomPatchConfiguration grassPatch(BlockStateProvider blockStateProvider, int n) {

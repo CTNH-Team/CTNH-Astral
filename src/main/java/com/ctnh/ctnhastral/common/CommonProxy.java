@@ -21,7 +21,6 @@ import com.ctnh.ctnhastral.data.CAMaterials;
 import com.ctnh.ctnhastral.data.lang.ChineseLangHandler;
 import com.ctnh.ctnhastral.data.lang.EnglishLangHandler;
 import com.ctnh.ctnhastral.data.worldgen.*;
-import com.ctnh.ctnhastral.data.worldgen.biome.CASubnauticsBiomeSource;
 import com.ctnh.ctnhastral.data.worldgen.feature.CAConfiguredFeatures;
 import com.ctnh.ctnhastral.data.worldgen.feature.CAPlacements;
 import com.ctnh.ctnhastral.data.worldgen.structure.AstralMeteorStructure;
@@ -49,8 +48,6 @@ public class CommonProxy {
     public static void init() {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         eventBus.addListener((RegisterEvent event) -> AstralMeteorStructure.init());
-        eventBus.addListener(CommonProxy::registerBiomeSources);
-        eventBus.addListener(CommonProxy::registerDensityFunctionTypes);
         CASoundEvents.SOUND_EVENTS.register(eventBus);
         CAEnchantments.Enchantments.register(eventBus);
         REGISTRATE.registerRegistrate();
@@ -62,22 +59,6 @@ public class CommonProxy {
     public static void registerMaterials(MaterialEvent event) {
         CAMaterials.init();
         CAMaterials.tagPrefixIgnore();
-    }
-
-    @SubscribeEvent
-    public static void registerBiomeSources(RegisterEvent event) {
-        if (event.getRegistryKey().equals(Registries.BIOME_SOURCE)) {
-            event.register(Registries.BIOME_SOURCE, CABiomeSources.SUBNAUTICS_OCEAN.location(),
-                    () -> CASubnauticsBiomeSource.CODEC);
-        }
-    }
-
-    @SubscribeEvent
-    public static void registerDensityFunctionTypes(RegisterEvent event) {
-        if (event.getRegistryKey().equals(Registries.DENSITY_FUNCTION_TYPE)) {
-            event.register(Registries.DENSITY_FUNCTION_TYPE, CADensityFunctionTypes.ORIGIN_HEIGHT_FALLOFF.location(),
-                    () -> CADensityFunctions.OriginHeightFalloff.CODEC.codec());
-        }
     }
 
     @SubscribeEvent
@@ -111,10 +92,10 @@ public class CommonProxy {
                             .add(Registries.DIMENSION_TYPE, CADimensionTypes::bootstrap)
                             .add(Registries.LEVEL_STEM, CADimensions::bootstrap)
                             .add(Registries.NOISE_SETTINGS, CANoiseSetting::bootstrap)
-                            .add(Registries.DENSITY_FUNCTION, CADensityFunctions::bootstrap)
                             // .add(Registries.DAMAGE_TYPE, CTNHDamageTypes::bootstrap)
                             .add(Registries.STRUCTURE, CAStructures::bootstrap)
-                            .add(Registries.STRUCTURE_SET, CAStructureSets::bootstrap),
+                            .add(Registries.STRUCTURE_SET, CAStructureSets::bootstrap)
+                            .add(Registries.DENSITY_FUNCTION, CADensityFunctions::bootstrap),
                     set));
         }
     }
