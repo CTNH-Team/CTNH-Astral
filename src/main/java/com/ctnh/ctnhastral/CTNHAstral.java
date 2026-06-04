@@ -20,8 +20,6 @@ public class CTNHAstral {
     public static final CARegistrate REGISTRATE = CARegistrate.create();
 
     public CTNHAstral() {
-        LangProcessor langProcessor = new LangProcessor(REGISTRATE);
-        langProcessor.processAll();
         DistExecutor.unsafeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
     }
 

@@ -51,8 +51,9 @@ public class CommonProxy {
         CASoundEvents.SOUND_EVENTS.register(eventBus);
         CAEnchantments.Enchantments.register(eventBus);
         REGISTRATE.registerRegistrate();
-        REGISTRATE.addDataGenerator(CNLANG, ChineseLangHandler::init);
-        REGISTRATE.addDataGenerator(ProviderType.LANG, EnglishLangHandler::init);
+        REGISTRATE.addLangProcessor()
+                .addDataGenerator(CNLANG, ChineseLangHandler::init)
+                .addDataGenerator(ProviderType.LANG, EnglishLangHandler::init);
     }
 
     @SubscribeEvent
