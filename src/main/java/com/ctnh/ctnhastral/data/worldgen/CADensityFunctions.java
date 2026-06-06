@@ -26,8 +26,6 @@ public class CADensityFunctions {
             CTNHAstral.id("base_3d_noise"));
     public static final ResourceKey<DensityFunction> ASTRAL_DENSITY = ResourceKey.create(Registries.DENSITY_FUNCTION,
             CTNHAstral.id("astral_density"));
-    public static final ResourceKey<DensityFunction> SUBNAUTIC_DENSITY = ResourceKey.create(Registries.DENSITY_FUNCTION,
-            CTNHAstral.id("subnautic_density"));
     public static final ResourceKey<DensityFunction> ORIGIN_HEIGHT_FALLOFF = ResourceKey.create(
             Registries.DENSITY_FUNCTION, CTNHAstral.id("origin_height_falloff"));
 

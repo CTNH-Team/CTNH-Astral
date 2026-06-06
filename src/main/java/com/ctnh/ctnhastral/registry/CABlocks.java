@@ -12,7 +12,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 
-import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.common.block.AstralFlowerBlock;
 import com.ctnh.ctnhastral.common.block.AstralGrassBlock;
 import com.ctnh.ctnhastral.common.block.AstralTallGrassBlock;
@@ -24,17 +23,6 @@ import static com.ctnh.ctnhastral.CTNHAstral.REGISTRATE;
 public class CABlocks {
 
     public static void init() {}
-
-    public static BlockEntry<FallingBlock> MOON_SAND = createSandLikeBlock("moon_sand", "月沙",
-            CTNHAstral.id("block/sands/moon_sand"));
-
-    public static BlockEntry<AmethystClusterBlock> SILICON_CRYSTAL = REGISTRATE
-            .block("silicon_crystal", properties -> new AmethystClusterBlock(7, 3, properties))
-            .cnlang("硅晶")
-            .initialProperties(() -> Blocks.AMETHYST_BLOCK)
-            .blockstate(GTModels::createCrossBlockState)
-            .addLayer(() -> RenderType::cutoutMipped)
-            .register();
 
     @SuppressWarnings("removal")
     public static BlockEntry<Block> createStoneLikeBlock(String name, String cnName, ResourceLocation texture) {

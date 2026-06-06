@@ -9,7 +9,6 @@ import com.ctnh.ctnhastral.common.CommonProxy;
 import com.ctnh.ctnhastral.registry.CARegistrate;
 import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
-import tech.vixhentx.mcmod.ctnhlib.langprovider.LangProcessor;
 
 @SuppressWarnings("removal")
 @Mod(CTNHAstral.MODID)

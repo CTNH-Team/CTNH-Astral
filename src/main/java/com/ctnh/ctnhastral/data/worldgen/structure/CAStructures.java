@@ -17,8 +17,12 @@ public class CAStructures {
 
     public static final ResourceKey<Structure> ASTRAL_METEOR = ResourceKey.create(Registries.STRUCTURE,
             CTNHAstral.id("meteorite"));
+    public static final ResourceKey<Structure> MOON_ABANDONED_OUTPOST = ResourceKey.create(Registries.STRUCTURE,
+            CTNHAstral.id("moon_abandoned_outpost"));
     public static final TagKey<Biome> ASTRAL_METEOR_BIOMES = TagKey.create(Registries.BIOME,
             CTNHAstral.id("astral_meteor"));
+    public static final TagKey<Biome> MOON_ABANDONED_OUTPOST_BIOMES = TagKey.create(Registries.BIOME,
+            CTNHAstral.id("moon_abandoned_outpost"));
 
     public static void bootstrap(BootstapContext<Structure> context) {
         var biomes = context.lookup(Registries.BIOME);
@@ -30,5 +34,13 @@ public class CAStructures {
                                 Map.of(),
                                 GenerationStep.Decoration.TOP_LAYER_MODIFICATION,
                                 TerrainAdjustment.NONE)));
+        context.register(
+                MOON_ABANDONED_OUTPOST,
+                new MoonAbandonedOutpostStructure(
+                        new Structure.StructureSettings(
+                                biomes.getOrThrow(MOON_ABANDONED_OUTPOST_BIOMES),
+                                Map.of(),
+                                GenerationStep.Decoration.SURFACE_STRUCTURES,
+                                TerrainAdjustment.BEARD_THIN)));
     }
 }

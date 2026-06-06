@@ -8,6 +8,7 @@ import com.ctnh.ctnhastral.data.CAElements;
 import com.ctnh.ctnhastral.data.CATagPrefixes;
 import com.ctnh.ctnhastral.registry.CTNHBlockInfo;
 import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
+import com.ctnh.ctnhastral.registry.worldgen.MoonBlocks;
 
 @GTAddon
 public class CTNHAstralGTAddon implements IGTAddon {
@@ -28,6 +29,7 @@ public class CTNHAstralGTAddon implements IGTAddon {
     @Override
     public void registerTagPrefixes() {
         AstralBlocks.init();
+        MoonBlocks.init();
         CTNHBlockInfo.init();
         CATagPrefixes.init();
     }

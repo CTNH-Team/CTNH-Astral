@@ -15,15 +15,22 @@ public class CAStructureSets {
 
     public static final ResourceKey<StructureSet> ASTRAL_METEOR_SET = ResourceKey
             .create(Registries.STRUCTURE_SET, CTNHAstral.id("meteorite"));
+    public static final ResourceKey<StructureSet> MOON_ABANDONED_OUTPOST_SET = ResourceKey
+            .create(Registries.STRUCTURE_SET, CTNHAstral.id("moon_abandoned_outpost"));
 
     public static void bootstrap(BootstapContext<StructureSet> context) {
         var structures = context.lookup(Registries.STRUCTURE);
         var meteorite = structures.getOrThrow(CAStructures.ASTRAL_METEOR);
+        var outpost = structures.getOrThrow(CAStructures.MOON_ABANDONED_OUTPOST);
 
         var structureSet = new StructureSet(
                 List.of(StructureSet.entry(meteorite)),
                 new RandomSpreadStructurePlacement(32, 8, RandomSpreadType.LINEAR, 124895654));
 
         context.register(ASTRAL_METEOR_SET, structureSet);
+        context.register(MOON_ABANDONED_OUTPOST_SET,
+                new StructureSet(
+                        List.of(StructureSet.entry(outpost)),
+                        new RandomSpreadStructurePlacement(40, 12, RandomSpreadType.LINEAR, 98421563)));
     }
 }

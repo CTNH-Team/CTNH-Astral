@@ -21,10 +21,25 @@ public class CADimensionTypes {
             CTNHAstral.id("astral_planet"));
     public static final ResourceKey<DimensionType> ASTRAL_ORBIT = ResourceKey.create(Registries.DIMENSION_TYPE,
             CTNHAstral.id("astral_orbit"));
+    public static final ResourceKey<DimensionType> MOON = ResourceKey.create(Registries.DIMENSION_TYPE,
+            CTNHAstral.id("moon"));
+    public static final ResourceKey<DimensionType> MARS = ResourceKey.create(Registries.DIMENSION_TYPE,
+            CTNHAstral.id("mars"));
+    public static final ResourceKey<DimensionType> VENUS = ResourceKey.create(Registries.DIMENSION_TYPE,
+            CTNHAstral.id("venus"));
 
     public static void bootstrap(BootstapContext<DimensionType> ctx) {
+        registerPlanetType(ctx, ASTRAL_PLANET, "astral_planet");
+        registerPlanetType(ctx, ASTRAL_ORBIT, "astral_orbit");
+        registerPlanetType(ctx, MOON, "moon");
+        registerPlanetType(ctx, MARS, "mars");
+        registerPlanetType(ctx, VENUS, "venus");
+    }
+
+    private static void registerPlanetType(BootstapContext<DimensionType> ctx, ResourceKey<DimensionType> key,
+                                           String effectsLocation) {
         ctx.register(
-                ASTRAL_PLANET,
+                key,
                 create(
                         OptionalLong.empty(),
                         true,
@@ -38,29 +53,7 @@ public class CADimensionTypes {
                         384,
                         384,
                         BlockTags.INFINIBURN_OVERWORLD,
-                        CTNHAstral.id("astral_planet"),
-                        0.0f,
-                        createMonsterSettings(
-                                false,
-                                false,
-                                UniformInt.of(0, 7),
-                                0)));
-        ctx.register(
-                ASTRAL_ORBIT,
-                create(
-                        OptionalLong.empty(),
-                        true,
-                        false,
-                        false,
-                        true,
-                        1.0,
-                        true,
-                        false,
-                        -64,
-                        384,
-                        384,
-                        BlockTags.INFINIBURN_OVERWORLD,
-                        CTNHAstral.id("astral_orbit"),
+                        CTNHAstral.id(effectsLocation),
                         0.0f,
                         createMonsterSettings(
                                 false,
