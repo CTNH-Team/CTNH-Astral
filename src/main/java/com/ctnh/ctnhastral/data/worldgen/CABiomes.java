@@ -10,6 +10,7 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.data.worldgen.biome.AstralBiomes;
+import com.ctnh.ctnhastral.data.worldgen.biome.MoonBiomes;
 
 public class CABiomes {
 
@@ -34,9 +35,9 @@ public class CABiomes {
         ctx.register(PLAGUE_WASTELAND, AstralBiomes.plague_wasteland(holderGetter, holderGetter2));
         ctx.register(PLAGUE_DESERT, AstralBiomes.plague_desert(holderGetter, holderGetter2));
         ctx.register(ASTRAL_ORBIT, AstralBiomes.astral_orbit(holderGetter, holderGetter2));
-        ctx.register(MOON_BRINE_SEA, AstralBiomes.moon_brine_sea(holderGetter, holderGetter2));
-        ctx.register(MOON_SILICON_PLAINS, AstralBiomes.moon_silicon_plains(holderGetter, holderGetter2));
-        ctx.register(MOON_GLASS_CRATER, AstralBiomes.moon_glass_crater(holderGetter, holderGetter2));
-        ctx.register(MOONLIGHT_DESERT, AstralBiomes.moonlight_desert(holderGetter, holderGetter2));
+        ctx.register(MOON_BRINE_SEA, MoonBiomes.moon_brine_sea(holderGetter, holderGetter2));
+        ctx.register(MOON_SILICON_PLAINS, MoonBiomes.moon_silicon_plains(holderGetter, holderGetter2));
+        ctx.register(MOON_GLASS_CRATER, MoonBiomes.moon_glass_crater(holderGetter, holderGetter2));
+        ctx.register(MOONLIGHT_DESERT, MoonBiomes.moonlight_desert(holderGetter, holderGetter2));
     }
 }
