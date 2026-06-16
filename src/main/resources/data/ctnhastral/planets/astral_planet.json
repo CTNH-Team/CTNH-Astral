@@ -1,7 +1,7 @@
 {
-  "dimension": "ctnhcore:astral_planet",
+  "dimension": "ctnhastral:astral_planet",
   "gravity": 7.134,
-  "orbit": "ctnhcore:astral_orbit",
+  "orbit": "ctnhastral:astral_orbit",
   "oxygen": false,
   "solar_power": 64,
   "solar_system": "ad_astra:proxima_centauri",

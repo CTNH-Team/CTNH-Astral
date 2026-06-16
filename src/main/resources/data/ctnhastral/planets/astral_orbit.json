@@ -1,5 +1,5 @@
 {
-  "dimension": "ctnhcore:astral_orbit",
+  "dimension": "ctnhastral:astral_orbit",
   "gravity": 0.0,
   "oxygen": false,
   "solar_power": 64,

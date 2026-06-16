@@ -2,7 +2,7 @@
   "custom_clouds": true,
   "custom_sky": true,
   "custom_weather": false,
-  "dimension": "ctnhcore:astral_orbit",
+  "dimension": "ctnhastral:astral_orbit",
   "has_fog": false,
   "has_thick_fog": false,
   "render_in_rain": true,
