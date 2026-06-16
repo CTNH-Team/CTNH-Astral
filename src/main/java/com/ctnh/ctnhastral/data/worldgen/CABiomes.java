@@ -1,6 +1,5 @@
 package com.ctnh.ctnhastral.data.worldgen;
 
-import com.ctnh.ctnhastral.data.worldgen.biome.NetherBiomes;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstapContext;
@@ -12,6 +11,7 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.data.worldgen.biome.AstralBiomes;
 import com.ctnh.ctnhastral.data.worldgen.biome.MoonBiomes;
+import com.ctnh.ctnhastral.data.worldgen.biome.NetherBiomes;
 
 public class CABiomes {
 

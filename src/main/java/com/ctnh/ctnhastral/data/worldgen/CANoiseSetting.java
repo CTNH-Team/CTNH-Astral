@@ -1,17 +1,15 @@
 package com.ctnh.ctnhastral.data.worldgen;
 
-import earth.terrarium.adastra.common.registry.ModBlocks;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.data.worldgen.SurfaceRuleData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.*;
-import net.minecraft.world.level.levelgen.placement.CaveSurface;
-import net.minecraft.world.level.material.Fluids;
 
 import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
+import earth.terrarium.adastra.common.registry.ModBlocks;
 
 import java.util.List;
 
@@ -25,7 +23,6 @@ public class CANoiseSetting {
             .create(Registries.NOISE_SETTINGS, CTNHAstral.id("astral_planet"));
     public static final ResourceKey<NoiseGeneratorSettings> MOON = ResourceKey
             .create(Registries.NOISE_SETTINGS, CTNHAstral.id("moon"));
-
 
     public static void bootstrap(BootstapContext<NoiseGeneratorSettings> ctx) {
         var holderGetter = ctx.lookup(Registries.DENSITY_FUNCTION);

@@ -33,7 +33,6 @@ public class CADimensions {
     public static final ResourceKey<LevelStem> VENUS = ResourceKey.create(Registries.LEVEL_STEM,
             CTNHAstral.id("venus"));
 
-
     public static void bootstrap(BootstapContext<LevelStem> ctx) {
         HolderGetter<Biome> biomes = ctx.lookup(Registries.BIOME);
         HolderGetter<DimensionType> dimensionTypes = ctx.lookup(Registries.DIMENSION_TYPE);
@@ -74,10 +73,10 @@ public class CADimensions {
     }
 
     private static void registerMars(BootstapContext<LevelStem> ctx, HolderGetter<Biome> biomes,
-                                       HolderGetter<DimensionType> dimensionTypes,
-                                       HolderGetter<NoiseGeneratorSettings> noiseSettings,
-                                       ResourceKey<LevelStem> levelStemKey,
-                                       ResourceKey<DimensionType> dimensionTypeKey) {
+                                     HolderGetter<DimensionType> dimensionTypes,
+                                     HolderGetter<NoiseGeneratorSettings> noiseSettings,
+                                     ResourceKey<LevelStem> levelStemKey,
+                                     ResourceKey<DimensionType> dimensionTypeKey) {
         ctx.register(levelStemKey, new LevelStem(dimensionTypes.getOrThrow(dimensionTypeKey),
                 new NoiseBasedChunkGenerator(
                         MultiNoiseBiomeSource.createFromList(new Climate.ParameterList<>(
@@ -89,15 +88,15 @@ public class CADimensions {
     }
 
     private static void registerVenus(BootstapContext<LevelStem> ctx, HolderGetter<Biome> biomes,
-                                     HolderGetter<DimensionType> dimensionTypes,
-                                     HolderGetter<NoiseGeneratorSettings> noiseSettings,
-                                     ResourceKey<LevelStem> levelStemKey,
-                                     ResourceKey<DimensionType> dimensionTypeKey) {
+                                      HolderGetter<DimensionType> dimensionTypes,
+                                      HolderGetter<NoiseGeneratorSettings> noiseSettings,
+                                      ResourceKey<LevelStem> levelStemKey,
+                                      ResourceKey<DimensionType> dimensionTypeKey) {
         ctx.register(levelStemKey, new LevelStem(dimensionTypes.getOrThrow(dimensionTypeKey),
                 new NoiseBasedChunkGenerator(
                         MultiNoiseBiomeSource.createFromList(new Climate.ParameterList<>(
                                 List.of(Pair.of(PLAGUE_WASTELAND_PARAMETER,
-                                                biomes.getOrThrow(CABiomes.PLAGUE_WASTELAND)),
+                                        biomes.getOrThrow(CABiomes.PLAGUE_WASTELAND)),
                                         Pair.of(PLAGUE_DESERT_PARAMETER,
                                                 biomes.getOrThrow(CABiomes.PLAGUE_DESERT))))),
                         noiseSettings.getOrThrow(CANoiseSetting.ASTRAL_PLANET))));

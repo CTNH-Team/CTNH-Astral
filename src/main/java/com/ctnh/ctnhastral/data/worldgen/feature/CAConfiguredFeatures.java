@@ -32,10 +32,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTes
 import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.data.CAMaterials;
 import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
-import com.ctnh.ctnhastral.registry.worldgen.MoonBlocks;
 import earth.terrarium.adastra.common.registry.ModBlocks;
-
-import java.util.List;
 
 import static com.simibubi.create.content.decoration.palettes.AllPaletteStoneTypes.OCHRUM;
 
@@ -87,7 +84,6 @@ public class CAConfiguredFeatures {
                         UniformInt.of(12, 16), UniformInt.of(6, 9),
                         0.4f));
     }
-
 
     private static RandomPatchConfiguration grassPatch(BlockStateProvider blockStateProvider, int n) {
         return FeatureUtils.simpleRandomPatchConfiguration(n,

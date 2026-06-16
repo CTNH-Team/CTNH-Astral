@@ -3,6 +3,7 @@ package com.ctnh.ctnhastral.data.worldgen.biome;
 import net.minecraft.world.level.biome.Climate;
 
 public class BiomeParameters {
+
     public static final Climate.ParameterPoint PLAGUE_WASTELAND_PARAMETER = createParameter(0.1F, 0, 0, 0, 0, 0, 0);
     public static final Climate.ParameterPoint PLAGUE_DESERT_PARAMETER = createParameter(0.2F, 0, 0, 0, 0, 0, 0);
     public static final Climate.ParameterPoint MOON_BRINE_SEA_PARAMETER = createParameter(-0.6F, 0.3F, -0.5F, 0, -0.6F,
