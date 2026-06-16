@@ -26,6 +26,7 @@ import com.ctnh.ctnhastral.data.worldgen.feature.CAPlacements;
 import com.ctnh.ctnhastral.data.worldgen.structure.AstralMeteorStructure;
 import com.ctnh.ctnhastral.data.worldgen.structure.CAStructureSets;
 import com.ctnh.ctnhastral.data.worldgen.structure.CAStructures;
+import com.ctnh.ctnhastral.data.worldgen.structure.MoonCraterStructure;
 import com.ctnh.ctnhastral.data.worldgen.structure.MoonAbandonedOutpostStructure;
 import com.ctnh.ctnhastral.registry.sound.CASoundDefinitionsProvider;
 import com.ctnh.ctnhastral.registry.sound.CASoundEvents;
@@ -50,6 +51,7 @@ public class CommonProxy {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         eventBus.addListener((RegisterEvent event) -> {
             AstralMeteorStructure.init();
+            MoonCraterStructure.init();
             MoonAbandonedOutpostStructure.init();
         });
         CASoundEvents.SOUND_EVENTS.register(eventBus);

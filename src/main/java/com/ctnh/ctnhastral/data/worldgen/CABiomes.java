@@ -1,5 +1,6 @@
 package com.ctnh.ctnhastral.data.worldgen;
 
+import com.ctnh.ctnhastral.data.worldgen.biome.NetherBiomes;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstapContext;
@@ -20,8 +21,10 @@ public class CABiomes {
             CTNHAstral.id("plague_desert"));
     public static final ResourceKey<Biome> ASTRAL_ORBIT = ResourceKey.create(Registries.BIOME,
             CTNHAstral.id("astral_orbit"));
-    public static final ResourceKey<Biome> MOON_BRINE_SEA = ResourceKey.create(Registries.BIOME,
-            CTNHAstral.id("moon_brine_sea"));
+    public static final ResourceKey<Biome> ACID_VALLEY = ResourceKey.create(Registries.BIOME,
+            CTNHAstral.id("acid_valley"));
+    public static final ResourceKey<Biome> MOON_WASTELAND = ResourceKey.create(Registries.BIOME,
+            CTNHAstral.id("moon_wasteland"));
     public static final ResourceKey<Biome> MOON_SILICON_PLAINS = ResourceKey.create(Registries.BIOME,
             CTNHAstral.id("moon_silicon_plains"));
     public static final ResourceKey<Biome> MOON_GLASS_CRATER = ResourceKey.create(Registries.BIOME,
@@ -35,7 +38,8 @@ public class CABiomes {
         ctx.register(PLAGUE_WASTELAND, AstralBiomes.plague_wasteland(holderGetter, holderGetter2));
         ctx.register(PLAGUE_DESERT, AstralBiomes.plague_desert(holderGetter, holderGetter2));
         ctx.register(ASTRAL_ORBIT, AstralBiomes.astral_orbit(holderGetter, holderGetter2));
-        ctx.register(MOON_BRINE_SEA, MoonBiomes.moon_brine_sea(holderGetter, holderGetter2));
+        ctx.register(ACID_VALLEY, NetherBiomes.acid_valley(holderGetter, holderGetter2));
+        ctx.register(MOON_WASTELAND, MoonBiomes.moon_wasteland(holderGetter, holderGetter2));
         ctx.register(MOON_SILICON_PLAINS, MoonBiomes.moon_silicon_plains(holderGetter, holderGetter2));
         ctx.register(MOON_GLASS_CRATER, MoonBiomes.moon_glass_crater(holderGetter, holderGetter2));
         ctx.register(MOONLIGHT_DESERT, MoonBiomes.moonlight_desert(holderGetter, holderGetter2));

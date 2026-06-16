@@ -49,22 +49,6 @@ public class CAConfiguredFeatures {
             .create(Registries.CONFIGURED_FEATURE, CTNHAstral.id("astral_grass"));
     public static final ResourceKey<ConfiguredFeature<?, ?>> ASTRAL_LAKE = ResourceKey
             .create(Registries.CONFIGURED_FEATURE, CTNHAstral.id("astral_lake"));
-    public static final ResourceKey<ConfiguredFeature<?, ?>> MOON_BRINE_CRUST = ResourceKey
-            .create(Registries.CONFIGURED_FEATURE, CTNHAstral.id("moon_brine_crust"));
-    public static final ResourceKey<ConfiguredFeature<?, ?>> MOON_SILICON_CRYSTAL_BLOCK = ResourceKey
-            .create(Registries.CONFIGURED_FEATURE, CTNHAstral.id("moon_silicon_crystal_block"));
-    public static final ResourceKey<ConfiguredFeature<?, ?>> MOON_BUDDING_SILICON_CRYSTAL = ResourceKey
-            .create(Registries.CONFIGURED_FEATURE, CTNHAstral.id("moon_budding_silicon_crystal"));
-    public static final ResourceKey<ConfiguredFeature<?, ?>> MOON_SILICON_CRYSTAL_CLUSTER = ResourceKey
-            .create(Registries.CONFIGURED_FEATURE, CTNHAstral.id("moon_silicon_crystal_cluster"));
-    public static final ResourceKey<ConfiguredFeature<?, ?>> MOON_GLASS_DEPOSIT = ResourceKey
-            .create(Registries.CONFIGURED_FEATURE, CTNHAstral.id("moon_glass_deposit"));
-    public static final ResourceKey<ConfiguredFeature<?, ?>> MOON_HELIUM3_REGOLITH = ResourceKey
-            .create(Registries.CONFIGURED_FEATURE, CTNHAstral.id("moon_helium3_regolith"));
-    public static final ResourceKey<ConfiguredFeature<?, ?>> MOON_ENRICHED_VEIN = ResourceKey
-            .create(Registries.CONFIGURED_FEATURE, CTNHAstral.id("moon_enriched_vein"));
-    public static final ResourceKey<ConfiguredFeature<?, ?>> MOON_HELIUM3_BEDROCK = ResourceKey
-            .create(Registries.CONFIGURED_FEATURE, CTNHAstral.id("moon_helium3_bedrock"));
     public static final ResourceKey<ConfiguredFeature<?, ?>> VENUS_OCHRUM = ResourceKey
             .create(Registries.CONFIGURED_FEATURE, CTNHAstral.id("venus_ochrum"));
     public static final ResourceKey<ConfiguredFeature<?, ?>> GAS_SPROUT = ResourceKey
@@ -96,22 +80,6 @@ public class CAConfiguredFeatures {
                                 .simple(CAMaterials.Starlight.getFluid().defaultFluidState().createLegacyBlock()),
                         BlockStateProvider.simple(AstralBlocks.ASTRAL_COBBLESTONE.getDefaultState())));
 
-        FeatureUtils.register(ctx, MOON_BRINE_CRUST, Feature.ORE,
-                moonOre(MoonBlocks.MOON_BRINE_CRUST.getDefaultState(), 20));
-        FeatureUtils.register(ctx, MOON_SILICON_CRYSTAL_BLOCK, Feature.ORE,
-                moonOre(MoonBlocks.SILICON_CRYSTAL_BLOCK.getDefaultState(), 24));
-        FeatureUtils.register(ctx, MOON_BUDDING_SILICON_CRYSTAL, Feature.ORE,
-                moonOre(MoonBlocks.BUDDING_SILICON_CRYSTAL.getDefaultState(), 8));
-        FeatureUtils.register(ctx, MOON_SILICON_CRYSTAL_CLUSTER, Feature.RANDOM_PATCH,
-                simplePatch(BlockStateProvider.simple(MoonBlocks.SILICON_CRYSTAL.getDefaultState()), 18));
-        FeatureUtils.register(ctx, MOON_GLASS_DEPOSIT, Feature.ORE,
-                moonOre(MoonBlocks.LUNAR_ROCK_GLASS.getDefaultState(), 24));
-        FeatureUtils.register(ctx, MOON_HELIUM3_REGOLITH, Feature.ORE,
-                moonOre(MoonBlocks.HELIUM3_REGOLITH.getDefaultState(), 18));
-        FeatureUtils.register(ctx, MOON_ENRICHED_VEIN, Feature.ORE,
-                moonOre(MoonBlocks.ENRICHED_VEIN_MASS.getDefaultState(), 48));
-        FeatureUtils.register(ctx, MOON_HELIUM3_BEDROCK, Feature.ORE,
-                moonOre(MoonBlocks.HELIUM3_BEDROCK.getDefaultState(), 8));
         FeatureUtils.register(ctx, VENUS_OCHRUM, Feature.ORE, new OreConfiguration(
                 new BlockMatchTest(ModBlocks.VENUS_STONE.get()), OCHRUM.getBaseBlock().get().defaultBlockState(), 9));
         FeatureUtils.register(ctx, GAS_SPROUT, GTFeatures.FLUID_SPROUT.get(),
@@ -120,15 +88,6 @@ public class CAConfiguredFeatures {
                         0.4f));
     }
 
-    private static OreConfiguration moonOre(BlockState state, int size) {
-        return new OreConfiguration(List.of(
-                OreConfiguration.target(new BlockMatchTest(AstralBlocks.ASTRAL_STONE.get()), state)), size);
-    }
-
-    private static RandomPatchConfiguration simplePatch(BlockStateProvider blockStateProvider, int n) {
-        return FeatureUtils.simpleRandomPatchConfiguration(n,
-                PlacementUtils.onlyWhenEmpty(Feature.SIMPLE_BLOCK, new SimpleBlockConfiguration(blockStateProvider)));
-    }
 
     private static RandomPatchConfiguration grassPatch(BlockStateProvider blockStateProvider, int n) {
         return FeatureUtils.simpleRandomPatchConfiguration(n,

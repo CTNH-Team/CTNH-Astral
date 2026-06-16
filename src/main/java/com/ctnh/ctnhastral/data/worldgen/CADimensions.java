@@ -18,12 +18,12 @@ import com.mojang.datafixers.util.Pair;
 
 import java.util.List;
 
+import static com.ctnh.ctnhastral.data.worldgen.biome.BiomeParameters.*;
+
 public class CADimensions {
 
     public static final ResourceKey<LevelStem> ASTRAL_PLANET = ResourceKey.create(Registries.LEVEL_STEM,
             CTNHAstral.id("astral_planet"));
-    public static final Climate.ParameterPoint PLAGUE_WASTELAND_PARAMETER = createParameter(0.1F, 0, 0, 0, 0, 0, 0);
-    public static final Climate.ParameterPoint PLAGUE_DESERT_PARAMETER = createParameter(0.2F, 0, 0, 0, 0, 0, 0);
     public static final ResourceKey<LevelStem> ASTRAL_ORBIT = ResourceKey.create(Registries.LEVEL_STEM,
             CTNHAstral.id("astral_orbit"));
     public static final ResourceKey<LevelStem> MOON = ResourceKey.create(Registries.LEVEL_STEM,
@@ -32,14 +32,7 @@ public class CADimensions {
             CTNHAstral.id("mars"));
     public static final ResourceKey<LevelStem> VENUS = ResourceKey.create(Registries.LEVEL_STEM,
             CTNHAstral.id("venus"));
-    public static final Climate.ParameterPoint MOON_BRINE_SEA_PARAMETER = createParameter(-0.6F, 0.3F, -0.5F, 0, -0.6F,
-            0, 0);
-    public static final Climate.ParameterPoint MOON_SILICON_PLAINS_PARAMETER = createParameter(-0.2F, 0, 0, 0, 0, 0,
-            0);
-    public static final Climate.ParameterPoint MOON_GLASS_CRATER_PARAMETER = createParameter(0.1F, -0.3F, 0.4F, 0,
-            0.2F, 0, 0);
-    public static final Climate.ParameterPoint MOONLIGHT_DESERT_PARAMETER = createParameter(0.4F, -0.5F, 0.1F, 0,
-            0.5F, 0, 0);
+
 
     public static void bootstrap(BootstapContext<LevelStem> ctx) {
         HolderGetter<Biome> biomes = ctx.lookup(Registries.BIOME);
@@ -59,8 +52,8 @@ public class CADimensions {
                                                 biomes.getOrThrow(CABiomes.PLAGUE_DESERT))))),
                         noiseSettings.getOrThrow(CANoiseSetting.ASTRAL_PLANET))));
         registerMoon(ctx, biomes, dimensionTypes, noiseSettings);
-        registerPlanet(ctx, biomes, dimensionTypes, noiseSettings, MARS, CADimensionTypes.MARS);
-        registerPlanet(ctx, biomes, dimensionTypes, noiseSettings, VENUS, CADimensionTypes.VENUS);
+        registerMars(ctx, biomes, dimensionTypes, noiseSettings, MARS, CADimensionTypes.MARS);
+        registerVenus(ctx, biomes, dimensionTypes, noiseSettings, VENUS, CADimensionTypes.VENUS);
     }
 
     private static void registerMoon(BootstapContext<LevelStem> ctx, HolderGetter<Biome> biomes,
@@ -70,17 +63,17 @@ public class CADimensions {
                 new NoiseBasedChunkGenerator(
                         MultiNoiseBiomeSource.createFromList(new Climate.ParameterList<>(
                                 List.of(Pair.of(MOON_BRINE_SEA_PARAMETER,
-                                        biomes.getOrThrow(CABiomes.MOON_BRINE_SEA)),
+                                        biomes.getOrThrow(CABiomes.MOON_WASTELAND)),
                                         Pair.of(MOON_SILICON_PLAINS_PARAMETER,
                                                 biomes.getOrThrow(CABiomes.MOON_SILICON_PLAINS)),
                                         Pair.of(MOON_GLASS_CRATER_PARAMETER,
                                                 biomes.getOrThrow(CABiomes.MOON_GLASS_CRATER)),
                                         Pair.of(MOONLIGHT_DESERT_PARAMETER,
                                                 biomes.getOrThrow(CABiomes.MOONLIGHT_DESERT))))),
-                        noiseSettings.getOrThrow(CANoiseSetting.ASTRAL_PLANET))));
+                        noiseSettings.getOrThrow(CANoiseSetting.MOON))));
     }
 
-    private static void registerPlanet(BootstapContext<LevelStem> ctx, HolderGetter<Biome> biomes,
+    private static void registerMars(BootstapContext<LevelStem> ctx, HolderGetter<Biome> biomes,
                                        HolderGetter<DimensionType> dimensionTypes,
                                        HolderGetter<NoiseGeneratorSettings> noiseSettings,
                                        ResourceKey<LevelStem> levelStemKey,
@@ -95,8 +88,18 @@ public class CADimensions {
                         noiseSettings.getOrThrow(CANoiseSetting.ASTRAL_PLANET))));
     }
 
-    public static Climate.ParameterPoint createParameter(float temperature, float humidity, float continentalness,
-                                                         float erosion, float depth, float weirdness, long offset) {
-        return Climate.parameters(temperature, humidity, continentalness, erosion, depth, weirdness, offset);
+    private static void registerVenus(BootstapContext<LevelStem> ctx, HolderGetter<Biome> biomes,
+                                     HolderGetter<DimensionType> dimensionTypes,
+                                     HolderGetter<NoiseGeneratorSettings> noiseSettings,
+                                     ResourceKey<LevelStem> levelStemKey,
+                                     ResourceKey<DimensionType> dimensionTypeKey) {
+        ctx.register(levelStemKey, new LevelStem(dimensionTypes.getOrThrow(dimensionTypeKey),
+                new NoiseBasedChunkGenerator(
+                        MultiNoiseBiomeSource.createFromList(new Climate.ParameterList<>(
+                                List.of(Pair.of(PLAGUE_WASTELAND_PARAMETER,
+                                                biomes.getOrThrow(CABiomes.PLAGUE_WASTELAND)),
+                                        Pair.of(PLAGUE_DESERT_PARAMETER,
+                                                biomes.getOrThrow(CABiomes.PLAGUE_DESERT))))),
+                        noiseSettings.getOrThrow(CANoiseSetting.ASTRAL_PLANET))));
     }
 }

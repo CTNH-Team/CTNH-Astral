@@ -57,22 +57,18 @@ public class MoonBlocks {
             .item(BlockItem::new)
             .build()
             .register();
-    public static final BlockEntry<Block> MOON_BRINE_CRUST = createMoonStoneBlock("moon_brine_crust", "盐化月壳");
-    public static final BlockEntry<GlassBlock> LUNAR_ROCK_GLASS = REGISTRATE.block("lunar_rock_glass",
-            GlassBlock::new)
-            .cnlang("月岩玻璃")
-            .initialProperties(() -> Blocks.TINTED_GLASS)
-            .blockstate((ctx, prov) -> prov.simpleBlock(ctx.getEntry(),
-                    prov.models().cubeAll("lunar_rock_glass", moonStoneTexture("lunar_rock_glass"))))
-            .properties(p -> p.isValidSpawn((state, level, pos, ent) -> false))
-            .addLayer(() -> RenderType::translucent)
-            .tag(BlockTags.MINEABLE_WITH_PICKAXE)
-            .item(BlockItem::new)
-            .build()
-            .register();
-    public static final BlockEntry<FallingBlock> HELIUM3_REGOLITH = createMoonSandBlock("helium3_regolith", "富氦月沙");
-    public static final BlockEntry<Block> ENRICHED_VEIN_MASS = createMoonStoneBlock("enriched_vein_mass", "富集矿脉块");
-    public static final BlockEntry<Block> HELIUM3_BEDROCK = createMoonStoneBlock("helium3_bedrock", "氦-3基岩块");
+//    public static final BlockEntry<GlassBlock> LUNAR_ROCK_GLASS = REGISTRATE.block("lunar_rock_glass",
+//            GlassBlock::new)
+//            .cnlang("月岩玻璃")
+//            .initialProperties(() -> Blocks.TINTED_GLASS)
+//            .blockstate((ctx, prov) -> prov.simpleBlock(ctx.getEntry(),
+//                    prov.models().cubeAll("lunar_rock_glass", moonStoneTexture("lunar_rock_glass"))))
+//            .properties(p -> p.isValidSpawn((state, level, pos, ent) -> false))
+//            .addLayer(() -> RenderType::translucent)
+//            .tag(BlockTags.MINEABLE_WITH_PICKAXE)
+//            .item(BlockItem::new)
+//            .build()
+//            .register();
 
     private static BlockEntry<Block> createMoonStoneBlock(String name, String cnName) {
         return createStoneLikeBlock(name, cnName, moonStoneTexture(name));

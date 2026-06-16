@@ -26,8 +26,9 @@ public class CADensityFunctions {
             CTNHAstral.id("base_3d_noise"));
     public static final ResourceKey<DensityFunction> ASTRAL_DENSITY = ResourceKey.create(Registries.DENSITY_FUNCTION,
             CTNHAstral.id("astral_density"));
-    public static final ResourceKey<DensityFunction> ORIGIN_HEIGHT_FALLOFF = ResourceKey.create(
-            Registries.DENSITY_FUNCTION, CTNHAstral.id("origin_height_falloff"));
+    public static final ResourceKey<DensityFunction> MOON_FINAL_DENSITY = ResourceKey.create(
+            Registries.DENSITY_FUNCTION,
+            CTNHAstral.id("moon_final_density"));
 
     public static void bootstrap(BootstapContext<DensityFunction> ctx) {
         Class<?> noiseRouter = NoiseRouterData.class;
@@ -145,5 +146,17 @@ public class CADensityFunctions {
 
         ctx.register(ASTRAL_DENSITY,
                 DensityFunctions.max(DensityFunctions.yClampedGradient(-64, -63, 1, -1), densityFunction13));
+
+        DensityFunction moonOverworldLikeTerrain = DensityFunctions.add(
+                DensityFunctions.yClampedGradient(-64, 320, 1.5, -1.5),
+                DensityFunctions.mul(DensityFunctions.constant(0.26),
+                        DensityFunctions.noise(holderGetter.getOrThrow(Noises.JAGGED), 0.9, 0.9)));
+        DensityFunction moonMicroRelief = DensityFunctions.mul(DensityFunctions.constant(0.05),
+                DensityFunctions.noise(holderGetter.getOrThrow(Noises.CAVE_CHEESE), 3.0, 3.0));
+        ctx.register(MOON_FINAL_DENSITY,
+                DensityFunctions.max(
+                        DensityFunctions.yClampedGradient(-64, -63, 1, -1),
+                        DensityFunctions.interpolated(
+                                DensityFunctions.add(moonOverworldLikeTerrain, moonMicroRelief))));
     }
 }

@@ -1,5 +1,7 @@
 package com.ctnh.ctnhastral.data.worldgen;
 
+import earth.terrarium.adastra.common.registry.ModBlocks;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.SurfaceRules;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.placement.CaveSurface;
@@ -7,6 +9,59 @@ import net.minecraft.world.level.levelgen.placement.CaveSurface;
 import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
 
 public class CASurfaceRuleData {
+    public static SurfaceRules.RuleSource AstralPlanetSurface() {
+        SurfaceRules.RuleSource ASTRAL_GRASS_BLOCK = SurfaceRules
+                .state(AstralBlocks.ASTRAL_GRASS_BLOCK.getDefaultState());
+        SurfaceRules.RuleSource ASTRAL_DIRT = SurfaceRules
+                .state(AstralBlocks.ASTRAL_DIRT.getDefaultState());
+        SurfaceRules.RuleSource ASTRAL_STONE = SurfaceRules
+                .state(AstralBlocks.ASTRAL_STONE.getDefaultState());
+        SurfaceRules.RuleSource ASTRAL_SAND = SurfaceRules
+                .state(AstralBlocks.ASTRAL_SAND.getDefaultState());
+        return SurfaceRules.sequence(
+                SurfaceRules.ifTrue(
+                        SurfaceRules.verticalGradient("ctnhcore:astral_bedrock",
+                                VerticalAnchor.aboveBottom(
+                                        0),
+                                VerticalAnchor.aboveBottom(5)),
+                        SurfaceRules.state(Blocks.BEDROCK.defaultBlockState())),
+                SurfaceRules.ifTrue(SurfaceRules.abovePreliminarySurface(),
+                        SurfaceRules.sequence(
+                                SurfaceRules.ifTrue(SurfaceRules
+                                                .isBiome(CABiomes.PLAGUE_WASTELAND),
+                                        SurfaceRules.sequence(
+                                                SurfaceRules.ifTrue(
+                                                        SurfaceRules.stoneDepthCheck(
+                                                                0,
+                                                                false,
+                                                                4,
+                                                                CaveSurface.FLOOR),
+                                                        SurfaceRules.sequence(
+                                                                SurfaceRules.ifTrue(
+                                                                        SurfaceRules.waterBlockCheck(
+                                                                                0,
+                                                                                0),
+                                                                        ASTRAL_GRASS_BLOCK),
+                                                                ASTRAL_DIRT)),
+                                                ASTRAL_STONE)),
+                                SurfaceRules.ifTrue(SurfaceRules
+                                                .isBiome(CABiomes.PLAGUE_DESERT),
+                                        SurfaceRules.ifTrue(
+                                                SurfaceRules.yBlockCheck(
+                                                        VerticalAnchor.absolute(
+                                                                58),
+                                                        2),
+                                                SurfaceRules.ifTrue(
+                                                        SurfaceRules.stoneDepthCheck(
+                                                                4,
+                                                                false,
+                                                                CaveSurface.FLOOR),
+                                                        ASTRAL_SAND))))));
+    }
+
+    public static SurfaceRules.RuleSource MoonSurface() {
+        return SurfaceRules.state(ModBlocks.MOON_STONE.get().defaultBlockState());
+    }
 
     public static SurfaceRules.RuleSource customSurface() {
         SurfaceRules.ConditionSource biome = SurfaceRules.isBiome(CABiomes.PLAGUE_WASTELAND);

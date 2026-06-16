@@ -39,22 +39,6 @@ public class CAPlacements {
             CTNHAstral.id("astral_lake"));
     public static final ResourceKey<PlacedFeature> ASTRAL_LAKE_UNDERGROUND = ResourceKey
             .create(Registries.PLACED_FEATURE, CTNHAstral.id("astral_lake_underground"));
-    public static final ResourceKey<PlacedFeature> MOON_BRINE_CRUST = ResourceKey.create(Registries.PLACED_FEATURE,
-            CTNHAstral.id("moon_brine_crust"));
-    public static final ResourceKey<PlacedFeature> MOON_SILICON_CRYSTAL_BLOCK = ResourceKey
-            .create(Registries.PLACED_FEATURE, CTNHAstral.id("moon_silicon_crystal_block"));
-    public static final ResourceKey<PlacedFeature> MOON_BUDDING_SILICON_CRYSTAL = ResourceKey
-            .create(Registries.PLACED_FEATURE, CTNHAstral.id("moon_budding_silicon_crystal"));
-    public static final ResourceKey<PlacedFeature> MOON_SILICON_CRYSTAL_CLUSTER = ResourceKey
-            .create(Registries.PLACED_FEATURE, CTNHAstral.id("moon_silicon_crystal_cluster"));
-    public static final ResourceKey<PlacedFeature> MOON_GLASS_DEPOSIT = ResourceKey.create(Registries.PLACED_FEATURE,
-            CTNHAstral.id("moon_glass_deposit"));
-    public static final ResourceKey<PlacedFeature> MOON_HELIUM3_REGOLITH = ResourceKey.create(Registries.PLACED_FEATURE,
-            CTNHAstral.id("moon_helium3_regolith"));
-    public static final ResourceKey<PlacedFeature> MOON_ENRICHED_VEIN = ResourceKey.create(Registries.PLACED_FEATURE,
-            CTNHAstral.id("moon_enriched_vein"));
-    public static final ResourceKey<PlacedFeature> MOON_HELIUM3_BEDROCK = ResourceKey.create(Registries.PLACED_FEATURE,
-            CTNHAstral.id("moon_helium3_bedrock"));
     public static final ResourceKey<PlacedFeature> VENUS_OCHRUM = ResourceKey.create(Registries.PLACED_FEATURE,
             CTNHAstral.id("venus_ochrum"));
     public static final ResourceKey<PlacedFeature> GAS_SPROUT = ResourceKey.create(Registries.PLACED_FEATURE,
@@ -109,81 +93,6 @@ public class CAPlacements {
                 RarityFilter.onAverageOnceEvery(50),
                 InSquarePlacement.spread(),
                 PlacementUtils.HEIGHTMAP_WORLD_SURFACE,
-                BiomeFilter.biome());
-        PlacementUtils.register(ctx, MOON_BRINE_CRUST, featureLookup.getOrThrow(CAConfiguredFeatures.MOON_BRINE_CRUST),
-                new BiomePlacement(List.of(
-                        new BiomeWeightModifier(
-                                () -> HolderSet.direct(biomeLookup.getOrThrow(CABiomes.MOON_BRINE_SEA)), 80))),
-                CountPlacement.of(UniformInt.of(20, 32)),
-                InSquarePlacement.spread(),
-                HeightRangePlacement.uniform(VerticalAnchor.absolute(40), VerticalAnchor.absolute(120)),
-                BiomeFilter.biome());
-        PlacementUtils.register(ctx, MOON_SILICON_CRYSTAL_BLOCK,
-                featureLookup.getOrThrow(CAConfiguredFeatures.MOON_SILICON_CRYSTAL_BLOCK),
-                new BiomePlacement(List.of(
-                        new BiomeWeightModifier(
-                                () -> HolderSet.direct(biomeLookup.getOrThrow(CABiomes.MOON_SILICON_PLAINS)), 90))),
-                CountPlacement.of(UniformInt.of(14, 22)),
-                InSquarePlacement.spread(),
-                HeightRangePlacement.triangle(VerticalAnchor.absolute(48), VerticalAnchor.absolute(140)),
-                BiomeFilter.biome());
-        PlacementUtils.register(ctx, MOON_BUDDING_SILICON_CRYSTAL,
-                featureLookup.getOrThrow(CAConfiguredFeatures.MOON_BUDDING_SILICON_CRYSTAL),
-                new BiomePlacement(List.of(
-                        new BiomeWeightModifier(
-                                () -> HolderSet.direct(biomeLookup.getOrThrow(CABiomes.MOON_SILICON_PLAINS)), 70))),
-                CountPlacement.of(UniformInt.of(3, 7)),
-                InSquarePlacement.spread(),
-                HeightRangePlacement.triangle(VerticalAnchor.absolute(56), VerticalAnchor.absolute(132)),
-                BiomeFilter.biome());
-        PlacementUtils.register(ctx, MOON_SILICON_CRYSTAL_CLUSTER,
-                featureLookup.getOrThrow(CAConfiguredFeatures.MOON_SILICON_CRYSTAL_CLUSTER),
-                new BiomePlacement(List.of(
-                        new BiomeWeightModifier(
-                                () -> HolderSet.direct(biomeLookup.getOrThrow(CABiomes.MOON_SILICON_PLAINS)), 110))),
-                CountPlacement.of(UniformInt.of(6, 12)),
-                InSquarePlacement.spread(),
-                PlacementUtils.HEIGHTMAP_WORLD_SURFACE,
-                PlacementUtils.filteredByBlockSurvival(MoonBlocks.SILICON_CRYSTAL.get()),
-                BiomeFilter.biome());
-        PlacementUtils.register(ctx, MOON_GLASS_DEPOSIT,
-                featureLookup.getOrThrow(CAConfiguredFeatures.MOON_GLASS_DEPOSIT),
-                new BiomePlacement(List.of(
-                        new BiomeWeightModifier(
-                                () -> HolderSet.direct(biomeLookup.getOrThrow(CABiomes.MOON_GLASS_CRATER)), 80))),
-                CountPlacement.of(UniformInt.of(10, 16)),
-                InSquarePlacement.spread(),
-                HeightRangePlacement.triangle(VerticalAnchor.absolute(30), VerticalAnchor.absolute(120)),
-                BiomeFilter.biome());
-        PlacementUtils.register(ctx, MOON_HELIUM3_REGOLITH,
-                featureLookup.getOrThrow(CAConfiguredFeatures.MOON_HELIUM3_REGOLITH),
-                new BiomePlacement(List.of(
-                        new BiomeWeightModifier(
-                                () -> HolderSet.direct(biomeLookup.getOrThrow(CABiomes.MOONLIGHT_DESERT)), 90))),
-                CountPlacement.of(UniformInt.of(14, 22)),
-                InSquarePlacement.spread(),
-                HeightRangePlacement.triangle(VerticalAnchor.absolute(40), VerticalAnchor.absolute(135)),
-                BiomeFilter.biome());
-        PlacementUtils.register(ctx, MOON_ENRICHED_VEIN,
-                featureLookup.getOrThrow(CAConfiguredFeatures.MOON_ENRICHED_VEIN),
-                new BiomePlacement(List.of(
-                        new BiomeWeightModifier(() -> HolderSet.direct(
-                                biomeLookup.getOrThrow(CABiomes.MOON_SILICON_PLAINS),
-                                biomeLookup.getOrThrow(CABiomes.MOON_GLASS_CRATER),
-                                biomeLookup.getOrThrow(CABiomes.MOONLIGHT_DESERT)), 60))),
-                CountPlacement.of(UniformInt.of(3, 6)),
-                InSquarePlacement.spread(),
-                HeightRangePlacement.uniform(VerticalAnchor.absolute(-48), VerticalAnchor.absolute(24)),
-                BiomeFilter.biome());
-        PlacementUtils.register(ctx, MOON_HELIUM3_BEDROCK,
-                featureLookup.getOrThrow(CAConfiguredFeatures.MOON_HELIUM3_BEDROCK),
-                new BiomePlacement(List.of(
-                        new BiomeWeightModifier(() -> HolderSet.direct(
-                                biomeLookup.getOrThrow(CABiomes.MOON_BRINE_SEA),
-                                biomeLookup.getOrThrow(CABiomes.MOONLIGHT_DESERT)), 70))),
-                CountPlacement.of(UniformInt.of(1, 2)),
-                InSquarePlacement.spread(),
-                HeightRangePlacement.uniform(VerticalAnchor.aboveBottom(0), VerticalAnchor.absolute(-32)),
                 BiomeFilter.biome());
         PlacementUtils.register(ctx, VENUS_OCHRUM, featureLookup.getOrThrow(CAConfiguredFeatures.VENUS_OCHRUM),
                 HeightRangePlacement.triangle(VerticalAnchor.aboveBottom(15), VerticalAnchor.absolute(70)),

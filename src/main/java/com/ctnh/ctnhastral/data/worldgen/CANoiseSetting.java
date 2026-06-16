@@ -1,5 +1,6 @@
 package com.ctnh.ctnhastral.data.worldgen;
 
+import earth.terrarium.adastra.common.registry.ModBlocks;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.data.worldgen.SurfaceRuleData;
@@ -22,16 +23,9 @@ public class CANoiseSetting {
             CTNHAstral.id("orbit"));
     public static final ResourceKey<NoiseGeneratorSettings> ASTRAL_PLANET = ResourceKey
             .create(Registries.NOISE_SETTINGS, CTNHAstral.id("astral_planet"));
-    public static final ResourceKey<NoiseGeneratorSettings> ABYSS = ResourceKey.create(Registries.NOISE_SETTINGS,
-            CTNHAstral.id("abyss"));
-    public static final SurfaceRules.RuleSource ASTRAL_GRASS_BLOCK = SurfaceRules
-            .state(AstralBlocks.ASTRAL_GRASS_BLOCK.getDefaultState());
-    public static final SurfaceRules.RuleSource ASTRAL_DIRT = SurfaceRules
-            .state(AstralBlocks.ASTRAL_DIRT.getDefaultState());
-    public static final SurfaceRules.RuleSource ASTRAL_STONE = SurfaceRules
-            .state(AstralBlocks.ASTRAL_STONE.getDefaultState());
-    public static final SurfaceRules.RuleSource ASTRAL_SAND = SurfaceRules
-            .state(AstralBlocks.ASTRAL_SAND.getDefaultState());
+    public static final ResourceKey<NoiseGeneratorSettings> MOON = ResourceKey
+            .create(Registries.NOISE_SETTINGS, CTNHAstral.id("moon"));
+
 
     public static void bootstrap(BootstapContext<NoiseGeneratorSettings> ctx) {
         var holderGetter = ctx.lookup(Registries.DENSITY_FUNCTION);
@@ -110,59 +104,16 @@ public class CANoiseSetting {
                         DensityFunctions.zero(),
                         DensityFunctions.zero(),
                         DensityFunctions.zero()),
-                SurfaceRules.sequence(
-                        SurfaceRules.ifTrue(
-                                SurfaceRules.verticalGradient("ctnhcore:astral_bedrock",
-                                        VerticalAnchor.aboveBottom(
-                                                0),
-                                        VerticalAnchor.aboveBottom(5)),
-                                SurfaceRules.state(Blocks.BEDROCK.defaultBlockState())),
-                        SurfaceRules.ifTrue(SurfaceRules.abovePreliminarySurface(),
-                                SurfaceRules.sequence(
-                                        SurfaceRules.ifTrue(SurfaceRules
-                                                .isBiome(CABiomes.PLAGUE_WASTELAND),
-                                                SurfaceRules.sequence(
-                                                        // If near-surface (up to depth 4) place astral grass on the
-                                                        // very top
-                                                        // when the water surface check passes, and always place astral
-                                                        // dirt
-                                                        // as the filler under that surface so vanilla dirt isn't used.
-                                                        SurfaceRules.ifTrue(
-                                                                SurfaceRules.stoneDepthCheck(
-                                                                        0,
-                                                                        false,
-                                                                        4,
-                                                                        CaveSurface.FLOOR),
-                                                                SurfaceRules.sequence(
-                                                                        SurfaceRules.ifTrue(
-                                                                                SurfaceRules.waterBlockCheck(
-                                                                                        0,
-                                                                                        0),
-                                                                                ASTRAL_GRASS_BLOCK),
-                                                                        ASTRAL_DIRT)),
-                                                        ASTRAL_STONE)),
-                                        SurfaceRules.ifTrue(SurfaceRules
-                                                .isBiome(CABiomes.PLAGUE_DESERT),
-                                                SurfaceRules.ifTrue(
-                                                        SurfaceRules.yBlockCheck(
-                                                                VerticalAnchor.absolute(
-                                                                        58),
-                                                                2),
-                                                        SurfaceRules.ifTrue(
-                                                                SurfaceRules.stoneDepthCheck(
-                                                                        4,
-                                                                        false,
-                                                                        CaveSurface.FLOOR),
-                                                                ASTRAL_SAND)))))),
+                CASurfaceRuleData.AstralPlanetSurface(),
                 List.of(),
                 64,
                 false,
                 false,
                 false,
                 false));
-        ctx.register(ABYSS, new NoiseGeneratorSettings(NoiseSettings.create(-64, 384, 1, 2),
-                Blocks.STONE.defaultBlockState(),
-                Fluids.WATER.defaultFluidState().createLegacyBlock(),
+        ctx.register(MOON, new NoiseGeneratorSettings(NoiseSettings.create(-64, 384, 1, 2),
+                ModBlocks.MOON_STONE.get().defaultBlockState(),
+                Blocks.AIR.defaultBlockState(),
                 new NoiseRouter(DensityFunctions.noise(holderGetter2.getOrThrow(Noises.AQUIFER_BARRIER),
                         0.5),
                         DensityFunctions.noise(
@@ -173,7 +124,7 @@ public class CANoiseSetting {
                                 holderGetter2.getOrThrow(
                                         Noises.AQUIFER_FLUID_LEVEL_SPREAD),
                                 0.7142857142857143),
-                        DensityFunctions.zero(),
+                        DensityFunctions.yClampedGradient(-1014, -1024, 0.0D, 1.0D),
                         DensityFunctions.shiftedNoise2d(DensityFunctions
                                 .flatCache(DensityFunctions.cache2d(DensityFunctions
                                         .shiftA(holderGetter2.getOrThrow(
@@ -198,14 +149,17 @@ public class CANoiseSetting {
                         DensityFunctions.mul(DensityFunctions.constant(4), DensityFunctions.mul(
                                 new DensityFunctions.HolderHolder(holderGetter
                                         .getOrThrow(CADensityFunctions.DEPTH)),
-                                new DensityFunctions.HolderHolder(holderGetter
-                                        .getOrThrow(CADensityFunctions.FACTOR)))),
+                                DensityFunctions.cache2d(
+                                        new DensityFunctions.HolderHolder(
+                                                holderGetter.getOrThrow(
+                                                        CADensityFunctions.FACTOR))))
+                                .quarterNegative()),
                         new DensityFunctions.HolderHolder(holderGetter
-                                .getOrThrow(CADensityFunctions.ASTRAL_DENSITY)),
+                                .getOrThrow(CADensityFunctions.MOON_FINAL_DENSITY)),
                         DensityFunctions.zero(),
                         DensityFunctions.zero(),
                         DensityFunctions.zero()),
-                SurfaceRuleData.overworld(),
+                CASurfaceRuleData.MoonSurface(),
                 List.of(),
                 64,
                 false,
