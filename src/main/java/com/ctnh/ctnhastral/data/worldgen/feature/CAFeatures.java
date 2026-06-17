@@ -1,12 +1,12 @@
 package com.ctnh.ctnhastral.data.worldgen.feature;
 
-import com.ctnh.ctnhastral.CTNHAstral;
-
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
+
+import com.ctnh.ctnhastral.CTNHAstral;
 
 public class CAFeatures {
 

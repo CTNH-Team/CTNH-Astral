@@ -1,6 +1,5 @@
 package com.ctnh.ctnhastral.data.worldgen.biome;
 
-import com.ctnh.ctnhastral.data.worldgen.feature.CAPlacements;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.sounds.Musics;
 import net.minecraft.sounds.SoundEvents;
@@ -12,9 +11,12 @@ import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
+import com.ctnh.ctnhastral.data.worldgen.feature.CAPlacements;
+
 public class NetherBiomes {
+
     public static Biome acidValley(HolderGetter<PlacedFeature> holderGetter,
-                                    HolderGetter<ConfiguredWorldCarver<?>> holderGetter2) {
+                                   HolderGetter<ConfiguredWorldCarver<?>> holderGetter2) {
         BiomeGenerationSettings.Builder biomeBuilder = new BiomeGenerationSettings.Builder(holderGetter, holderGetter2);
         biomeBuilder.addFeature(GenerationStep.Decoration.FLUID_SPRINGS, CAPlacements.ACID_LAKE);
         MobSpawnSettings mobspawnsettings = new MobSpawnSettings.Builder()

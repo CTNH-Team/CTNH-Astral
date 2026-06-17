@@ -1,7 +1,5 @@
 package com.ctnh.ctnhastral.data.worldgen.feature;
 
-import com.ctnh.ctnhastral.data.CAMaterials;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
@@ -12,6 +10,8 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import net.minecraft.world.level.material.FluidState;
+
+import com.ctnh.ctnhastral.data.CAMaterials;
 
 public class AcidPoolFeature extends Feature<NoneFeatureConfiguration> {
 
@@ -197,9 +197,9 @@ public class AcidPoolFeature extends Feature<NoneFeatureConfiguration> {
     }
 
     private static boolean isPoolRock(BlockState state) {
-        return state.is(Blocks.NETHERRACK) || state.is(Blocks.BLACKSTONE) || state.is(Blocks.BASALT)
-                || state.is(Blocks.SMOOTH_BASALT) || state.is(Blocks.MAGMA_BLOCK) || state.is(Blocks.GRAVEL)
-                || state.is(Blocks.SOUL_SAND);
+        return state.is(Blocks.NETHERRACK) || state.is(Blocks.BLACKSTONE) || state.is(Blocks.BASALT) ||
+                state.is(Blocks.SMOOTH_BASALT) || state.is(Blocks.MAGMA_BLOCK) || state.is(Blocks.GRAVEL) ||
+                state.is(Blocks.SOUL_SAND);
     }
 
     private static boolean canClear(BlockState state) {
@@ -320,8 +320,8 @@ public class AcidPoolFeature extends Feature<NoneFeatureConfiguration> {
         }
 
         private boolean isLobe(int dx, int dz) {
-            return extendX && Math.abs(dx) >= Math.ceil(radiusX) && Math.abs(dz) <= 1
-                    || extendZ && Math.abs(dz) >= Math.ceil(radiusZ) && Math.abs(dx) <= 1;
+            return extendX && Math.abs(dx) >= Math.ceil(radiusX) && Math.abs(dz) <= 1 ||
+                    extendZ && Math.abs(dz) >= Math.ceil(radiusZ) && Math.abs(dx) <= 1;
         }
 
         private int maxRimFailures() {
