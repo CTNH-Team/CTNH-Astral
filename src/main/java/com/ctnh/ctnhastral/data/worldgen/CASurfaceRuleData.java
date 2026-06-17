@@ -1,14 +1,15 @@
 package com.ctnh.ctnhastral.data.worldgen;
 
-import earth.terrarium.adastra.common.registry.ModBlocks;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.SurfaceRules;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.placement.CaveSurface;
 
 import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
+import earth.terrarium.adastra.common.registry.ModBlocks;
 
 public class CASurfaceRuleData {
+
     public static SurfaceRules.RuleSource AstralPlanetSurface() {
         SurfaceRules.RuleSource ASTRAL_GRASS_BLOCK = SurfaceRules
                 .state(AstralBlocks.ASTRAL_GRASS_BLOCK.getDefaultState());
@@ -28,7 +29,7 @@ public class CASurfaceRuleData {
                 SurfaceRules.ifTrue(SurfaceRules.abovePreliminarySurface(),
                         SurfaceRules.sequence(
                                 SurfaceRules.ifTrue(SurfaceRules
-                                                .isBiome(CABiomes.PLAGUE_WASTELAND),
+                                        .isBiome(CABiomes.PLAGUE_WASTELAND),
                                         SurfaceRules.sequence(
                                                 SurfaceRules.ifTrue(
                                                         SurfaceRules.stoneDepthCheck(
@@ -45,7 +46,7 @@ public class CASurfaceRuleData {
                                                                 ASTRAL_DIRT)),
                                                 ASTRAL_STONE)),
                                 SurfaceRules.ifTrue(SurfaceRules
-                                                .isBiome(CABiomes.PLAGUE_DESERT),
+                                        .isBiome(CABiomes.PLAGUE_DESERT),
                                         SurfaceRules.ifTrue(
                                                 SurfaceRules.yBlockCheck(
                                                         VerticalAnchor.absolute(

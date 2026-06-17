@@ -1,6 +1,5 @@
 package com.ctnh.ctnhastral.data.worldgen.structure;
 
-import earth.terrarium.adastra.common.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.util.RandomSource;
@@ -13,6 +12,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
 
 import com.ctnh.ctnhastral.registry.worldgen.MoonBlocks;
+import earth.terrarium.adastra.common.registry.ModBlocks;
 
 public class MoonCraterPlacer {
 
@@ -82,9 +82,11 @@ public class MoonCraterPlacer {
 
     private void shapeRim() {
         MutableBlockPos blockPos = new MutableBlockPos();
-        for (int currentX = minX((int) Math.floor(x - rimRadius)); currentX <= maxX((int) Math.ceil(x + rimRadius)); currentX++) {
+        for (int currentX = minX((int) Math.floor(x - rimRadius)); currentX <=
+                maxX((int) Math.ceil(x + rimRadius)); currentX++) {
             blockPos.setX(currentX);
-            for (int currentZ = minZ((int) Math.floor(z - rimRadius)); currentZ <= maxZ((int) Math.ceil(z + rimRadius)); currentZ++) {
+            for (int currentZ = minZ((int) Math.floor(z - rimRadius)); currentZ <=
+                    maxZ((int) Math.ceil(z + rimRadius)); currentZ++) {
                 blockPos.setZ(currentZ);
                 double dx = currentX - x;
                 double dz = currentZ - z;
@@ -97,7 +99,8 @@ public class MoonCraterPlacer {
                 int surfaceY = findSurfaceY(currentX, currentZ);
                 for (int offsetY = 0; offsetY < fillHeight; offsetY++) {
                     blockPos.setY(surfaceY + offsetY);
-                    putter.put(level, blockPos, offsetY == fillHeight - 1 && random.nextFloat() > 0.35F ? moonSand : moonStone);
+                    putter.put(level, blockPos,
+                            offsetY == fillHeight - 1 && random.nextFloat() > 0.35F ? moonSand : moonStone);
                 }
             }
         }

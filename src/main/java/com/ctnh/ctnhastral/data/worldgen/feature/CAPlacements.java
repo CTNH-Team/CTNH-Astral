@@ -23,7 +23,6 @@ import net.minecraft.world.level.levelgen.placement.*;
 import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.data.worldgen.CABiomes;
 import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
-import com.ctnh.ctnhastral.registry.worldgen.MoonBlocks;
 
 import java.util.List;
 

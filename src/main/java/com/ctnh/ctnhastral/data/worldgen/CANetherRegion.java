@@ -1,11 +1,12 @@
 package com.ctnh.ctnhastral.data.worldgen;
 
-import com.ctnh.ctnhastral.CTNHAstral;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Climate;
+
+import com.ctnh.ctnhastral.CTNHAstral;
+import com.mojang.datafixers.util.Pair;
 import terrablender.api.ParameterUtils;
 import terrablender.api.Region;
 import terrablender.api.RegionType;
@@ -14,6 +15,7 @@ import terrablender.api.VanillaParameterOverlayBuilder;
 import java.util.function.Consumer;
 
 public class CANetherRegion extends Region {
+
     public CANetherRegion(int weight) {
         super(CTNHAstral.id("nether"), RegionType.NETHER, weight);
     }
