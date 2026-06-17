@@ -22,6 +22,7 @@ import com.ctnh.ctnhastral.data.lang.ChineseLangHandler;
 import com.ctnh.ctnhastral.data.lang.EnglishLangHandler;
 import com.ctnh.ctnhastral.data.worldgen.*;
 import com.ctnh.ctnhastral.data.worldgen.feature.CAConfiguredFeatures;
+import com.ctnh.ctnhastral.data.worldgen.feature.CAFeatures;
 import com.ctnh.ctnhastral.data.worldgen.feature.CAPlacements;
 import com.ctnh.ctnhastral.data.worldgen.structure.AstralMeteorStructure;
 import com.ctnh.ctnhastral.data.worldgen.structure.CAStructureSets;
@@ -56,6 +57,7 @@ public class CommonProxy {
         });
         CASoundEvents.SOUND_EVENTS.register(eventBus);
         CAEnchantments.Enchantments.register(eventBus);
+        CAFeatures.init(eventBus);
         REGISTRATE.registerRegistrate();
         REGISTRATE.addLangProcessor()
                 .addDataGenerator(CNLANG, ChineseLangHandler::init)
@@ -73,8 +75,11 @@ public class CommonProxy {
         // CTNHMaterials.tagPrefixIgnore();
         event.enqueueWork(() -> {
             Regions.register(new CAOverworldRegion(2));
+            Regions.register(new CANetherRegion(5));
             SurfaceRuleManager.addSurfaceRules(SurfaceRuleManager.RuleCategory.OVERWORLD, CTNHAstral.MODID,
                     CASurfaceRuleData.customSurface());
+            SurfaceRuleManager.addSurfaceRules(SurfaceRuleManager.RuleCategory.NETHER, CTNHAstral.MODID,
+                    CASurfaceRuleData.acidValleySurface());
         });
     }
 

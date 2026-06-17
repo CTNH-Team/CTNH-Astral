@@ -39,6 +39,8 @@ public class CAPlacements {
             CTNHAstral.id("astral_lake"));
     public static final ResourceKey<PlacedFeature> ASTRAL_LAKE_UNDERGROUND = ResourceKey
             .create(Registries.PLACED_FEATURE, CTNHAstral.id("astral_lake_underground"));
+    public static final ResourceKey<PlacedFeature> ACID_LAKE = ResourceKey.create(Registries.PLACED_FEATURE,
+            CTNHAstral.id("acid_lake"));
     public static final ResourceKey<PlacedFeature> VENUS_OCHRUM = ResourceKey.create(Registries.PLACED_FEATURE,
             CTNHAstral.id("venus_ochrum"));
     public static final ResourceKey<PlacedFeature> GAS_SPROUT = ResourceKey.create(Registries.PLACED_FEATURE,
@@ -104,5 +106,10 @@ public class CAPlacements {
                 InSquarePlacement.spread(),
                 BiomeFilter.biome(),
                 HeightRangePlacement.uniform(VerticalAnchor.absolute(10), VerticalAnchor.absolute(40)));
+        PlacementUtils.register(ctx, ACID_LAKE, featureLookup.getOrThrow(CAConfiguredFeatures.ACID_LAKE),
+                CountPlacement.of(4),
+                InSquarePlacement.spread(),
+                HeightRangePlacement.uniform(VerticalAnchor.absolute(24), VerticalAnchor.absolute(96)),
+                BiomeFilter.biome());
     }
 }

@@ -29,25 +29,25 @@ public class MoonBiomes {
                 .generationSettings(builder.build()).build();
     }
 
-    public static Biome moon_wasteland(HolderGetter<PlacedFeature> holderGetter,
+    public static Biome moonWasteland(HolderGetter<PlacedFeature> holderGetter,
                                        HolderGetter<ConfiguredWorldCarver<?>> holderGetter2) {
         BiomeGenerationSettings.Builder biomeBuilder = new BiomeGenerationSettings.Builder(holderGetter, holderGetter2);
         return baseMoonSetting(biomeBuilder, 0x6b8891, 0x314248, 0x0f1118, 0x1a2334, -0.4F);
     }
 
-    public static Biome moon_silicon_plains(HolderGetter<PlacedFeature> holderGetter,
+    public static Biome moonSiliconPlains(HolderGetter<PlacedFeature> holderGetter,
                                             HolderGetter<ConfiguredWorldCarver<?>> holderGetter2) {
         BiomeGenerationSettings.Builder biomeBuilder = new BiomeGenerationSettings.Builder(holderGetter, holderGetter2);
         return baseMoonSetting(biomeBuilder, 0x8ea0b0, 0x46505a, 0x141822, 0x29344f, -0.2F);
     }
 
-    public static Biome moon_glass_crater(HolderGetter<PlacedFeature> holderGetter,
+    public static Biome moonGlassCrater(HolderGetter<PlacedFeature> holderGetter,
                                           HolderGetter<ConfiguredWorldCarver<?>> holderGetter2) {
         BiomeGenerationSettings.Builder biomeBuilder = new BiomeGenerationSettings.Builder(holderGetter, holderGetter2);
         return baseMoonSetting(biomeBuilder, 0x77818a, 0x2e363d, 0x0a0d14, 0x202738, -0.3F);
     }
 
-    public static Biome moonlight_desert(HolderGetter<PlacedFeature> holderGetter,
+    public static Biome moonlightDesert(HolderGetter<PlacedFeature> holderGetter,
                                          HolderGetter<ConfiguredWorldCarver<?>> holderGetter2) {
         BiomeGenerationSettings.Builder biomeBuilder = new BiomeGenerationSettings.Builder(holderGetter, holderGetter2);
         return baseMoonSetting(biomeBuilder, 0xc8c2a6, 0x5e5a4d, 0x151515, 0x323a4f, 0.1F);

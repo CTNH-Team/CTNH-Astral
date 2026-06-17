@@ -35,13 +35,13 @@ public class CABiomes {
     public static void bootstrap(BootstapContext<Biome> ctx) {
         HolderGetter<PlacedFeature> holderGetter = ctx.lookup(Registries.PLACED_FEATURE);
         HolderGetter<ConfiguredWorldCarver<?>> holderGetter2 = ctx.lookup(Registries.CONFIGURED_CARVER);
-        ctx.register(PLAGUE_WASTELAND, AstralBiomes.plague_wasteland(holderGetter, holderGetter2));
-        ctx.register(PLAGUE_DESERT, AstralBiomes.plague_desert(holderGetter, holderGetter2));
-        ctx.register(ASTRAL_ORBIT, AstralBiomes.astral_orbit(holderGetter, holderGetter2));
-        ctx.register(ACID_VALLEY, NetherBiomes.acid_valley(holderGetter, holderGetter2));
-        ctx.register(MOON_WASTELAND, MoonBiomes.moon_wasteland(holderGetter, holderGetter2));
-        ctx.register(MOON_SILICON_PLAINS, MoonBiomes.moon_silicon_plains(holderGetter, holderGetter2));
-        ctx.register(MOON_GLASS_CRATER, MoonBiomes.moon_glass_crater(holderGetter, holderGetter2));
-        ctx.register(MOONLIGHT_DESERT, MoonBiomes.moonlight_desert(holderGetter, holderGetter2));
+        ctx.register(PLAGUE_WASTELAND, AstralBiomes.plagueWasteland(holderGetter, holderGetter2));
+        ctx.register(PLAGUE_DESERT, AstralBiomes.plagueDesert(holderGetter, holderGetter2));
+        ctx.register(ASTRAL_ORBIT, AstralBiomes.astralOrbit(holderGetter, holderGetter2));
+        ctx.register(ACID_VALLEY, NetherBiomes.acidValley(holderGetter, holderGetter2));
+        ctx.register(MOON_WASTELAND, MoonBiomes.moonWasteland(holderGetter, holderGetter2));
+        ctx.register(MOON_SILICON_PLAINS, MoonBiomes.moonSiliconPlains(holderGetter, holderGetter2));
+        ctx.register(MOON_GLASS_CRATER, MoonBiomes.moonGlassCrater(holderGetter, holderGetter2));
+        ctx.register(MOONLIGHT_DESERT, MoonBiomes.moonlightDesert(holderGetter, holderGetter2));
     }
 }

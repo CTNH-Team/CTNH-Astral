@@ -19,6 +19,7 @@ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.LakeFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.RandomPatchConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.SimpleBlockConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
@@ -53,6 +54,8 @@ public class CAConfiguredFeatures {
             .create(Registries.CONFIGURED_FEATURE, CTNHAstral.id("venus_ochrum"));
     public static final ResourceKey<ConfiguredFeature<?, ?>> GAS_SPROUT = ResourceKey
             .create(Registries.CONFIGURED_FEATURE, CTNHAstral.id("gas_sprout"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> ACID_LAKE = ResourceKey
+            .create(Registries.CONFIGURED_FEATURE, CTNHAstral.id("acid_lake"));
 
     public static void bootstrap(BootstapContext<ConfiguredFeature<?, ?>> ctx) {
         FeatureUtils.register(ctx, ASTRAL_TREE, Feature.TREE, new TreeConfiguration.TreeConfigurationBuilder(
@@ -86,6 +89,7 @@ public class CAConfiguredFeatures {
                 new FluidSproutConfiguration(GTMaterials.RefineryGas.getFluid(FluidStorageKeys.GAS),
                         UniformInt.of(12, 16), UniformInt.of(6, 9),
                         0.4f));
+        FeatureUtils.register(ctx, ACID_LAKE, CAFeatures.ACID_POOL.get(), NoneFeatureConfiguration.INSTANCE);
     }
 
 

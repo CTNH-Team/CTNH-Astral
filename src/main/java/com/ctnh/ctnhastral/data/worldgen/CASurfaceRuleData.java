@@ -79,4 +79,14 @@ public class CASurfaceRuleData {
                         SurfaceRules.state(AstralBlocks.ASTRAL_DIRT.getDefaultState()))),
                 SurfaceRules.ifTrue(surface20, SurfaceRules.state(AstralBlocks.ASTRAL_STONE.getDefaultState()))));
     }
+
+    public static SurfaceRules.RuleSource acidValleySurface() {
+        SurfaceRules.ConditionSource biome = SurfaceRules.isBiome(CABiomes.ACID_VALLEY);
+        SurfaceRules.ConditionSource surfaceDepth = SurfaceRules.stoneDepthCheck(0, true, 6, CaveSurface.FLOOR);
+        SurfaceRules.ConditionSource ceilingDepth = SurfaceRules.stoneDepthCheck(0, false, 6, CaveSurface.CEILING);
+        SurfaceRules.RuleSource blackstone = SurfaceRules.state(Blocks.BLACKSTONE.defaultBlockState());
+        return SurfaceRules.ifTrue(biome, SurfaceRules.sequence(
+                SurfaceRules.ifTrue(surfaceDepth, blackstone),
+                SurfaceRules.ifTrue(ceilingDepth, blackstone)));
+    }
 }

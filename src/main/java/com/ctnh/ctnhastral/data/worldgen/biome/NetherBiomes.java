@@ -1,5 +1,6 @@
 package com.ctnh.ctnhastral.data.worldgen.biome;
 
+import com.ctnh.ctnhastral.data.worldgen.feature.CAPlacements;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.data.worldgen.biome.OverworldBiomes;
 import net.minecraft.sounds.Musics;
@@ -8,13 +9,15 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.*;
+import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 public class NetherBiomes {
-    public static Biome acid_valley(HolderGetter<PlacedFeature> holderGetter,
+    public static Biome acidValley(HolderGetter<PlacedFeature> holderGetter,
                                     HolderGetter<ConfiguredWorldCarver<?>> holderGetter2) {
         BiomeGenerationSettings.Builder biomeBuilder = new BiomeGenerationSettings.Builder(holderGetter, holderGetter2);
+        biomeBuilder.addFeature(GenerationStep.Decoration.FLUID_SPRINGS, CAPlacements.ACID_LAKE);
         MobSpawnSettings mobspawnsettings = new MobSpawnSettings.Builder()
                 .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityType.ZOMBIFIED_PIGLIN, 40, 4, 4))
                 .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityType.SLIME, 40, 4, 4))

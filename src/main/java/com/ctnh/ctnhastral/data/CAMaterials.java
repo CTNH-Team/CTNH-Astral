@@ -30,6 +30,8 @@ public class CAMaterials {
     public static Material Starlight;
     public static Material Starmetal;
 
+    public static Material Acid;
+
     public static void init() {
         // Ad Astra
         Moonstone = REGISTRATE.material(CTNHAstral.id("moon_stone"))
@@ -91,6 +93,10 @@ public class CAMaterials {
                         GENERATE_FOIL,
                         GENERATE_ROTOR)
                 .cableProperties(GTValues.V[GTValues.OpV], 4, 256)
+                .buildAndRegister();
+        Acid = REGISTRATE.material(GTCEu.id("acid"))
+                .cnlang("酸液")
+                .liquid(new FluidBuilder().textures(true, true).block())
                 .buildAndRegister();
     }
 
