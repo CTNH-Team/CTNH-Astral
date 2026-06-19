@@ -147,16 +147,25 @@ public class CADensityFunctions {
         ctx.register(ASTRAL_DENSITY,
                 DensityFunctions.max(DensityFunctions.yClampedGradient(-64, -63, 1, -1), densityFunction13));
 
-        DensityFunction moonOverworldLikeTerrain = DensityFunctions.add(
-                DensityFunctions.yClampedGradient(-64, 320, 1.5, -1.5),
-                DensityFunctions.mul(DensityFunctions.constant(0.26),
-                        DensityFunctions.noise(holderGetter.getOrThrow(Noises.JAGGED), 0.9, 0.9)));
-        DensityFunction moonMicroRelief = DensityFunctions.mul(DensityFunctions.constant(0.05),
-                DensityFunctions.noise(holderGetter.getOrThrow(Noises.CAVE_CHEESE), 3.0, 3.0));
+        DensityFunction moonContinents = DensityFunctions.flatCache(DensityFunctions.cache2d(
+                new DensityFunctions.HolderHolder(holderGetter2.getOrThrow(NoiseRouterData.CONTINENTS))));
+        DensityFunction moonSurfaceOffset = DensityFunctions
+                .add(DensityFunctions.constant(-0.02),
+                        DensityFunctions.mul(DensityFunctions.constant(0.18), moonContinents))
+                .clamp(-0.17, 0.09);
+        DensityFunction moonRelief = DensityFunctions
+                .mul(DensityFunctions.constant(0.12),
+                        new DensityFunctions.HolderHolder(holderGetter2.getOrThrow(SLOPED_CHEESE)))
+                .clamp(-0.08, 0.08);
+        DensityFunction moonDetail = DensityFunctions.add(DensityFunctions.constant(0),
+                DensityFunctions.noise(holderGetter.getOrThrow(Noises.CAVE_CHEESE), 0.75, 0.35)).clamp(-0.03, 0.03);
+        DensityFunction moonSurfaceDensity = DensityFunctions.add(
+                DensityFunctions.yClampedGradient(-64, 192, 1, -1),
+                DensityFunctions.add(moonSurfaceOffset, DensityFunctions.add(moonRelief, moonDetail)));
+
         ctx.register(MOON_FINAL_DENSITY,
-                DensityFunctions.max(
-                        DensityFunctions.yClampedGradient(-64, -63, 1, -1),
-                        DensityFunctions.interpolated(
-                                DensityFunctions.add(moonOverworldLikeTerrain, moonMicroRelief))));
+                DensityFunctions.max(DensityFunctions.yClampedGradient(-64, -63, 1, -1), moonSurfaceDensity));
+
+
     }
 }

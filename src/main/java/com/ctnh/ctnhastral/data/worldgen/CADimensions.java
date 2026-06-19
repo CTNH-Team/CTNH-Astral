@@ -61,12 +61,12 @@ public class CADimensions {
         ctx.register(MOON, new LevelStem(dimensionTypes.getOrThrow(CADimensionTypes.MOON),
                 new NoiseBasedChunkGenerator(
                         MultiNoiseBiomeSource.createFromList(new Climate.ParameterList<>(
-                                List.of(Pair.of(MOON_BRINE_SEA_PARAMETER,
+                                List.of(Pair.of(MOON_WASTELAND_PARAMETER,
                                         biomes.getOrThrow(CABiomes.MOON_WASTELAND)),
                                         Pair.of(MOON_SILICON_PLAINS_PARAMETER,
                                                 biomes.getOrThrow(CABiomes.MOON_SILICON_PLAINS)),
-                                        Pair.of(MOON_GLASS_CRATER_PARAMETER,
-                                                biomes.getOrThrow(CABiomes.MOON_GLASS_CRATER)),
+                                        Pair.of(MOON_SALT_SEA_PARAMETER,
+                                                biomes.getOrThrow(CABiomes.MOON_SALT_SEA)),
                                         Pair.of(MOONLIGHT_DESERT_PARAMETER,
                                                 biomes.getOrThrow(CABiomes.MOONLIGHT_DESERT))))),
                         noiseSettings.getOrThrow(CANoiseSetting.MOON))));

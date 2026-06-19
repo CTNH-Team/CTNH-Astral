@@ -1,5 +1,6 @@
 package com.ctnh.ctnhastral.data.worldgen;
 
+import com.gregtechceu.gtceu.common.data.GTMaterials;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.data.worldgen.SurfaceRuleData;
@@ -110,7 +111,7 @@ public class CANoiseSetting {
                 false));
         ctx.register(MOON, new NoiseGeneratorSettings(NoiseSettings.create(-64, 384, 1, 2),
                 ModBlocks.MOON_STONE.get().defaultBlockState(),
-                Blocks.AIR.defaultBlockState(),
+                GTMaterials.SaltWater.getFluid().defaultFluidState().createLegacyBlock(),
                 new NoiseRouter(DensityFunctions.noise(holderGetter2.getOrThrow(Noises.AQUIFER_BARRIER),
                         0.5),
                         DensityFunctions.noise(

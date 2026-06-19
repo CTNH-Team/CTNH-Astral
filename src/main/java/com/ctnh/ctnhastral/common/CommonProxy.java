@@ -1,5 +1,6 @@
 package com.ctnh.ctnhastral.common;
 
+import com.ctnh.ctnhastral.data.GTMateralAdjust;
 import com.gregtechceu.gtceu.api.data.chemical.material.event.MaterialEvent;
 
 import net.minecraft.core.RegistrySetBuilder;
@@ -68,6 +69,7 @@ public class CommonProxy {
     public static void registerMaterials(MaterialEvent event) {
         CAMaterials.init();
         CAMaterials.tagPrefixIgnore();
+        GTMateralAdjust.init();
     }
 
     @SubscribeEvent

@@ -39,7 +39,7 @@ public class MoonBiomes {
         return baseMoonSetting(biomeBuilder, 0x8ea0b0, 0x46505a, 0x141822, 0x29344f, -0.2F);
     }
 
-    public static Biome moonGlassCrater(HolderGetter<PlacedFeature> holderGetter,
+    public static Biome moonSaltSea(HolderGetter<PlacedFeature> holderGetter,
                                         HolderGetter<ConfiguredWorldCarver<?>> holderGetter2) {
         BiomeGenerationSettings.Builder biomeBuilder = new BiomeGenerationSettings.Builder(holderGetter, holderGetter2);
         return baseMoonSetting(biomeBuilder, 0x77818a, 0x2e363d, 0x0a0d14, 0x202738, -0.3F);
