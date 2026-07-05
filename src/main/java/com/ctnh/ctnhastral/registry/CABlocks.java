@@ -1,5 +1,8 @@
 package com.ctnh.ctnhastral.registry;
 
+import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
+import com.ctnh.ctnhastral.registry.worldgen.MarsBlocks;
+import com.ctnh.ctnhastral.registry.worldgen.MoonBlocks;
 import com.gregtechceu.gtceu.common.data.models.GTModels;
 
 import net.minecraft.client.renderer.RenderType;
@@ -19,10 +22,19 @@ import com.tterrag.registrate.providers.loot.RegistrateBlockLootTables;
 import com.tterrag.registrate.util.entry.BlockEntry;
 
 import static com.ctnh.ctnhastral.CTNHAstral.REGISTRATE;
+import static com.ctnh.ctnhastral.registry.CACreativeModeTabs.MACHINE;
 
 public class CABlocks {
+    static {
+        REGISTRATE.creativeModeTab(() -> MACHINE);
+    }
 
-    public static void init() {}
+    public static void init() {
+        AstralBlocks.init();
+        MarsBlocks.init();
+        MoonBlocks.init();
+        CARocketBlocks.init();
+    }
 
     @SuppressWarnings("removal")
     public static BlockEntry<Block> createStoneLikeBlock(String name, String cnName, ResourceLocation texture) {

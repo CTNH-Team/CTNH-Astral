@@ -21,6 +21,22 @@ public class BiomeParameters {
             LOWLAND_CONTINENTS);
     public static final Climate.ParameterPoint MOONLIGHT_DESERT_PARAMETER = createMoonParameter(WARM_RANGE,
             HIGHLAND_CONTINENTS);
+    public static final Climate.ParameterPoint MARS_HEMATITE_PLAINS_PARAMETER = createMoonParameter(WARM_RANGE,
+            LOWLAND_CONTINENTS);
+    public static final Climate.ParameterPoint MARS_DRY_ICE_CANYON_PARAMETER = createMoonParameter(COLD_RANGE,
+            OCEAN_CONTINENTS);
+    public static final Climate.ParameterPoint MARS_MOSS_FOREST_PARAMETER = Climate.parameters(COLD_RANGE, FULL_RANGE,
+            LOWLAND_CONTINENTS, FULL_RANGE, Climate.Parameter.span(-0.4F, 0.1F), FULL_RANGE, 0.0F);
+    public static final Climate.ParameterPoint MARS_DEAD_VOLCANO_PARAMETER = createMoonParameter(WARM_RANGE,
+            HIGHLAND_CONTINENTS);
+    public static final Climate.ParameterPoint MARS_SULFUR_LAKE_PARAMETER = Climate.parameters(WARM_RANGE, FULL_RANGE,
+            Climate.Parameter.span(0.15F, 0.55F), FULL_RANGE, FULL_RANGE, FULL_RANGE, 0.0F);
+    public static final Climate.ParameterPoint MARS_RESEARCH_GRAVEYARD_PARAMETER = Climate.parameters(COLD_RANGE,
+            FULL_RANGE, Climate.Parameter.span(0.45F, 0.85F), FULL_RANGE, FULL_RANGE, FULL_RANGE, 0.0F);
+    public static final Climate.ParameterPoint MARS_STARGATE_RUINS_PARAMETER = Climate.parameters(COLD_RANGE,
+            FULL_RANGE, HIGHLAND_CONTINENTS, FULL_RANGE, Climate.Parameter.span(-0.8F, -0.2F), FULL_RANGE, 0.0F);
+    public static final Climate.ParameterPoint MARS_SLIME_CAVES_PARAMETER = Climate.parameters(WARM_RANGE, FULL_RANGE,
+            Climate.Parameter.span(-0.2F, 0.4F), FULL_RANGE, Climate.Parameter.span(0.25F, 0.8F), FULL_RANGE, 0.0F);
 
     public static Climate.ParameterPoint createParameter(float temperature, float humidity, float continentalness,
                                                          float erosion, float depth, float weirdness, long offset) {

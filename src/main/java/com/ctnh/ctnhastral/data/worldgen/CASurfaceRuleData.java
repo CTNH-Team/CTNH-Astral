@@ -6,6 +6,7 @@ import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.placement.CaveSurface;
 
 import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
+import com.ctnh.ctnhastral.registry.worldgen.MarsBlocks;
 import earth.terrarium.adastra.common.registry.ModBlocks;
 
 public class CASurfaceRuleData {
@@ -62,6 +63,51 @@ public class CASurfaceRuleData {
 
     public static SurfaceRules.RuleSource MoonSurface() {
         return SurfaceRules.state(ModBlocks.MOON_STONE.get().defaultBlockState());
+    }
+
+    public static SurfaceRules.RuleSource MarsSurface() {
+        SurfaceRules.RuleSource marsStone = SurfaceRules.state(ModBlocks.MARS_STONE.get().defaultBlockState());
+        SurfaceRules.RuleSource hematiteSoil = SurfaceRules.state(MarsBlocks.HEMATITE_SOIL.getDefaultState());
+        SurfaceRules.RuleSource hematiteSand = SurfaceRules.state(MarsBlocks.HEMATITE_SAND.getDefaultState());
+        SurfaceRules.RuleSource dryIce = SurfaceRules.state(MarsBlocks.DRY_ICE.getDefaultState());
+        SurfaceRules.RuleSource martianMoss = SurfaceRules.state(MarsBlocks.MARTIAN_MOSS.getDefaultState());
+        SurfaceRules.RuleSource martianRegolith = SurfaceRules.state(MarsBlocks.MARTIAN_REGOLITH.getDefaultState());
+        SurfaceRules.RuleSource blackBasalt = SurfaceRules.state(MarsBlocks.BLACK_BASALT.getDefaultState());
+        SurfaceRules.RuleSource sulfuricCrust = SurfaceRules.state(MarsBlocks.SULFURIC_CRUST.getDefaultState());
+        SurfaceRules.RuleSource obsidianChannel = SurfaceRules.state(MarsBlocks.OBSIDIAN_CHANNEL.getDefaultState());
+
+        SurfaceRules.ConditionSource floorDepth = SurfaceRules.stoneDepthCheck(0, true, 4, CaveSurface.FLOOR);
+        SurfaceRules.ConditionSource topSurface = SurfaceRules.abovePreliminarySurface();
+
+        return SurfaceRules.sequence(
+                SurfaceRules.ifTrue(
+                        SurfaceRules.verticalGradient("ctnhastral:mars_bedrock",
+                                VerticalAnchor.aboveBottom(0),
+                                VerticalAnchor.aboveBottom(5)),
+                        SurfaceRules.state(Blocks.BEDROCK.defaultBlockState())),
+                SurfaceRules.ifTrue(topSurface,
+                        SurfaceRules.sequence(
+                                SurfaceRules.ifTrue(SurfaceRules.isBiome(CABiomes.MARS_HEMATITE_PLAINS),
+                                        SurfaceRules.ifTrue(floorDepth, hematiteSoil)),
+                                SurfaceRules.ifTrue(SurfaceRules.isBiome(CABiomes.MARS_DRY_ICE_CANYON),
+                                        SurfaceRules.ifTrue(floorDepth, dryIce)),
+                                SurfaceRules.ifTrue(SurfaceRules.isBiome(CABiomes.MARS_MOSS_FOREST),
+                                        SurfaceRules.sequence(
+                                                SurfaceRules.ifTrue(
+                                                        SurfaceRules.stoneDepthCheck(0, false, 1, CaveSurface.FLOOR),
+                                                        martianMoss),
+                                                martianRegolith)),
+                                SurfaceRules.ifTrue(SurfaceRules.isBiome(CABiomes.MARS_DEAD_VOLCANO),
+                                        SurfaceRules.ifTrue(floorDepth, blackBasalt)),
+                                SurfaceRules.ifTrue(SurfaceRules.isBiome(CABiomes.MARS_SULFUR_LAKE),
+                                        SurfaceRules.ifTrue(floorDepth, sulfuricCrust)),
+                                SurfaceRules.ifTrue(SurfaceRules.isBiome(CABiomes.MARS_RESEARCH_GRAVEYARD),
+                                        SurfaceRules.ifTrue(floorDepth, hematiteSand)),
+                                SurfaceRules.ifTrue(SurfaceRules.isBiome(CABiomes.MARS_STARGATE_RUINS),
+                                        SurfaceRules.ifTrue(floorDepth, obsidianChannel)),
+                                SurfaceRules.ifTrue(SurfaceRules.isBiome(CABiomes.MARS_SLIME_CAVES),
+                                        SurfaceRules.ifTrue(floorDepth, martianMoss)),
+                                marsStone)));
     }
 
     public static SurfaceRules.RuleSource customSurface() {

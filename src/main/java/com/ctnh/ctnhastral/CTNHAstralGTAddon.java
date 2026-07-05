@@ -1,5 +1,7 @@
 package com.ctnh.ctnhastral;
 
+import com.ctnh.ctnhastral.data.CARecipes;
+import com.ctnh.ctnhastral.registry.CABlocks;
 import com.gregtechceu.gtceu.api.addon.GTAddon;
 import com.gregtechceu.gtceu.api.addon.IGTAddon;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
@@ -7,8 +9,10 @@ import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 import com.ctnh.ctnhastral.data.CAElements;
 import com.ctnh.ctnhastral.data.CATagPrefixes;
 import com.ctnh.ctnhastral.registry.CTNHBlockInfo;
-import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
-import com.ctnh.ctnhastral.registry.worldgen.MoonBlocks;
+import com.ctnh.ctnhastral.registry.CAItems;
+import net.minecraft.data.recipes.FinishedRecipe;
+
+import java.util.function.Consumer;
 
 @GTAddon
 public class CTNHAstralGTAddon implements IGTAddon {
@@ -28,8 +32,8 @@ public class CTNHAstralGTAddon implements IGTAddon {
 
     @Override
     public void registerTagPrefixes() {
-        AstralBlocks.init();
-        MoonBlocks.init();
+        CABlocks.init();
+        CAItems.init();
         CTNHBlockInfo.init();
         CATagPrefixes.init();
     }
@@ -37,5 +41,10 @@ public class CTNHAstralGTAddon implements IGTAddon {
     @Override
     public void registerElements() {
         CAElements.init();
+    }
+
+    @Override
+    public void addRecipes(Consumer<FinishedRecipe> provider) {
+        CARecipes.init(provider);
     }
 }

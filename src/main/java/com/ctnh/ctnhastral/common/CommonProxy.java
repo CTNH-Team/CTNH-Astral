@@ -1,12 +1,17 @@
 package com.ctnh.ctnhastral.common;
 
 import com.ctnh.ctnhastral.data.GTMateralAdjust;
+import com.ctnh.ctnhastral.registry.CACreativeModeTabs;
+import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.data.chemical.material.event.MaterialEvent;
 
+import com.gregtechceu.gtceu.api.machine.MachineDefinition;
+import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -28,8 +33,12 @@ import com.ctnh.ctnhastral.data.worldgen.feature.CAPlacements;
 import com.ctnh.ctnhastral.data.worldgen.structure.AstralMeteorStructure;
 import com.ctnh.ctnhastral.data.worldgen.structure.CAStructureSets;
 import com.ctnh.ctnhastral.data.worldgen.structure.CAStructures;
+import com.ctnh.ctnhastral.data.worldgen.structure.MarsResearchGraveyardStructure;
+import com.ctnh.ctnhastral.data.worldgen.structure.MarsStargateRuinsStructure;
 import com.ctnh.ctnhastral.data.worldgen.structure.MoonAbandonedOutpostStructure;
 import com.ctnh.ctnhastral.data.worldgen.structure.MoonCraterStructure;
+import com.ctnh.ctnhastral.registry.CAMultiblocks;
+import com.ctnh.ctnhastral.registry.CARecipeTypes;
 import com.ctnh.ctnhastral.registry.sound.CASoundDefinitionsProvider;
 import com.ctnh.ctnhastral.registry.sound.CASoundEvents;
 import com.tterrag.registrate.providers.ProviderType;
@@ -55,14 +64,26 @@ public class CommonProxy {
             AstralMeteorStructure.init();
             MoonCraterStructure.init();
             MoonAbandonedOutpostStructure.init();
+            MarsResearchGraveyardStructure.init();
+            MarsStargateRuinsStructure.init();
         });
+        eventBus.addGenericListener(GTRecipeType.class, CommonProxy::registerRecipeTypes);
+        eventBus.addGenericListener(MachineDefinition.class, CommonProxy::registerMachines);
         CASoundEvents.SOUND_EVENTS.register(eventBus);
         CAEnchantments.Enchantments.register(eventBus);
+        CACreativeModeTabs.init();
         CAFeatures.init(eventBus);
         REGISTRATE.registerRegistrate();
         REGISTRATE.addLangProcessor()
                 .addDataGenerator(CNLANG, ChineseLangHandler::init)
                 .addDataGenerator(ProviderType.LANG, EnglishLangHandler::init);
+    }
+    public static void registerRecipeTypes(GTCEuAPI.RegisterEvent<ResourceLocation, GTRecipeType> event) {
+        CARecipeTypes.init();
+    }
+
+    public static void registerMachines(GTCEuAPI.RegisterEvent<ResourceLocation, MachineDefinition> event) {
+        CAMultiblocks.init();
     }
 
     @SubscribeEvent

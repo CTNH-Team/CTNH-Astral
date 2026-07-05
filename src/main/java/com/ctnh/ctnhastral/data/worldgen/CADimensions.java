@@ -80,11 +80,23 @@ public class CADimensions {
         ctx.register(levelStemKey, new LevelStem(dimensionTypes.getOrThrow(dimensionTypeKey),
                 new NoiseBasedChunkGenerator(
                         MultiNoiseBiomeSource.createFromList(new Climate.ParameterList<>(
-                                List.of(Pair.of(PLAGUE_WASTELAND_PARAMETER,
-                                        biomes.getOrThrow(CABiomes.PLAGUE_WASTELAND)),
-                                        Pair.of(PLAGUE_DESERT_PARAMETER,
-                                                biomes.getOrThrow(CABiomes.PLAGUE_DESERT))))),
-                        noiseSettings.getOrThrow(CANoiseSetting.ASTRAL_PLANET))));
+                                List.of(Pair.of(MARS_HEMATITE_PLAINS_PARAMETER,
+                                                biomes.getOrThrow(CABiomes.MARS_HEMATITE_PLAINS)),
+                                        Pair.of(MARS_DRY_ICE_CANYON_PARAMETER,
+                                                biomes.getOrThrow(CABiomes.MARS_DRY_ICE_CANYON)),
+                                        Pair.of(MARS_MOSS_FOREST_PARAMETER,
+                                                biomes.getOrThrow(CABiomes.MARS_MOSS_FOREST)),
+                                        Pair.of(MARS_DEAD_VOLCANO_PARAMETER,
+                                                biomes.getOrThrow(CABiomes.MARS_DEAD_VOLCANO)),
+                                        Pair.of(MARS_SULFUR_LAKE_PARAMETER,
+                                                biomes.getOrThrow(CABiomes.MARS_SULFUR_LAKE)),
+                                        Pair.of(MARS_RESEARCH_GRAVEYARD_PARAMETER,
+                                                biomes.getOrThrow(CABiomes.MARS_RESEARCH_GRAVEYARD)),
+                                        Pair.of(MARS_STARGATE_RUINS_PARAMETER,
+                                                biomes.getOrThrow(CABiomes.MARS_STARGATE_RUINS)),
+                                        Pair.of(MARS_SLIME_CAVES_PARAMETER,
+                                                biomes.getOrThrow(CABiomes.MARS_SLIME_CAVES))))),
+                        noiseSettings.getOrThrow(CANoiseSetting.MARS))));
     }
 
     private static void registerVenus(BootstapContext<LevelStem> ctx, HolderGetter<Biome> biomes,

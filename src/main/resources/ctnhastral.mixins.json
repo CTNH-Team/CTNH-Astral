@@ -6,7 +6,8 @@
   "mixins": [
     "adastra.OxygenApilmplMixin",
     "adastra.TemperatureApilmplMixin",
-    "minecraft.NoiseBasedChunkGeneratorMixin"
+    "minecraft.NoiseBasedChunkGeneratorMixin",
+    "minecraft.ServerGamePacketListenerImplMixin"
   ],
   "client": [],
   "minVersion": "0.8"

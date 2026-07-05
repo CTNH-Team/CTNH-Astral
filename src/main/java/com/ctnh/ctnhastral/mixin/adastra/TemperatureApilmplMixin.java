@@ -4,6 +4,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 
 import com.ctnh.ctnhastral.common.enchantment.VacuumSealEnchantment;
+import com.ctnh.ctnhastral.common.oxygen.OxygenEnvironmentService;
 import earth.terrarium.adastra.common.systems.TemperatureApiImpl;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,7 +16,8 @@ public class TemperatureApilmplMixin {
 
     @Inject(method = "entityTick", at = @At("HEAD"), cancellable = true, remap = false)
     public void entityTick(ServerLevel level, LivingEntity entity, CallbackInfo ci) {
-        if (VacuumSealEnchantment.hasFullEnchant(entity)) {
+        if (VacuumSealEnchantment.hasFullEnchant(entity) ||
+                OxygenEnvironmentService.hasBreathableAtmosphere(level, entity.blockPosition())) {
             ci.cancel();
         }
     }
