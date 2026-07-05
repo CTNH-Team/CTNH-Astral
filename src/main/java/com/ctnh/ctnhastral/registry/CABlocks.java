@@ -1,8 +1,5 @@
 package com.ctnh.ctnhastral.registry;
 
-import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
-import com.ctnh.ctnhastral.registry.worldgen.MarsBlocks;
-import com.ctnh.ctnhastral.registry.worldgen.MoonBlocks;
 import com.gregtechceu.gtceu.common.data.models.GTModels;
 
 import net.minecraft.client.renderer.RenderType;
@@ -18,6 +15,9 @@ import net.minecraft.world.level.material.PushReaction;
 import com.ctnh.ctnhastral.common.block.AstralFlowerBlock;
 import com.ctnh.ctnhastral.common.block.AstralGrassBlock;
 import com.ctnh.ctnhastral.common.block.AstralTallGrassBlock;
+import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
+import com.ctnh.ctnhastral.registry.worldgen.MarsBlocks;
+import com.ctnh.ctnhastral.registry.worldgen.MoonBlocks;
 import com.tterrag.registrate.providers.loot.RegistrateBlockLootTables;
 import com.tterrag.registrate.util.entry.BlockEntry;
 
@@ -25,6 +25,7 @@ import static com.ctnh.ctnhastral.CTNHAstral.REGISTRATE;
 import static com.ctnh.ctnhastral.registry.CACreativeModeTabs.MACHINE;
 
 public class CABlocks {
+
     static {
         REGISTRATE.creativeModeTab(() -> MACHINE);
     }

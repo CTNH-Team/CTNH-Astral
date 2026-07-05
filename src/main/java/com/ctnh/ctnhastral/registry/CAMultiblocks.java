@@ -1,22 +1,25 @@
 package com.ctnh.ctnhastral.registry;
 
-import com.ctnh.ctnhastral.common.machine.multiblock.RocketAssemblyPlatformMachine;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.data.RotationState;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.pattern.Predicates;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
-import com.mo_guang.ctpp.api.pattern.FactoryStaticBlockPattern;
+
+import com.ctnh.ctnhastral.common.machine.multiblock.RocketAssemblyPlatformMachine;
 import com.mo_guang.ctpp.CTPP;
+import com.mo_guang.ctpp.api.pattern.FactoryStaticBlockPattern;
 import com.simibubi.create.AllBlocks;
 
 import static com.ctnh.ctnhastral.CTNHAstral.REGISTRATE;
 
 public class CAMultiblocks {
+
     static {
         REGISTRATE.creativeModeTab(() -> CACreativeModeTabs.MACHINE);
     }
-    public static final MultiblockMachineDefinition ROCKET_ASSEMBLY_PLATFORM = REGISTRATE.multiblock("rocket_assembly_platform", RocketAssemblyPlatformMachine::new)
+    public static final MultiblockMachineDefinition ROCKET_ASSEMBLY_PLATFORM = REGISTRATE
+            .multiblock("rocket_assembly_platform", RocketAssemblyPlatformMachine::new)
             .cnLangValue("火箭组装平台")
             .rotationState(RotationState.NON_Y_AXIS)
             .recipeType(CARecipeTypes.ROCKET_ASSEMBLY_PLATFORM_RECIPE)

@@ -81,7 +81,7 @@ public class CADimensions {
                 new NoiseBasedChunkGenerator(
                         MultiNoiseBiomeSource.createFromList(new Climate.ParameterList<>(
                                 List.of(Pair.of(MARS_HEMATITE_PLAINS_PARAMETER,
-                                                biomes.getOrThrow(CABiomes.MARS_HEMATITE_PLAINS)),
+                                        biomes.getOrThrow(CABiomes.MARS_HEMATITE_PLAINS)),
                                         Pair.of(MARS_DRY_ICE_CANYON_PARAMETER,
                                                 biomes.getOrThrow(CABiomes.MARS_DRY_ICE_CANYON)),
                                         Pair.of(MARS_MOSS_FOREST_PARAMETER,

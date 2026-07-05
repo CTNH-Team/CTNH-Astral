@@ -1,6 +1,7 @@
 package com.ctnh.ctnhastral.data.worldgen;
 
 import com.gregtechceu.gtceu.common.data.GTMaterials;
+
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.data.worldgen.SurfaceRuleData;

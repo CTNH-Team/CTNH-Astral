@@ -5,11 +5,13 @@ import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
+
 import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
 
 import static com.ctnh.ctnhastral.CTNHAstral.REGISTRATE;
 
 public class CARecipeTypes {
+
     public static final GTRecipeType ROCKET_ASSEMBLY_PLATFORM_RECIPE = REGISTRATE
             .recipeType(GTCEu.id("rocket_assembly_platform_recipe"), GTRecipeTypes.ELECTRIC)
             .cnlang("火箭组装平台")

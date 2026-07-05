@@ -1,6 +1,7 @@
 package com.ctnh.ctnhastral.common.machine.multiblock;
 
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
+import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.TickableSubscription;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IDisplayUIMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
@@ -8,8 +9,6 @@ import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.ComponentPanelWidget;
 import com.lowdragmc.lowdraglib.utils.TrackedDummyWorld;
-import com.simibubi.create.content.contraptions.Contraption;
-import com.simibubi.create.content.contraptions.StructureTransform;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -30,11 +29,12 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import com.ctnh.ctnhastral.registry.CARocketBlocks;
-import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.mo_guang.ctpp.api.pattern.StaticBlockPattern;
 import com.mo_guang.ctpp.dynamicPart.rotation.IContraptionMultiblock;
 import com.mo_guang.ctpp.dynamicPart.rotation.SimpleRotatingContraption;
 import com.mo_guang.ctpp.dynamicPart.rotation.SimpleRotatingContraptionEntity;
+import com.simibubi.create.content.contraptions.Contraption;
+import com.simibubi.create.content.contraptions.StructureTransform;
 import earth.terrarium.adastra.common.menus.base.PlanetsMenuProvider;
 import lombok.Getter;
 import lombok.Setter;
@@ -124,7 +124,8 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     @Override
     public void onLoad() {
         super.onLoad();
-        if (self().getLevel() == null || self().getLevel().isClientSide || self().getLevel() instanceof TrackedDummyWorld) {
+        if (self().getLevel() == null || self().getLevel().isClientSide ||
+                self().getLevel() instanceof TrackedDummyWorld) {
             return;
         }
         restoreRocketEntityBinding();
@@ -235,7 +236,8 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     @Override
     public void attach(SimpleRotatingContraptionEntity contraption) {
         if (contraption == null) return;
-        if (rocketEntityUuid != null && !rocketEntityUuid.equals(contraption.getUUID()) && !isEntityBoundToThisController(contraption)) {
+        if (rocketEntityUuid != null && !rocketEntityUuid.equals(contraption.getUUID()) &&
+                !isEntityBoundToThisController(contraption)) {
             return;
         }
         contraptionEntity = new ArrayList<>(List.of(contraption));
@@ -306,7 +308,8 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
 
     private void startLaunch(ServerPlayer player) {
         SimpleRotatingContraptionEntity entity = getAttachedRocketEntity();
-        if (entity == null || launching || rocketThrust <= 0 || rocketFuelCapacity <= 0 || rocketRemainingFuel <= 0) return;
+        if (entity == null || launching || rocketThrust <= 0 || rocketFuelCapacity <= 0 || rocketRemainingFuel <= 0)
+            return;
         launching = true;
         launchTicks = 0;
         writeRocketData(entity);
@@ -368,8 +371,8 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     }
 
     private boolean hasCreateSeat(List<BlockPos> positions) {
-        return positions.stream().map(pos -> self().getLevel().getBlockState(pos)).anyMatch(state -> state.is(CREATE_SEATS)
-                || isCreateSeatById(state));
+        return positions.stream().map(pos -> self().getLevel().getBlockState(pos))
+                .anyMatch(state -> state.is(CREATE_SEATS) || isCreateSeatById(state));
     }
 
     private boolean isCreateSeatById(BlockState state) {
@@ -381,7 +384,8 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         int thrust = 0;
         long fuelCapacity = 0;
         for (BlockPos pos : positions) {
-            CARocketBlocks.RocketPartStats stats = CARocketBlocks.getStats(self().getLevel().getBlockState(pos).getBlock());
+            CARocketBlocks.RocketPartStats stats = CARocketBlocks
+                    .getStats(self().getLevel().getBlockState(pos).getBlock());
             thrust += stats.thrust();
             fuelCapacity += stats.fuelCapacity();
         }
@@ -393,7 +397,8 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         if (rocketAssemblyCandidatePositions.isEmpty()) {
             cacheRocketAssemblyArea();
         }
-        if (rocketAssemblyCandidatePositions.isEmpty() || rocketAssemblyMinPos == null || rocketAssemblyMaxPos == null) {
+        if (rocketAssemblyCandidatePositions.isEmpty() || rocketAssemblyMinPos == null ||
+                rocketAssemblyMaxPos == null) {
             return List.of();
         }
 
@@ -431,9 +436,9 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     }
 
     private boolean isWithinRocketAssemblyBounds(BlockPos pos) {
-        return pos.getX() >= rocketAssemblyMinPos.getX() && pos.getX() <= rocketAssemblyMaxPos.getX()
-                && pos.getY() >= rocketAssemblyMinPos.getY() && pos.getY() <= rocketAssemblyMaxPos.getY()
-                && pos.getZ() >= rocketAssemblyMinPos.getZ() && pos.getZ() <= rocketAssemblyMaxPos.getZ();
+        return pos.getX() >= rocketAssemblyMinPos.getX() && pos.getX() <= rocketAssemblyMaxPos.getX() &&
+                pos.getY() >= rocketAssemblyMinPos.getY() && pos.getY() <= rocketAssemblyMaxPos.getY() &&
+                pos.getZ() >= rocketAssemblyMinPos.getZ() && pos.getZ() <= rocketAssemblyMaxPos.getZ();
     }
 
     private BlockPos calculatePivot(List<BlockPos> positions) {
@@ -453,7 +458,8 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         AABB search = getRocketSearchBounds();
         for (SimpleRotatingContraptionEntity entity : self().getLevel()
                 .getEntitiesOfClass(SimpleRotatingContraptionEntity.class, search)) {
-            if ((rocketEntityUuid != null && rocketEntityUuid.equals(entity.getUUID())) || isEntityBoundToThisController(entity)) {
+            if ((rocketEntityUuid != null && rocketEntityUuid.equals(entity.getUUID())) ||
+                    isEntityBoundToThisController(entity)) {
                 contraptionEntity.add(entity);
                 rocketEntityUuid = entity.getUUID();
                 rocketEntityPos = entity.blockPosition();

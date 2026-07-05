@@ -171,7 +171,8 @@ public class CAPlacements {
                 PlacementUtils.HEIGHTMAP,
                 BiomeFilter.biome());
 
-        PlacementUtils.register(ctx, MARS_HEMATITE_ORE, featureLookup.getOrThrow(CAConfiguredFeatures.MARS_HEMATITE_ORE),
+        PlacementUtils.register(ctx, MARS_HEMATITE_ORE,
+                featureLookup.getOrThrow(CAConfiguredFeatures.MARS_HEMATITE_ORE),
                 CountPlacement.of(32),
                 InSquarePlacement.spread(),
                 HeightRangePlacement.triangle(VerticalAnchor.absolute(-32), VerticalAnchor.absolute(128)),

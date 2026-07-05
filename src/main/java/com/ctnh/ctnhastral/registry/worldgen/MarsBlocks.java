@@ -68,7 +68,8 @@ public class MarsBlocks {
             CTNHAstral.id(MARS_STONE_TEXTURE_ROOT + "mars_base_platform"));
     public static final BlockEntry<Block> REINFORCED_MARTIAN_GLASS = createStoneLikeBlock("reinforced_martian_glass",
             "强化火星玻璃", CTNHAstral.id(MARS_STONE_TEXTURE_ROOT + "reinforced_martian_glass"));
-    public static final BlockEntry<Block> COMPRESSED_DIAMOND_ORE = createStoneLikeBlock("compressed_diamond_ore", "压缩钻石块",
+    public static final BlockEntry<Block> COMPRESSED_DIAMOND_ORE = createStoneLikeBlock("compressed_diamond_ore",
+            "压缩钻石块",
             CTNHAstral.id(MARS_STONE_TEXTURE_ROOT + "compressed_diamond_ore"));
     public static final BlockEntry<Block> KRYPTON_CRYSTAL_ORE = createStoneLikeBlock("krypton_crystal_ore", "氪晶石",
             CTNHAstral.id(MARS_STONE_TEXTURE_ROOT + "krypton_crystal_ore"));
@@ -124,7 +125,8 @@ public class MarsBlocks {
 
     public static final BlockEntry<AstralGrassBlock> MARTIAN_SHORT_GRASS = createTallGrassBlock("martian_short_grass",
             "火星短草");
-    public static final BlockEntry<AstralTallGrassBlock> MARTIAN_TALL_GRASS = createDoublePlantBlock("martian_tall_grass",
+    public static final BlockEntry<AstralTallGrassBlock> MARTIAN_TALL_GRASS = createDoublePlantBlock(
+            "martian_tall_grass",
             "火星高草");
     public static final BlockEntry<AstralFlowerBlock> MARTIAN_GLOW_BLOOM = createFlowerBlock("martian_glow_bloom",
             "火星辉光花", MobEffects.REGENERATION);

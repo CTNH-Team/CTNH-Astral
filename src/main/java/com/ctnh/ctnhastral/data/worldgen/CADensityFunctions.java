@@ -165,7 +165,5 @@ public class CADensityFunctions {
 
         ctx.register(MOON_FINAL_DENSITY,
                 DensityFunctions.max(DensityFunctions.yClampedGradient(-64, -63, 1, -1), moonSurfaceDensity));
-
-
     }
 }

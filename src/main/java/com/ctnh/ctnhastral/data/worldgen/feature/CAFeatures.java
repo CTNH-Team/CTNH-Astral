@@ -17,9 +17,11 @@ public class CAFeatures {
             AcidPoolFeature::new);
     public static final RegistryObject<AcidPoolFeature> MARS_SULFUR_POOL = FEATURE_REGISTER.register("mars_sulfur_pool",
             AcidPoolFeature::new);
-    public static final RegistryObject<AcidPoolFeature> MARS_ORGANIC_POOL = FEATURE_REGISTER.register("mars_organic_pool",
+    public static final RegistryObject<AcidPoolFeature> MARS_ORGANIC_POOL = FEATURE_REGISTER.register(
+            "mars_organic_pool",
             AcidPoolFeature::new);
-    public static final RegistryObject<AcidPoolFeature> MARS_HEALING_POOL = FEATURE_REGISTER.register("mars_healing_pool",
+    public static final RegistryObject<AcidPoolFeature> MARS_HEALING_POOL = FEATURE_REGISTER.register(
+            "mars_healing_pool",
             AcidPoolFeature::new);
     public static final RegistryObject<MarsDeadVolcanoFeature> MARS_DEAD_VOLCANO = FEATURE_REGISTER
             .register("mars_dead_volcano", MarsDeadVolcanoFeature::new);

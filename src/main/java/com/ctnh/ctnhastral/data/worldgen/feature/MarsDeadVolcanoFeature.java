@@ -44,9 +44,8 @@ public class MarsDeadVolcanoFeature extends Feature<NoneFeatureConfiguration> {
             for (int x = -craterRadius; x <= craterRadius; x++) {
                 for (int z = -craterRadius; z <= craterRadius; z++) {
                     if (x * x + z * z <= craterRadius * craterRadius + 1) {
-                        level.setBlock(surface.offset(x, height - y, z), y == 0 && context.random().nextFloat() < 0.18F
-                                ? lava
-                                : obsidian, 2);
+                        level.setBlock(surface.offset(x, height - y, z),
+                                y == 0 && context.random().nextFloat() < 0.18F ? lava : obsidian, 2);
                     }
                 }
             }

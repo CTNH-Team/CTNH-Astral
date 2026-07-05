@@ -9,8 +9,10 @@ import com.gregtechceu.gtceu.common.data.GTMaterials;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.Sulfur;
 
 public class GTMateralAdjust {
+
     public static void init() {
         GTMaterials.SaltWater.getFluidBuilder().block().textures(true, true);
-        Sulfur.setProperty(PropertyKey.FLUID, new FluidProperty(FluidStorageKeys.LIQUID, new FluidBuilder().temperature(388).block()));
+        Sulfur.setProperty(PropertyKey.FLUID,
+                new FluidProperty(FluidStorageKeys.LIQUID, new FluidBuilder().temperature(388).block()));
     }
 }

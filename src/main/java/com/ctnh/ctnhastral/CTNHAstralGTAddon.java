@@ -1,16 +1,17 @@
 package com.ctnh.ctnhastral;
 
-import com.ctnh.ctnhastral.data.CARecipes;
-import com.ctnh.ctnhastral.registry.CABlocks;
 import com.gregtechceu.gtceu.api.addon.GTAddon;
 import com.gregtechceu.gtceu.api.addon.IGTAddon;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 
-import com.ctnh.ctnhastral.data.CAElements;
-import com.ctnh.ctnhastral.data.CATagPrefixes;
-import com.ctnh.ctnhastral.registry.CTNHBlockInfo;
-import com.ctnh.ctnhastral.registry.CAItems;
 import net.minecraft.data.recipes.FinishedRecipe;
+
+import com.ctnh.ctnhastral.data.CAElements;
+import com.ctnh.ctnhastral.data.CARecipes;
+import com.ctnh.ctnhastral.data.CATagPrefixes;
+import com.ctnh.ctnhastral.registry.CABlocks;
+import com.ctnh.ctnhastral.registry.CAItems;
+import com.ctnh.ctnhastral.registry.CTNHBlockInfo;
 
 import java.util.function.Consumer;
 

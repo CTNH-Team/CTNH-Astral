@@ -1,12 +1,10 @@
 package com.ctnh.ctnhastral.common;
 
-import com.ctnh.ctnhastral.data.GTMateralAdjust;
-import com.ctnh.ctnhastral.registry.CACreativeModeTabs;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.data.chemical.material.event.MaterialEvent;
-
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
+
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
@@ -24,6 +22,7 @@ import net.minecraftforge.registries.RegisterEvent;
 import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.data.CAEnchantments;
 import com.ctnh.ctnhastral.data.CAMaterials;
+import com.ctnh.ctnhastral.data.GTMateralAdjust;
 import com.ctnh.ctnhastral.data.lang.ChineseLangHandler;
 import com.ctnh.ctnhastral.data.lang.EnglishLangHandler;
 import com.ctnh.ctnhastral.data.worldgen.*;
@@ -37,6 +36,7 @@ import com.ctnh.ctnhastral.data.worldgen.structure.MarsResearchGraveyardStructur
 import com.ctnh.ctnhastral.data.worldgen.structure.MarsStargateRuinsStructure;
 import com.ctnh.ctnhastral.data.worldgen.structure.MoonAbandonedOutpostStructure;
 import com.ctnh.ctnhastral.data.worldgen.structure.MoonCraterStructure;
+import com.ctnh.ctnhastral.registry.CACreativeModeTabs;
 import com.ctnh.ctnhastral.registry.CAMultiblocks;
 import com.ctnh.ctnhastral.registry.CARecipeTypes;
 import com.ctnh.ctnhastral.registry.sound.CASoundDefinitionsProvider;
@@ -78,6 +78,7 @@ public class CommonProxy {
                 .addDataGenerator(CNLANG, ChineseLangHandler::init)
                 .addDataGenerator(ProviderType.LANG, EnglishLangHandler::init);
     }
+
     public static void registerRecipeTypes(GTCEuAPI.RegisterEvent<ResourceLocation, GTRecipeType> event) {
         CARecipeTypes.init();
     }

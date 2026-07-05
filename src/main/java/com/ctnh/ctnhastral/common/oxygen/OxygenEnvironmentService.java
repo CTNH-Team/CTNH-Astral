@@ -9,14 +9,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
+import earth.terrarium.adastra.api.systems.OxygenApi;
+import earth.terrarium.adastra.common.utils.floodfill.FloodFill3D;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-
-import earth.terrarium.adastra.api.systems.OxygenApi;
-import earth.terrarium.adastra.common.utils.floodfill.FloodFill3D;
 
 public final class OxygenEnvironmentService {
 

@@ -10,12 +10,11 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.data.worldgen.features.FeatureUtils;
 import net.minecraft.data.worldgen.placement.PlacementUtils;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.random.SimpleWeightedRandomList;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.util.valueproviders.UniformInt;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -147,7 +146,8 @@ public class CAConfiguredFeatures {
 
         FeatureUtils.register(ctx, MARS_SULFUR_LAKE, Feature.LAKE,
                 new LakeFeature.Configuration(
-                        BlockStateProvider.simple(GTMaterials.Sulfur.getFluid().defaultFluidState().createLegacyBlock()),
+                        BlockStateProvider
+                                .simple(GTMaterials.Sulfur.getFluid().defaultFluidState().createLegacyBlock()),
                         BlockStateProvider.simple(MarsBlocks.SULFURIC_CRUST.getDefaultState())));
         FeatureUtils.register(ctx, MARS_ORGANIC_COMPOUND_LAKE, Feature.LAKE,
                 new LakeFeature.Configuration(
