@@ -87,6 +87,7 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     private TickableSubscription rocketTickSubscription;
     private CompoundTag rocketContraptionSnapshot = new CompoundTag();
     private List<BlockPos> rocketAssemblyCandidatePositions = new ArrayList<>();
+    private Set<Long> rocketAssemblyCandidateLookup = new HashSet<>();
     private BlockPos rocketAssemblyMinPos;
     private BlockPos rocketAssemblyMaxPos;
 
@@ -234,6 +235,49 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     }
 
     @Override
+    public BlockPos getAssemblyPivot() {
+        if (rocketPivotPos != null) {
+            return rocketPivotPos;
+        }
+        List<BlockPos> dynamicPositions = getRocketDynamicPositions();
+        if (dynamicPositions.isEmpty()) {
+            return null;
+        }
+        return calculatePivot(dynamicPositions);
+    }
+
+    @Override
+    public void onDebugAssembled() {
+        if (!isFormed() || self().getLevel() == null || self().getLevel().isClientSide) {
+            return;
+        }
+        SimpleRotatingContraptionEntity entity = getAttachedRocketEntity();
+        if (entity == null) {
+            return;
+        }
+        List<BlockPos> dynamicPositions = getRocketDynamicPositions();
+        if (!dynamicPositions.isEmpty()) {
+            RocketStats stats = collectRocketStats(dynamicPositions);
+            rocketThrust = stats.thrust();
+            rocketFuelCapacity = stats.fuelCapacity();
+            if (rocketRemainingFuel <= 0) {
+                rocketRemainingFuel = rocketFuelCapacity;
+            } else {
+                rocketRemainingFuel = Math.min(rocketRemainingFuel, rocketFuelCapacity);
+            }
+        }
+        if (rocketPivotPos == null) {
+            rocketPivotPos = getAssemblyPivot();
+        }
+        launching = false;
+        launchTicks = 0;
+        cacheRocketContraption(entity);
+        writeRocketData(entity);
+        markDirty();
+        self().holder.notifyBlockUpdate();
+    }
+
+    @Override
     public void attach(SimpleRotatingContraptionEntity contraption) {
         if (contraption == null) return;
         if (rocketEntityUuid != null && !rocketEntityUuid.equals(contraption.getUUID()) &&
@@ -246,6 +290,24 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         rocketEntityPos = contraption.blockPosition();
         writeRocketData(contraption);
         self().holder.notifyBlockUpdate();
+    }
+
+    @Override
+    public void findAndReattachEntities() {
+        if (self().getLevel() == null || self().getLevel().isClientSide) return;
+        restoreRocketEntityBinding();
+    }
+
+    @Override
+    public void clearAndDisassembleRotatingEntities() {
+        SimpleRotatingContraptionEntity entity = getAttachedRocketEntity();
+        if (entity != null && entity.isAlive()) {
+            entity.disassemble();
+        } else {
+            restoreRocketBlocksFromSnapshot();
+        }
+        clearRocketData();
+        markDirty();
     }
 
     public void handlePassengerJump(ServerPlayer player) {
@@ -421,7 +483,7 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
             BlockPos current = queue.removeFirst();
             for (Direction direction : ROCKET_SEARCH_DIRECTIONS) {
                 BlockPos next = current.relative(direction);
-                if (!isWithinRocketAssemblyBounds(next) || visited.contains(next)) {
+                if (!isWithinRocketAssemblyBounds(next) || !isRocketAssemblyCandidate(next) || visited.contains(next)) {
                     continue;
                 }
                 if (self().getLevel().getBlockState(next).isAir()) {
@@ -439,6 +501,10 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         return pos.getX() >= rocketAssemblyMinPos.getX() && pos.getX() <= rocketAssemblyMaxPos.getX() &&
                 pos.getY() >= rocketAssemblyMinPos.getY() && pos.getY() <= rocketAssemblyMaxPos.getY() &&
                 pos.getZ() >= rocketAssemblyMinPos.getZ() && pos.getZ() <= rocketAssemblyMaxPos.getZ();
+    }
+
+    private boolean isRocketAssemblyCandidate(BlockPos pos) {
+        return rocketAssemblyCandidateLookup.contains(pos.asLong());
     }
 
     private BlockPos calculatePivot(List<BlockPos> positions) {
@@ -502,11 +568,13 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         if (entity == null || entity.getContraption() == null) {
             return;
         }
+        entity.ensureContraptionReadyForSave();
         rocketContraptionSnapshot = entity.getContraption().writeNBT(false);
     }
 
     private void cacheRocketAssemblyArea() {
         rocketAssemblyCandidatePositions = new ArrayList<>();
+        rocketAssemblyCandidateLookup = new HashSet<>();
         rocketAssemblyMinPos = null;
         rocketAssemblyMaxPos = null;
 
@@ -531,10 +599,14 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         rocketAssemblyMinPos = new BlockPos(minX, minY, minZ);
         rocketAssemblyMaxPos = new BlockPos(maxX, maxY, maxZ);
         rocketAssemblyCandidatePositions = allDynamicPositions;
+        rocketAssemblyCandidateLookup = allDynamicPositions.stream()
+                .map(BlockPos::asLong)
+                .collect(HashSet::new, Set::add, Set::addAll);
     }
 
     private void clearRocketAssemblyArea() {
         rocketAssemblyCandidatePositions = new ArrayList<>();
+        rocketAssemblyCandidateLookup = new HashSet<>();
         rocketAssemblyMinPos = null;
         rocketAssemblyMaxPos = null;
     }
@@ -546,7 +618,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     }
 
     private void restoreRocketEntityBinding() {
-        findAndReattachEntities();
         SimpleRotatingContraptionEntity entity = getAttachedRocketEntity();
         if (entity != null) {
             attach(entity);
