@@ -101,11 +101,11 @@ public class CAMaterials {
     }
 
     public static void tagPrefixIgnore() {
-        TagPrefix.block.setIgnored(Moonstone, ModBlocks.MOON_STONE);
-        TagPrefix.block.setIgnored(Marsstone, ModBlocks.MARS_STONE);
-        TagPrefix.block.setIgnored(Venusstone, ModBlocks.VENUS_STONE);
-        TagPrefix.block.setIgnored(Mercurystone, ModBlocks.MERCURY_STONE);
-        TagPrefix.block.setIgnored(Glaciostone, ModBlocks.GLACIO_STONE);
+        TagPrefix.block.setIgnoredBlock(Moonstone, ModBlocks.MOON_STONE);
+        TagPrefix.block.setIgnoredBlock(Marsstone, ModBlocks.MARS_STONE);
+        TagPrefix.block.setIgnoredBlock(Venusstone, ModBlocks.VENUS_STONE);
+        TagPrefix.block.setIgnoredBlock(Mercurystone, ModBlocks.MERCURY_STONE);
+        TagPrefix.block.setIgnoredBlock(Glaciostone, ModBlocks.GLACIO_STONE);
     }
 
     public static class MaterialIcons {
