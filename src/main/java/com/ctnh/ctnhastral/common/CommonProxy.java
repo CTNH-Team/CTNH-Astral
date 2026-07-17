@@ -2,9 +2,11 @@ package com.ctnh.ctnhastral.common;
 
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.data.chemical.material.event.MaterialEvent;
+import com.gregtechceu.gtceu.api.data.chemical.material.event.MaterialRegistryEvent;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 
+import com.gregtechceu.gtceu.common.unification.material.MaterialRegistryManager;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
@@ -14,7 +16,6 @@ import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegisterEvent;
@@ -50,23 +51,17 @@ import java.util.Set;
 import static com.ctnh.ctnhastral.CTNHAstral.REGISTRATE;
 import static tech.vixhentx.mcmod.ctnhlib.registrate.data.ProviderTypes.CNLANG;
 
-@Mod.EventBusSubscriber(modid = CTNHAstral.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 @SuppressWarnings("removal")
 public class CommonProxy {
 
     public CommonProxy() {
-        CommonProxy.init();
+        IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        eventBus.register(this);
+        init();
     }
 
     public static void init() {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        eventBus.addListener((RegisterEvent event) -> {
-            AstralMeteorStructure.init();
-            MoonCraterStructure.init();
-            MoonAbandonedOutpostStructure.init();
-            MarsResearchGraveyardStructure.init();
-            MarsStargateRuinsStructure.init();
-        });
         eventBus.addGenericListener(GTRecipeType.class, CommonProxy::registerRecipeTypes);
         eventBus.addGenericListener(MachineDefinition.class, CommonProxy::registerMachines);
         CASoundEvents.SOUND_EVENTS.register(eventBus);
@@ -88,14 +83,28 @@ public class CommonProxy {
     }
 
     @SubscribeEvent
-    public static void registerMaterials(MaterialEvent event) {
+    public void registerMisc(RegisterEvent event) {
+        AstralMeteorStructure.init();
+        MoonCraterStructure.init();
+        MoonAbandonedOutpostStructure.init();
+        MarsResearchGraveyardStructure.init();
+        MarsStargateRuinsStructure.init();
+    }
+
+    @SubscribeEvent
+    public void registerMaterial(MaterialRegistryEvent event) {
+        MaterialRegistryManager.getInstance().createRegistry(CTNHAstral.MODID);
+    }
+
+    @SubscribeEvent
+    public void registerMaterials(MaterialEvent event) {
         CAMaterials.init();
         CAMaterials.tagPrefixIgnore();
         GTMateralAdjust.init();
     }
 
     @SubscribeEvent
-    public static void commonSetup(FMLCommonSetupEvent event) {
+    public void commonSetup(FMLCommonSetupEvent event) {
         // CTNHMaterials.tagPrefixIgnore();
         event.enqueueWork(() -> {
             Regions.register(new CAOverworldRegion(2));
@@ -108,7 +117,7 @@ public class CommonProxy {
     }
 
     @SubscribeEvent
-    public static void gatherData(GatherDataEvent event) {
+    public void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
         PackOutput packOutput = generator.getPackOutput();
         var registries = event.getLookupProvider();

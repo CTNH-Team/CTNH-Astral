@@ -1,5 +1,6 @@
 package com.ctnh.ctnhastral.client.render;
 
+import com.ctnh.ctnhastral.client.ClientProxy;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
@@ -10,7 +11,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import com.ctnh.ctnhastral.client.ClientRegister;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
@@ -43,7 +43,7 @@ public class MoonEffects extends DimensionSpecialEffects {
         RenderSystem.depthMask(false);
 
         // 渲染着色器
-        ShaderInstance galaxyShader = ClientRegister.getGalaxyShader();
+        ShaderInstance galaxyShader = ClientProxy.getGalaxyShader();
         if (galaxyShader != null) {
             poseStack.pushPose();
 
@@ -52,7 +52,7 @@ public class MoonEffects extends DimensionSpecialEffects {
             poseStack.mulPose(Axis.XP.rotationDegrees(timeOfDay * 360.0F));
             Matrix4f skyMatrix = poseStack.last().pose();
 
-            RenderSystem.setShader(ClientRegister::getGalaxyShader);
+            RenderSystem.setShader(ClientProxy::getGalaxyShader);
 
             if (galaxyShader.safeGetUniform("GameTime") != null) {
                 galaxyShader.safeGetUniform("GameTime").set((ticks + partialTick) * 0.01f);

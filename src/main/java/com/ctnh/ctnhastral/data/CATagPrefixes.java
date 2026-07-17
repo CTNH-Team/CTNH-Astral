@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.lowdragmc.lowdraglib.LDLib;
 
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 
@@ -23,8 +24,8 @@ public class CATagPrefixes {
             .cnlang("星辉%s矿石")
             .registerOre(() -> AstralBlocks.ASTRAL_STONE.get().defaultBlockState(),
                     () -> CAMaterials.AstralStone,
-                    BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).requiresCorrectToolForDrops()
-                            .strength(2.0F, 2.0F),
+                    () -> BlockBehaviour.Properties.copy(Blocks.STONE)
+                            .isValidSpawn((state, level, pos, entityType) -> false),
                     CTNHAstral.id("block/astral_stone"), false, false, true);
     public static TagPrefix oreMoonStone;
     public static TagPrefix oreVenusStone;
@@ -39,40 +40,35 @@ public class CATagPrefixes {
                     .lang("Moon Stone %s Ore")
                     .registerOre(() -> ModBlocks.MOON_STONE.get().defaultBlockState(),
                             () -> CAMaterials.Moonstone,
-                            BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops()
-                                    .strength(3, 3),
+                            () -> BlockBehaviour.Properties.copy(Blocks.STONE).mapColor(MapColor.COLOR_LIGHT_GRAY),
                             AdAstraRL("block/moon_stone"), false, false, true);
             oreVenusStone = REGISTRATE.oreTagPrefix("venus_stone", BlockTags.MINEABLE_WITH_PICKAXE)
                     .cnlang("锃金岩%s矿石")
                     .lang("Venus Stone %s Ore")
                     .registerOre(() -> ModBlocks.VENUS_STONE.get().defaultBlockState(),
                             () -> CAMaterials.Venusstone,
-                            BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops()
-                                    .strength(3, 3),
+                            () -> BlockBehaviour.Properties.copy(Blocks.STONE).mapColor(MapColor.TERRACOTTA_ORANGE),
                             AdAstraRL("block/venus_stone"), false, false, true);
             oreMarsStone = REGISTRATE.oreTagPrefix("mars_stone", BlockTags.MINEABLE_WITH_PICKAXE)
                     .cnlang("深红岩%s矿石")
                     .lang("Mars Stone %s Ore")
                     .registerOre(() -> ModBlocks.MARS_STONE.get().defaultBlockState(),
                             () -> CAMaterials.Marsstone,
-                            BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops()
-                                    .strength(3, 3),
+                            () -> BlockBehaviour.Properties.copy(Blocks.STONE).mapColor(MapColor.COLOR_RED),
                             AdAstraRL("block/mars_stone"), false, false, true);
             oreMercuryStone = REGISTRATE.oreTagPrefix("mercury_stone", BlockTags.MINEABLE_WITH_PICKAXE)
                     .cnlang("旱海岩%s矿石")
                     .lang("Mercury Stone %s Ore")
                     .registerOre(() -> ModBlocks.MERCURY_STONE.get().defaultBlockState(),
                             () -> CAMaterials.Mercurystone,
-                            BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops()
-                                    .strength(3, 3),
+                            () -> BlockBehaviour.Properties.copy(Blocks.STONE).mapColor(MapColor.TERRACOTTA_PURPLE),
                             AdAstraRL("block/mercury_stone"), false, false, true);
             oreGlacioStone = REGISTRATE.oreTagPrefix("glacio_stone", BlockTags.MINEABLE_WITH_PICKAXE)
                     .cnlang("坚冰岩%s矿石")
                     .lang("Glacio Stone %s Ore")
                     .registerOre(() -> ModBlocks.GLACIO_STONE.get().defaultBlockState(),
                             () -> CAMaterials.Glaciostone,
-                            BlockBehaviour.Properties.of().mapColor(MapColor.STONE).requiresCorrectToolForDrops()
-                                    .strength(3, 3),
+                            () -> BlockBehaviour.Properties.copy(Blocks.STONE).mapColor(MapColor.ICE),
                             AdAstraRL("block/glacio_stone"), false, false, true);
         }
         oreMoonStone

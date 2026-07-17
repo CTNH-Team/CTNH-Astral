@@ -74,11 +74,11 @@ public class CAMaterials {
                 .color(0xc6b2e8)
                 .iconSet(ROUGH)
                 .buildAndRegister();
-        Starlight = REGISTRATE.material(GTCEu.id("starlight"))
+        Starlight = REGISTRATE.material(CTNHAstral.id("starlight"))
                 .cnlang("星能液")
                 .liquid(new FluidBuilder().temperature(50).textures(true, true).block())
                 .buildAndRegister();
-        Starmetal = REGISTRATE.material(GTCEu.id("starmetal"))
+        Starmetal = REGISTRATE.material(CTNHAstral.id("starmetal"))
                 .cnlang("炫星")
                 .ingot()
                 .liquid(new FluidBuilder().textures(true, true).block())
@@ -94,7 +94,7 @@ public class CAMaterials {
                         GENERATE_ROTOR)
                 .cableProperties(GTValues.V[GTValues.OpV], 4, 256)
                 .buildAndRegister();
-        Acid = REGISTRATE.material(GTCEu.id("acid"))
+        Acid = REGISTRATE.material(CTNHAstral.id("acid"))
                 .cnlang("酸液")
                 .liquid(new FluidBuilder().textures(true, true).block())
                 .buildAndRegister();
