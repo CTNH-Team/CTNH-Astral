@@ -10,7 +10,5 @@ dependencies {
 
     modImplementation(ctnh.terrablender)
 
-    modImplementation(ctnh.createnewage)
-
     modImplementation("extra-mods:worldgenrender-1.0.0:1.0.0")
 }

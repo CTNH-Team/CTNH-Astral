@@ -13,8 +13,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.io.IOException;
 
-//
-// @Mod.EventBusSubscriber(modid = CTNHLib.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@SuppressWarnings("removal")
 public class ClientProxy extends CommonProxy {
 
     public ClientProxy() {
