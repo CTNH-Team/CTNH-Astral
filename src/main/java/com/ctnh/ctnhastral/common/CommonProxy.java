@@ -5,8 +5,9 @@ import com.gregtechceu.gtceu.api.data.chemical.material.event.MaterialEvent;
 import com.gregtechceu.gtceu.api.data.chemical.material.event.MaterialRegistryEvent;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
-
+import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 import com.gregtechceu.gtceu.common.unification.material.MaterialRegistryManager;
+
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
@@ -38,8 +39,11 @@ import com.ctnh.ctnhastral.data.worldgen.structure.MarsStargateRuinsStructure;
 import com.ctnh.ctnhastral.data.worldgen.structure.MoonAbandonedOutpostStructure;
 import com.ctnh.ctnhastral.data.worldgen.structure.MoonCraterStructure;
 import com.ctnh.ctnhastral.registry.CACreativeModeTabs;
+import com.ctnh.ctnhastral.registry.CAMachines;
 import com.ctnh.ctnhastral.registry.CAMultiblocks;
+import com.ctnh.ctnhastral.registry.CARecipeConditions;
 import com.ctnh.ctnhastral.registry.CARecipeTypes;
+import com.ctnh.ctnhastral.registry.CARocketEntityTypes;
 import com.ctnh.ctnhastral.registry.sound.CASoundDefinitionsProvider;
 import com.ctnh.ctnhastral.registry.sound.CASoundEvents;
 import com.tterrag.registrate.providers.ProviderType;
@@ -64,10 +68,12 @@ public class CommonProxy {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         eventBus.addGenericListener(GTRecipeType.class, CommonProxy::registerRecipeTypes);
         eventBus.addGenericListener(MachineDefinition.class, CommonProxy::registerMachines);
+        eventBus.addGenericListener(RecipeConditionType.class, CommonProxy::registerRecipeConditions);
         CASoundEvents.SOUND_EVENTS.register(eventBus);
         CAEnchantments.Enchantments.register(eventBus);
         CACreativeModeTabs.init();
         CAFeatures.init(eventBus);
+        CARocketEntityTypes.init();
         REGISTRATE.registerRegistrate();
         REGISTRATE.addLangProcessor()
                 .addDataGenerator(CNLANG, ChineseLangHandler::init)
@@ -79,7 +85,13 @@ public class CommonProxy {
     }
 
     public static void registerMachines(GTCEuAPI.RegisterEvent<ResourceLocation, MachineDefinition> event) {
+        CAMachines.init();
         CAMultiblocks.init();
+    }
+
+    public static void registerRecipeConditions(
+                                                GTCEuAPI.RegisterEvent<ResourceLocation, RecipeConditionType<?>> event) {
+        CARecipeConditions.init();
     }
 
     @SubscribeEvent

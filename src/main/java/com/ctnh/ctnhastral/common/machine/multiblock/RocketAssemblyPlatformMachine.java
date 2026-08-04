@@ -19,6 +19,7 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
@@ -28,6 +29,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+import com.ctnh.ctnhastral.common.entity.RocketContraptionEntity;
+import com.ctnh.ctnhastral.data.lang.RocketLang;
 import com.ctnh.ctnhastral.registry.CARocketBlocks;
 import com.mo_guang.ctpp.api.pattern.StaticBlockPattern;
 import com.mo_guang.ctpp.dynamicPart.rotation.IContraptionMultiblock;
@@ -35,7 +38,9 @@ import com.mo_guang.ctpp.dynamicPart.rotation.SimpleRotatingContraption;
 import com.mo_guang.ctpp.dynamicPart.rotation.SimpleRotatingContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.contraptions.StructureTransform;
+import earth.terrarium.adastra.common.config.AdAstraConfig;
 import earth.terrarium.adastra.common.menus.base.PlanetsMenuProvider;
+import earth.terrarium.botarium.common.menu.MenuHooks;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -55,7 +60,7 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
 
     private static final String ACTION_ASSEMBLE = "ctnhastral:assemble_rocket";
     private static final String ACTION_DISASSEMBLE = "ctnhastral:disassemble_rocket";
-    private static final String ACTION_LAUNCH = "ctnhastral:launch_rocket";
+    private static final String ACTION_CLEAR = "ctnhastral:clear_rocket";
     private static final String TAG_THRUST = "RocketThrust";
     private static final String TAG_FUEL_CAPACITY = "RocketFuelCapacity";
     private static final String TAG_ENTITY_UUID = "RocketEntityUUID";
@@ -67,7 +72,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     private static final String TAG_CONTRAPTION_SNAPSHOT = "RocketContraptionSnapshot";
     private static final String ENTITY_TAG_PREFIX = "CTNHAstralRocket";
     private static final int COUNTDOWN_TICKS = 200;
-    private static final int PLANET_SCREEN_HEIGHT = 1024;
     private static final Direction[] ROCKET_SEARCH_DIRECTIONS = Direction.values();
     private static final TagKey<Block> CREATE_SEATS = TagKey.create(BuiltInRegistries.BLOCK.key(),
             ResourceLocation.tryParse("create:seats"));
@@ -83,6 +87,7 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     private BlockPos rocketEntityPos;
     private BlockPos rocketPivotPos;
     private boolean launching;
+    private boolean rocketDimensionTransfer;
     private int launchTicks;
     private TickableSubscription rocketTickSubscription;
     private CompoundTag rocketContraptionSnapshot = new CompoundTag();
@@ -109,7 +114,7 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     @Override
     public void onStructureInvalid() {
         super.onStructureInvalid();
-        SimpleRotatingContraptionEntity entity = getAttachedRocketEntity();
+        RocketContraptionEntity entity = getAttachedRocketEntity();
         if (entity != null && isEntityOnPlatform(entity)) {
             entity.disassemble();
         }
@@ -145,7 +150,7 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         if (!isFormed()) return;
 
         findAndReattachEntities();
-        SimpleRotatingContraptionEntity entity = getAttachedRocketEntity();
+        RocketContraptionEntity entity = getAttachedRocketEntity();
         textList.add(Component.literal("火箭推力: " + rocketThrust).withStyle(ChatFormatting.AQUA));
         textList.add(Component.literal("燃料容量: " + rocketFuelCapacity + " mB").withStyle(ChatFormatting.AQUA));
         textList.add(Component.literal("剩余燃料: " + rocketRemainingFuel + " mB").withStyle(ChatFormatting.AQUA));
@@ -157,7 +162,7 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
             var buttons = Component.empty();
             buttons.append(ComponentPanelWidget.withButton(Component.literal("[解组装]"), ACTION_DISASSEMBLE));
             buttons.append(" ");
-            buttons.append(ComponentPanelWidget.withButton(Component.literal("[发射]"), ACTION_LAUNCH));
+            buttons.append(ComponentPanelWidget.withButton(RocketLang.clear.translate(), ACTION_CLEAR));
             textList.add(buttons);
         }
     }
@@ -168,7 +173,7 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         switch (componentData) {
             case ACTION_ASSEMBLE -> assembleRocket();
             case ACTION_DISASSEMBLE -> disassembleRocket();
-            case ACTION_LAUNCH -> startLaunch(null);
+            case ACTION_CLEAR -> clearRocket();
             default -> {}
         }
     }
@@ -224,7 +229,7 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         contraption.assemble(self().getLevel(), self().getPos());
         contraption.removeBlocksFromWorld(self().getLevel(), BlockPos.ZERO);
 
-        SimpleRotatingContraptionEntity entity = SimpleRotatingContraptionEntity
+        RocketContraptionEntity entity = RocketContraptionEntity
                 .create(self().getLevel(), contraption, this, pivot.getCenter());
         entity.setPos(pivot.getX(), pivot.getY(), pivot.getZ());
         self().getLevel().addFreshEntity(entity);
@@ -251,7 +256,7 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         if (!isFormed() || self().getLevel() == null || self().getLevel().isClientSide) {
             return;
         }
-        SimpleRotatingContraptionEntity entity = getAttachedRocketEntity();
+        RocketContraptionEntity entity = getAttachedRocketEntity();
         if (entity == null) {
             return;
         }
@@ -298,9 +303,28 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         restoreRocketEntityBinding();
     }
 
+    public void prepareRocketDimensionTransfer(RocketContraptionEntity entity) {
+        if (entity == null || entity.getContraption() == null) return;
+        cacheRocketContraption(entity);
+        rocketDimensionTransfer = true;
+        entity.setContraptionMotion(Vec3.ZERO);
+        markDirty();
+    }
+
+    public void completeRocketDimensionTransfer() {
+        clearRocketData();
+        markDirty();
+        self().holder.notifyBlockUpdate();
+    }
+
+    public void cancelRocketDimensionTransfer() {
+        rocketDimensionTransfer = false;
+        markDirty();
+    }
+
     @Override
     public void clearAndDisassembleRotatingEntities() {
-        SimpleRotatingContraptionEntity entity = getAttachedRocketEntity();
+        RocketContraptionEntity entity = getAttachedRocketEntity();
         if (entity != null && entity.isAlive()) {
             entity.disassemble();
         } else {
@@ -317,16 +341,21 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     }
 
     public static boolean handleRocketPassengerJump(ServerPlayer player) {
-        Entity vehicle = findRocketVehicle(player);
-        if (!(vehicle instanceof SimpleRotatingContraptionEntity rocketEntity)) return false;
-        CompoundTag data = rocketEntity.getPersistentData();
-        if (!data.getBoolean(ENTITY_TAG_PREFIX)) return false;
-        BlockPos controllerPos = BlockPos.of(data.getLong(ENTITY_TAG_PREFIX + ".ControllerPos"));
-        if (!(MetaMachine.getMachine(player.level(), controllerPos) instanceof RocketAssemblyPlatformMachine machine)) {
-            return false;
-        }
+        RocketContraptionEntity rocketEntity = findRocketVehicle(player);
+        RocketAssemblyPlatformMachine machine = findControllerForRocket(rocketEntity);
+        if (machine == null) return false;
         machine.handlePassengerJump(player);
         return true;
+    }
+
+    public static RocketAssemblyPlatformMachine findControllerForRocket(RocketContraptionEntity rocketEntity) {
+        if (rocketEntity == null) return null;
+        CompoundTag data = rocketEntity.getPersistentData();
+        if (!data.getBoolean(ENTITY_TAG_PREFIX)) return null;
+        BlockPos controllerPos = BlockPos.of(data.getLong(ENTITY_TAG_PREFIX + ".ControllerPos"));
+        return MetaMachine.getMachine(rocketEntity.level(),
+                controllerPos) instanceof RocketAssemblyPlatformMachine machine ?
+                        machine : null;
     }
 
     private void assembleRocket() {
@@ -357,7 +386,7 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     }
 
     private void disassembleRocket() {
-        SimpleRotatingContraptionEntity entity = getAttachedRocketEntity();
+        RocketContraptionEntity entity = getAttachedRocketEntity();
         if (entity != null && isEntityOnPlatform(entity)) {
             clearAndDisassembleRotatingEntities();
         } else if (!restoreRocketBlocksFromSnapshot()) {
@@ -368,12 +397,33 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         self().holder.notifyBlockUpdate();
     }
 
+    private void clearRocket() {
+        RocketContraptionEntity entity = findRocketEntityForClear();
+        boolean blocksRestored = false;
+        if (entity != null && entity.isAlive()) {
+            if (isEntityOnPlatform(entity)) {
+                entity.disassemble();
+                blocksRestored = !entity.isAlive();
+            } else {
+                entity.kill();
+            }
+        }
+        if (!blocksRestored) {
+            restoreRocketBlocksFromSnapshot();
+        }
+        clearRocketData();
+        markDirty();
+        self().holder.notifyBlockUpdate();
+    }
+
     private void startLaunch(ServerPlayer player) {
-        SimpleRotatingContraptionEntity entity = getAttachedRocketEntity();
+        RocketContraptionEntity entity = getAttachedRocketEntity();
         if (entity == null || launching || rocketThrust <= 0 || rocketFuelCapacity <= 0 || rocketRemainingFuel <= 0)
             return;
         launching = true;
         launchTicks = 0;
+        entity.setContraptionMotion(Vec3.ZERO);
+        updateRocketSyncedState(entity);
         writeRocketData(entity);
         markDirty();
         if (player != null) {
@@ -384,8 +434,9 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
 
     private void rocketServerTick() {
         if (!isFormed() || self().getLevel() == null || self().getLevel().isClientSide) return;
+        if (rocketDimensionTransfer) return;
         findAndReattachEntities();
-        SimpleRotatingContraptionEntity entity = getAttachedRocketEntity();
+        RocketContraptionEntity entity = getAttachedRocketEntity();
         if (entity == null) {
             if (launching) {
                 launching = false;
@@ -394,11 +445,15 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
             }
             return;
         }
-        if (!launching) return;
+        if (!launching) {
+            updateRocketSyncedState(entity);
+            return;
+        }
 
         launchTicks++;
         if (launchTicks <= COUNTDOWN_TICKS) {
-            entity.setDeltaMovement(Vec3.ZERO);
+            entity.setContraptionMotion(Vec3.ZERO);
+            updateRocketSyncedState(entity);
             writeRocketData(entity);
             markDirty();
             return;
@@ -407,6 +462,8 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         rocketRemainingFuel = Math.max(0, rocketRemainingFuel - Math.max(1, rocketThrust / 240));
         if (rocketRemainingFuel <= 0) {
             launching = false;
+            entity.setContraptionMotion(Vec3.ZERO);
+            updateRocketSyncedState(entity);
             writeRocketData(entity);
             markDirty();
             return;
@@ -416,15 +473,25 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         double launchCurve = Math.min(1.0D, poweredTicks / 120.0D);
         double acceleration = Math.min(0.18D, (0.025D + rocketThrust / 140000.0D) * launchCurve);
         Vec3 motion = entity.getDeltaMovement();
-        entity.setDeltaMovement(motion.x * 0.88D, Math.min(1.8D, motion.y + acceleration), motion.z * 0.88D);
+        entity.setContraptionMotion(new Vec3(motion.x * 0.88D,
+                Math.min(1.8D, motion.y + acceleration), motion.z * 0.88D));
         entity.hurtMarked = true;
+        updateRocketSyncedState(entity);
         writeRocketData(entity);
         markDirty();
 
-        if (entity.getY() >= PLANET_SCREEN_HEIGHT) {
+        if (entity.getY() >= AdAstraConfig.atmosphereLeave) {
             openPlanetsScreenForPassengers(entity);
             launching = false;
+            entity.setContraptionMotion(Vec3.ZERO);
+            updateRocketSyncedState(entity);
             markDirty();
+        }
+    }
+
+    private void updateRocketSyncedState(SimpleRotatingContraptionEntity entity) {
+        if (entity instanceof RocketContraptionEntity rocket) {
+            rocket.setRocketLaunchState(true, launching, launchTicks, COUNTDOWN_TICKS);
         }
     }
 
@@ -516,14 +583,18 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         return new BlockPos((minX + maxX) / 2, minY, (minZ + maxZ) / 2);
     }
 
-    private SimpleRotatingContraptionEntity getAttachedRocketEntity() {
+    private RocketContraptionEntity getAttachedRocketEntity() {
         if (contraptionEntity == null) contraptionEntity = new ArrayList<>();
         contraptionEntity.removeIf(entity -> entity == null || !entity.isAlive());
-        if (!contraptionEntity.isEmpty()) return contraptionEntity.get(0);
+        if (!contraptionEntity.isEmpty()) {
+            SimpleRotatingContraptionEntity entity = contraptionEntity.get(0);
+            if (entity instanceof RocketContraptionEntity rocket) return rocket;
+            contraptionEntity.clear();
+        }
         if (self().getLevel() == null) return null;
         AABB search = getRocketSearchBounds();
-        for (SimpleRotatingContraptionEntity entity : self().getLevel()
-                .getEntitiesOfClass(SimpleRotatingContraptionEntity.class, search)) {
+        for (RocketContraptionEntity entity : self().getLevel()
+                .getEntitiesOfClass(RocketContraptionEntity.class, search)) {
             if ((rocketEntityUuid != null && rocketEntityUuid.equals(entity.getUUID())) ||
                     isEntityBoundToThisController(entity)) {
                 contraptionEntity.add(entity);
@@ -536,8 +607,17 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         return null;
     }
 
+    private RocketContraptionEntity findRocketEntityForClear() {
+        RocketContraptionEntity entity = getAttachedRocketEntity();
+        if (entity != null || rocketEntityUuid == null || !(self().getLevel() instanceof ServerLevel level)) {
+            return entity;
+        }
+        Entity loadedEntity = level.getEntity(rocketEntityUuid);
+        return loadedEntity instanceof RocketContraptionEntity rocket ? rocket : null;
+    }
+
     private boolean hasAssembledRocket() {
-        return getAttachedRocketEntity() != null || hasRocketSnapshot();
+        return getAttachedRocketEntity() != null || hasRocketSnapshot() || rocketEntityUuid != null;
     }
 
     private boolean hasRocketSnapshot() {
@@ -562,6 +642,7 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         if (rocketPivotPos != null) {
             data.putLong(ENTITY_TAG_PREFIX + ".PivotPos", rocketPivotPos.asLong());
         }
+        updateRocketSyncedState(entity);
     }
 
     private void cacheRocketContraption(SimpleRotatingContraptionEntity entity) {
@@ -618,7 +699,8 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     }
 
     private void restoreRocketEntityBinding() {
-        SimpleRotatingContraptionEntity entity = getAttachedRocketEntity();
+        if (rocketDimensionTransfer) return;
+        RocketContraptionEntity entity = getAttachedRocketEntity();
         if (entity != null) {
             attach(entity);
             cacheRocketContraption(entity);
@@ -657,7 +739,7 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         if (contraption == null) {
             return null;
         }
-        SimpleRotatingContraptionEntity entity = SimpleRotatingContraptionEntity.create(
+        RocketContraptionEntity entity = RocketContraptionEntity.create(
                 self().getLevel(), contraption, this, rocketPivotPos.getCenter());
         entity.setPos(rocketPivotPos.getX(), rocketPivotPos.getY(), rocketPivotPos.getZ());
         writeRocketData(entity);
@@ -681,10 +763,10 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         return true;
     }
 
-    private void openPlanetsScreenForPassengers(SimpleRotatingContraptionEntity entity) {
+    private void openPlanetsScreenForPassengers(RocketContraptionEntity entity) {
         for (Entity passenger : entity.getIndirectPassengers()) {
             if (passenger instanceof ServerPlayer player) {
-                player.openMenu(new PlanetsMenuProvider());
+                MenuHooks.openMenu(player, new PlanetsMenuProvider());
             }
         }
     }
@@ -699,14 +781,15 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         rocketFuelCapacity = 0;
         rocketRemainingFuel = 0;
         launching = false;
+        rocketDimensionTransfer = false;
         launchTicks = 0;
     }
 
-    private static Entity findRocketVehicle(Player player) {
+    public static RocketContraptionEntity findRocketVehicle(Player player) {
         Entity vehicle = player.getVehicle();
         while (vehicle != null) {
-            if (vehicle instanceof SimpleRotatingContraptionEntity) {
-                return vehicle;
+            if (vehicle instanceof RocketContraptionEntity rocket) {
+                return rocket;
             }
             vehicle = vehicle.getVehicle();
         }

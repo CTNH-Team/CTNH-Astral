@@ -1,15 +1,17 @@
 package com.ctnh.ctnhastral.client;
 
+import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.client.event.RegisterDimensionSpecialEffectsEvent;
+import net.minecraftforge.client.event.RegisterShadersEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+
 import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.client.render.MoonEffects;
 import com.ctnh.ctnhastral.common.CommonProxy;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import lombok.Getter;
-import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.event.RegisterDimensionSpecialEffectsEvent;
-import net.minecraftforge.client.event.RegisterShadersEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.io.IOException;
 
@@ -18,6 +20,7 @@ public class ClientProxy extends CommonProxy {
 
     public ClientProxy() {
         super();
+        MinecraftForge.EVENT_BUS.addListener(RocketLaunchHud::render);
         init();
     }
 
