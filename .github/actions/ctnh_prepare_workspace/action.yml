@@ -27,6 +27,15 @@ inputs:
     required: false
     default: dev
 
+  ctnh_cei_repository:
+    description: Create-Enough-Items repository.
+    required: false
+    default: CTNH-Team/Create-Enough-Items
+  ctnh_cei_ref:
+    description: Create-Enough-Items ref.
+    required: false
+    default: dev
+
   ctnh_bio_repository:
     description: CTNH-Bio repository.
     required: false
