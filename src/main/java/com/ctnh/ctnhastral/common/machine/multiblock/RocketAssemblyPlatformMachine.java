@@ -30,8 +30,10 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import com.ctnh.ctnhastral.common.entity.RocketContraptionEntity;
-import com.ctnh.ctnhastral.data.lang.RocketLang;
 import com.ctnh.ctnhastral.registry.CARocketBlocks;
+import com.ctnhlang.CN;
+import com.ctnhlang.EN;
+import com.ctnhlang.Key;
 import com.mo_guang.ctpp.api.pattern.StaticBlockPattern;
 import com.mo_guang.ctpp.dynamicPart.rotation.IContraptionMultiblock;
 import com.mo_guang.ctpp.dynamicPart.rotation.SimpleRotatingContraption;
@@ -44,6 +46,7 @@ import earth.terrarium.botarium.common.menu.MenuHooks;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import tech.vixhentx.mcmod.ctnhlib.langprovider.Lang;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -144,6 +147,11 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         markDirty();
     }
 
+    @Key("gui.ctnhastral.rocket.clear")
+    @EN("Clear Rocket")
+    @CN("清除火箭")
+    public static Lang clear;
+
     @Override
     public void addDisplayText(List<Component> textList) {
         IDisplayUIMachine.super.addDisplayText(textList);
@@ -162,7 +170,7 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
             var buttons = Component.empty();
             buttons.append(ComponentPanelWidget.withButton(Component.literal("[解组装]"), ACTION_DISASSEMBLE));
             buttons.append(" ");
-            buttons.append(ComponentPanelWidget.withButton(RocketLang.clear.translate(), ACTION_CLEAR));
+            buttons.append(ComponentPanelWidget.withButton(clear.translate(), ACTION_CLEAR));
             textList.add(buttons);
         }
     }

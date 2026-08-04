@@ -9,9 +9,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraftforge.client.event.RenderGuiEvent;
 
 import com.ctnh.ctnhastral.common.entity.RocketContraptionEntity;
-import com.ctnh.ctnhastral.data.lang.RocketLang;
+import com.ctnhlang.CN;
+import com.ctnhlang.EN;
+import com.ctnhlang.Key;
 import com.mojang.blaze3d.vertex.PoseStack;
 import earth.terrarium.adastra.common.config.AdAstraConfig;
+import tech.vixhentx.mcmod.ctnhlib.langprovider.Lang;
 
 public final class RocketLaunchHud {
 
@@ -21,6 +24,11 @@ public final class RocketLaunchHud {
             "ad_astra", "textures/gui/sprites/overlay/rocket.png");
 
     private RocketLaunchHud() {}
+
+    @Key("message.ctnhastral.rocket.launch")
+    @EN("Press %1$s to launch")
+    @CN("按%1$s发射")
+    public static Lang launch;
 
     public static void render(RenderGuiEvent.Post event) {
         Minecraft minecraft = Minecraft.getInstance();
@@ -35,7 +43,7 @@ public final class RocketLaunchHud {
         if (!rocket.isRocketLaunching()) {
             Component key = minecraft.options.keyJump.getTranslatedKeyMessage();
             graphics.drawCenteredString(minecraft.font,
-                    RocketLang.launch.translate(key),
+                    launch.translate(key),
                     width / 2, 60, 0xE54B4B);
             return;
         }
