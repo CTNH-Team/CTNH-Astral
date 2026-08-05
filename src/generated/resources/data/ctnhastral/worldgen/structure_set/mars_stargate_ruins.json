@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 78125433,
+    "separation": 24,
+    "spacing": 72
+  },
+  "structures": [
+    {
+      "structure": "ctnhastral:mars_stargate_ruins",
+      "weight": 1
+    }
+  ]
+}

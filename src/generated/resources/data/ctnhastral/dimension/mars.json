@@ -1,0 +1,252 @@
+{
+  "type": "ctnhastral:mars",
+  "generator": {
+    "type": "minecraft:noise",
+    "biome_source": {
+      "type": "minecraft:multi_noise",
+      "biomes": [
+        {
+          "biome": "ctnhastral:mars_hematite_plains",
+          "parameters": {
+            "continentalness": [
+              -0.12,
+              0.3
+            ],
+            "depth": [
+              -1.0,
+              1.0
+            ],
+            "erosion": [
+              -1.0,
+              1.0
+            ],
+            "humidity": [
+              -1.0,
+              1.0
+            ],
+            "offset": 0.0,
+            "temperature": [
+              0.0,
+              1.0
+            ],
+            "weirdness": [
+              -1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "biome": "ctnhastral:mars_dry_ice_canyon",
+          "parameters": {
+            "continentalness": [
+              -1.0,
+              -0.12
+            ],
+            "depth": [
+              -1.0,
+              1.0
+            ],
+            "erosion": [
+              -1.0,
+              1.0
+            ],
+            "humidity": [
+              -1.0,
+              1.0
+            ],
+            "offset": 0.0,
+            "temperature": [
+              -1.0,
+              0.0
+            ],
+            "weirdness": [
+              -1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "biome": "ctnhastral:mars_moss_forest",
+          "parameters": {
+            "continentalness": [
+              -0.12,
+              0.3
+            ],
+            "depth": [
+              -0.4,
+              0.1
+            ],
+            "erosion": [
+              -1.0,
+              1.0
+            ],
+            "humidity": [
+              -1.0,
+              1.0
+            ],
+            "offset": 0.0,
+            "temperature": [
+              -1.0,
+              0.0
+            ],
+            "weirdness": [
+              -1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "biome": "ctnhastral:mars_dead_volcano",
+          "parameters": {
+            "continentalness": [
+              0.3,
+              1.0
+            ],
+            "depth": [
+              -1.0,
+              1.0
+            ],
+            "erosion": [
+              -1.0,
+              1.0
+            ],
+            "humidity": [
+              -1.0,
+              1.0
+            ],
+            "offset": 0.0,
+            "temperature": [
+              0.0,
+              1.0
+            ],
+            "weirdness": [
+              -1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "biome": "ctnhastral:mars_sulfur_lake",
+          "parameters": {
+            "continentalness": [
+              0.15,
+              0.55
+            ],
+            "depth": [
+              -1.0,
+              1.0
+            ],
+            "erosion": [
+              -1.0,
+              1.0
+            ],
+            "humidity": [
+              -1.0,
+              1.0
+            ],
+            "offset": 0.0,
+            "temperature": [
+              0.0,
+              1.0
+            ],
+            "weirdness": [
+              -1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "biome": "ctnhastral:mars_research_graveyard",
+          "parameters": {
+            "continentalness": [
+              0.45,
+              0.85
+            ],
+            "depth": [
+              -1.0,
+              1.0
+            ],
+            "erosion": [
+              -1.0,
+              1.0
+            ],
+            "humidity": [
+              -1.0,
+              1.0
+            ],
+            "offset": 0.0,
+            "temperature": [
+              -1.0,
+              0.0
+            ],
+            "weirdness": [
+              -1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "biome": "ctnhastral:mars_stargate_ruins",
+          "parameters": {
+            "continentalness": [
+              0.3,
+              1.0
+            ],
+            "depth": [
+              -0.8,
+              -0.2
+            ],
+            "erosion": [
+              -1.0,
+              1.0
+            ],
+            "humidity": [
+              -1.0,
+              1.0
+            ],
+            "offset": 0.0,
+            "temperature": [
+              -1.0,
+              0.0
+            ],
+            "weirdness": [
+              -1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "biome": "ctnhastral:mars_slime_caves",
+          "parameters": {
+            "continentalness": [
+              -0.2,
+              0.4
+            ],
+            "depth": [
+              0.25,
+              0.8
+            ],
+            "erosion": [
+              -1.0,
+              1.0
+            ],
+            "humidity": [
+              -1.0,
+              1.0
+            ],
+            "offset": 0.0,
+            "temperature": [
+              0.0,
+              1.0
+            ],
+            "weirdness": [
+              -1.0,
+              1.0
+            ]
+          }
+        }
+      ]
+    },
+    "settings": "ctnhastral:mars"
+  }
+}

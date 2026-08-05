@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "ctnhastral:block/basic_rocket_thruster"
+    }
+  }
+}

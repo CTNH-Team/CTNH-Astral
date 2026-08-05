@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:ctnh_mars_stargate_ruins",
+  "biomes": "#ctnhastral:mars_stargate_ruins",
+  "spawn_overrides": {},
+  "step": "surface_structures",
+  "terrain_adaptation": "beard_thin"
+}

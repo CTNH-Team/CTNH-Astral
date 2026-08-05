@@ -1,0 +1,21 @@
+{
+  "type": "gtceu:fluid_sprout",
+  "config": {
+    "fluid": "gtceu:sulfur",
+    "size": {
+      "type": "minecraft:uniform",
+      "value": {
+        "max_inclusive": 10,
+        "min_inclusive": 8
+      }
+    },
+    "sprout_chance": 0.55,
+    "surface_offset": {
+      "type": "minecraft:uniform",
+      "value": {
+        "max_inclusive": 6,
+        "min_inclusive": 3
+      }
+    }
+  }
+}

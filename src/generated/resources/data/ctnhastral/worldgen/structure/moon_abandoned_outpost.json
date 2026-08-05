@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:ctnh_moon_abandoned_outpost",
+  "biomes": "#ctnhastral:moon_abandoned_outpost",
+  "spawn_overrides": {},
+  "step": "surface_structures",
+  "terrain_adaptation": "beard_thin"
+}

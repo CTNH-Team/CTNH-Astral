@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "ctnhastral:block/martian_oak_log_top",
+    "side": "ctnhastral:block/martian_oak_log"
+  }
+}

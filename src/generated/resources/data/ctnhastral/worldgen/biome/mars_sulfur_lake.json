@@ -1,0 +1,50 @@
+{
+  "carvers": {},
+  "downfall": 0.0,
+  "effects": {
+    "fog_color": 2367241,
+    "mood_sound": {
+      "block_search_extent": 8,
+      "offset": 2.0,
+      "sound": "minecraft:ambient.cave",
+      "tick_delay": 6000
+    },
+    "music": {
+      "max_delay": 24000,
+      "min_delay": 12000,
+      "replace_current_music": false,
+      "sound": "ctnhastral:ambient_astral"
+    },
+    "sky_color": 11768092,
+    "water_color": 13021773,
+    "water_fog_color": 6642457
+  },
+  "features": [
+    [],
+    [
+      "ctnhastral:mars_sulfur_lake"
+    ],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "ctnhastral:mars_sulfur_spring"
+    ]
+  ],
+  "has_precipitation": false,
+  "spawn_costs": {},
+  "spawners": {
+    "ambient": [],
+    "axolotls": [],
+    "creature": [],
+    "misc": [],
+    "monster": [],
+    "underground_water_creature": [],
+    "water_ambient": [],
+    "water_creature": []
+  },
+  "temperature": 1.1
+}

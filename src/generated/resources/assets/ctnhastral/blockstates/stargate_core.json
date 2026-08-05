@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "ctnhastral:block/stargate_core"
+    }
+  }
+}

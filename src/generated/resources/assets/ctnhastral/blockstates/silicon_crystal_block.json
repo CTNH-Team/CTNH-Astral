@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "ctnhastral:block/silicon_crystal_block"
+    }
+  }
+}

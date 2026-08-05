@@ -1,0 +1,52 @@
+{
+  "carvers": {},
+  "downfall": 0.0,
+  "effects": {
+    "fog_color": 2299667,
+    "mood_sound": {
+      "block_search_extent": 8,
+      "offset": 2.0,
+      "sound": "minecraft:ambient.cave",
+      "tick_delay": 6000
+    },
+    "music": {
+      "max_delay": 24000,
+      "min_delay": 12000,
+      "replace_current_music": false,
+      "sound": "ctnhastral:ambient_astral"
+    },
+    "sky_color": 7094068,
+    "water_color": 9264210,
+    "water_fog_color": 4860458
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "ctnhastral:mars_hematite_ore",
+      "ctnhastral:mars_magnetite_ore"
+    ],
+    [],
+    [],
+    [
+      "ctnhastral:mars_hematite_grass"
+    ]
+  ],
+  "has_precipitation": false,
+  "spawn_costs": {},
+  "spawners": {
+    "ambient": [],
+    "axolotls": [],
+    "creature": [],
+    "misc": [],
+    "monster": [],
+    "underground_water_creature": [],
+    "water_ambient": [],
+    "water_creature": []
+  },
+  "temperature": 0.2
+}

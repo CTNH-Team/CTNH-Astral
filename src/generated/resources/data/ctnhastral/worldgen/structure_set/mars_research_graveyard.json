@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 18621543,
+    "separation": 14,
+    "spacing": 46
+  },
+  "structures": [
+    {
+      "structure": "ctnhastral:mars_research_graveyard",
+      "weight": 1
+    }
+  ]
+}

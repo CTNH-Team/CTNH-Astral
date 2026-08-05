@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 98421563,
+    "separation": 12,
+    "spacing": 40
+  },
+  "structures": [
+    {
+      "structure": "ctnhastral:moon_abandoned_outpost",
+      "weight": 1
+    }
+  ]
+}

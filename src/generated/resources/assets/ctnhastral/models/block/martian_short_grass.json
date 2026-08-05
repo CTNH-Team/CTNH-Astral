@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "ctnhastral:block/martian_short_grass"
+  }
+}

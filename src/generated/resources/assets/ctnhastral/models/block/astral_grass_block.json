@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "ctnhastral:block/dirts/astral_dirt",
+    "side": "ctnhastral:block/dirts/astral_grass_block_side",
+    "top": "ctnhastral:block/dirts/astral_grass_block_top"
+  }
+}

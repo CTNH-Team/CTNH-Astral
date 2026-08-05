@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "ctnhastral:block/mars/stone/xenon_frost_ore"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:ctnh_meteor",
+  "biomes": "#ctnhastral:astral_meteor",
+  "spawn_overrides": {},
+  "step": "top_layer_modification"
+}

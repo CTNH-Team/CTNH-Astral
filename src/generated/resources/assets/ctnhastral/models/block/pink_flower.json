@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "ctnhastral:block/pink_flower"
+  }
+}

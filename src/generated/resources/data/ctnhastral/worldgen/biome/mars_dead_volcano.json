@@ -1,0 +1,52 @@
+{
+  "carvers": {},
+  "downfall": 0.0,
+  "effects": {
+    "fog_color": 1839631,
+    "mood_sound": {
+      "block_search_extent": 8,
+      "offset": 2.0,
+      "sound": "minecraft:ambient.cave",
+      "tick_delay": 6000
+    },
+    "music": {
+      "max_delay": 24000,
+      "min_delay": 12000,
+      "replace_current_music": false,
+      "sound": "ctnhastral:ambient_astral"
+    },
+    "sky_color": 8071961,
+    "water_color": 10706245,
+    "water_fog_color": 6107171
+  },
+  "features": [
+    [],
+    [],
+    [
+      "ctnhastral:mars_dead_volcano"
+    ],
+    [],
+    [],
+    [],
+    [
+      "ctnhastral:mars_compressed_diamond_ore"
+    ],
+    [],
+    [
+      "ctnhastral:mars_lava_sprout"
+    ]
+  ],
+  "has_precipitation": false,
+  "spawn_costs": {},
+  "spawners": {
+    "ambient": [],
+    "axolotls": [],
+    "creature": [],
+    "misc": [],
+    "monster": [],
+    "underground_water_creature": [],
+    "water_ambient": [],
+    "water_creature": []
+  },
+  "temperature": 0.8
+}

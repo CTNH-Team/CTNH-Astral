@@ -1,0 +1,11 @@
+{
+  "type": "ctnhastral:astral_orbit",
+  "generator": {
+    "type": "minecraft:noise",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "ctnhastral:astral_orbit"
+    },
+    "settings": "ctnhastral:orbit"
+  }
+}

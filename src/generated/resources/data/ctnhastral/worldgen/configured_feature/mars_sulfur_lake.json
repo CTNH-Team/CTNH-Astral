@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:lake",
+  "config": {
+    "barrier": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "ctnhastral:sulfuric_crust"
+      }
+    },
+    "fluid": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "gtceu:sulfur",
+        "Properties": {
+          "level": "0"
+        }
+      }
+    }
+  }
+}

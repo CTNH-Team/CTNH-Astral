@@ -1,0 +1,29 @@
+{
+  "ambient_astral": {
+    "sounds": [
+      {
+        "name": "ctnhastral:astral_infection",
+        "stream": true,
+        "volume": 0.6,
+        "weight": 3
+      },
+      {
+        "name": "ctnhastral:astral_infection_underground",
+        "stream": true,
+        "volume": 0.6,
+        "weight": 3
+      },
+      {
+        "name": "ctnhastral:astrum_deus",
+        "stream": true,
+        "volume": 0.6
+      },
+      {
+        "name": "ctnhastral:astrum_aureus",
+        "stream": true,
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitle.ctnhcore.bgm.plague_wasteland"
+  }
+}

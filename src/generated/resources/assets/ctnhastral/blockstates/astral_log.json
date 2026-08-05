@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "ctnhastral:block/astral_log_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "ctnhastral:block/astral_log"
+    },
+    "axis=z": {
+      "model": "ctnhastral:block/astral_log_horizontal",
+      "x": 90
+    }
+  }
+}

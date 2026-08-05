@@ -1,0 +1,71 @@
+{
+  "type": "minecraft:max",
+  "argument1": {
+    "type": "minecraft:y_clamped_gradient",
+    "from_value": 1.0,
+    "from_y": -64,
+    "to_value": -1.0,
+    "to_y": -63
+  },
+  "argument2": {
+    "type": "minecraft:add",
+    "argument1": {
+      "type": "minecraft:y_clamped_gradient",
+      "from_value": 1.0,
+      "from_y": -64,
+      "to_value": -1.0,
+      "to_y": 192
+    },
+    "argument2": {
+      "type": "minecraft:add",
+      "argument1": {
+        "type": "minecraft:clamp",
+        "input": {
+          "type": "minecraft:add",
+          "argument1": -0.02,
+          "argument2": {
+            "type": "minecraft:mul",
+            "argument1": 0.18,
+            "argument2": {
+              "type": "minecraft:flat_cache",
+              "argument": {
+                "type": "minecraft:cache_2d",
+                "argument": "minecraft:overworld/continents"
+              }
+            }
+          }
+        },
+        "max": 0.09,
+        "min": -0.17
+      },
+      "argument2": {
+        "type": "minecraft:add",
+        "argument1": {
+          "type": "minecraft:clamp",
+          "input": {
+            "type": "minecraft:mul",
+            "argument1": 0.12,
+            "argument2": "ctnhastral:sloped_cheese"
+          },
+          "max": 0.08,
+          "min": -0.08
+        },
+        "argument2": {
+          "type": "minecraft:clamp",
+          "input": {
+            "type": "minecraft:add",
+            "argument1": 0.0,
+            "argument2": {
+              "type": "minecraft:noise",
+              "noise": "minecraft:cave_cheese",
+              "xz_scale": 0.75,
+              "y_scale": 0.35
+            }
+          },
+          "max": 0.03,
+          "min": -0.03
+        }
+      }
+    }
+  }
+}
