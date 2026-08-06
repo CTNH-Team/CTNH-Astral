@@ -1,7 +1,5 @@
 package com.ctnh.ctnhastral.data.worldgen;
 
-import com.gregtechceu.gtceu.common.data.GTMaterials;
-
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.data.worldgen.SurfaceRuleData;
@@ -10,6 +8,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.*;
 
 import com.ctnh.ctnhastral.CTNHAstral;
+import com.ctnh.ctnhastral.data.CAMaterials;
 import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
 import earth.terrarium.adastra.common.registry.ModBlocks;
 
@@ -114,7 +113,7 @@ public class CANoiseSetting {
                 false));
         ctx.register(MOON, new NoiseGeneratorSettings(NoiseSettings.create(-64, 384, 1, 2),
                 ModBlocks.MOON_STONE.get().defaultBlockState(),
-                GTMaterials.SaltWater.getFluid().defaultFluidState().createLegacyBlock(),
+                CAMaterials.Seawater.getFluid().defaultFluidState().createLegacyBlock(),
                 new NoiseRouter(DensityFunctions.noise(holderGetter2.getOrThrow(Noises.AQUIFER_BARRIER),
                         0.5),
                         DensityFunctions.noise(

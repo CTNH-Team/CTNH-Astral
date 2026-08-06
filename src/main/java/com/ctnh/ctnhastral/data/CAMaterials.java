@@ -28,6 +28,7 @@ public class CAMaterials {
 
     public static Material Starlight;
     public static Material Starmetal;
+    public static Material Seawater;
 
     public static Material Acid;
 
@@ -93,6 +94,13 @@ public class CAMaterials {
                         GENERATE_ROTOR)
                 .cableProperties(GTValues.V[GTValues.OpV], 4, 256)
                 .buildAndRegister();
+        Seawater = REGISTRATE.material(CTNHAstral.id("seawater"))
+                .cnlang("海水")
+                .liquid(new FluidBuilder().temperature(288).block().textures(true, true))
+                .color(0x3B7BB0)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister()
+                .setFormula("Cl?Br?I?[H2O]", false);
         Acid = REGISTRATE.material(CTNHAstral.id("acid"))
                 .cnlang("酸液")
                 .liquid(new FluidBuilder().textures(true, true).block())
