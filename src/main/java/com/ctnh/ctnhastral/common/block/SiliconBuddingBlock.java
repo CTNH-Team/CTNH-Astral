@@ -33,17 +33,17 @@ public class SiliconBuddingBlock extends AmethystBlock {
         Block nextBlock = null;
 
         if (canClusterGrowAtState(targetState)) {
-            nextBlock = MoonBlocks.SMALL_SILICON_BUD.get();
+            nextBlock = MoonBlocks.SMALL_SILICON_CRYSTAL_BUD.get();
         }
-        if (nextBlock == null && targetState.is(MoonBlocks.SMALL_SILICON_BUD.get()) &&
+        if (nextBlock == null && targetState.is(MoonBlocks.SMALL_SILICON_CRYSTAL_BUD.get()) &&
                 targetState.getValue(AmethystClusterBlock.FACING) == direction) {
-            nextBlock = MoonBlocks.MEDIUM_SILICON_BUD.get();
+            nextBlock = MoonBlocks.MEDIUM_SILICON_CRYSTAL_BUD.get();
         }
-        if (nextBlock == null && targetState.is(MoonBlocks.MEDIUM_SILICON_BUD.get()) &&
+        if (nextBlock == null && targetState.is(MoonBlocks.MEDIUM_SILICON_CRYSTAL_BUD.get()) &&
                 targetState.getValue(AmethystClusterBlock.FACING) == direction) {
-            nextBlock = MoonBlocks.LARGE_SILICON_BUD.get();
+            nextBlock = MoonBlocks.LARGE_SILICON_CRYSTAL_BUD.get();
         }
-        if (nextBlock == null && targetState.is(MoonBlocks.LARGE_SILICON_BUD.get()) &&
+        if (nextBlock == null && targetState.is(MoonBlocks.LARGE_SILICON_CRYSTAL_BUD.get()) &&
                 targetState.getValue(AmethystClusterBlock.FACING) == direction) {
             nextBlock = MoonBlocks.SILICON_CRYSTAL.get();
         }

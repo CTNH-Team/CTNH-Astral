@@ -26,11 +26,11 @@
     "ctnhastral:ruined_iv_machine",
     "ctnhastral:silicon_crystal_block",
     "ctnhastral:budding_silicon_crystal",
-    "ctnhastral:small_silicon_bud",
-    "ctnhastral:medium_silicon_bud",
-    "ctnhastral:large_silicon_bud",
+    "ctnhastral:small_silicon_crystal_bud",
+    "ctnhastral:medium_silicon_crystal_bud",
+    "ctnhastral:large_silicon_crystal_bud",
     "ctnhastral:silicon_crystal",
     "ctnhastral:basic_rocket_thruster",
-    "ctnhastral:basic_rocket_fuel_tank"
+    "ctnhastral:hv_rocket_fuel_tank"
   ]
 }

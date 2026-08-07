@@ -2,6 +2,6 @@
   "parent": "minecraft:block/amethyst_cluster",
   "render_type": "minecraft:cutout",
   "textures": {
-    "cross": "ctnhastral:block/silicon_crystal"
+    "cross": "ctnhastral:block/silicon_crystal/silicon_crystal_cluster"
   }
 }

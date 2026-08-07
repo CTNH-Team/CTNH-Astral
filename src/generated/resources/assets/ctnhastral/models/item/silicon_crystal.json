@@ -1,3 +1,6 @@
 {
-  "parent": "ctnhastral:block/silicon_crystal"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "ctnhastral:block/silicon_crystal/silicon_crystal_cluster"
+  }
 }

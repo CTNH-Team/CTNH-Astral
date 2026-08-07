@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "ctnhastral:block/rocket/basic_rocket_thruster"
-  }
-}

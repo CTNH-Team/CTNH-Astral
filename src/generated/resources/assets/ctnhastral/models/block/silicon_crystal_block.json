@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "ctnhastral:block/silicon_crystal_block"
+    "all": "ctnhastral:block/silicon_crystal/silicon_crystal_block"
   }
 }

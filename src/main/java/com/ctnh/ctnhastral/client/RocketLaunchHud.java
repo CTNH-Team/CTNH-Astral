@@ -18,9 +18,9 @@ import tech.vixhentx.mcmod.ctnhlib.langprovider.Lang;
 
 public final class RocketLaunchHud {
 
-    private static final ResourceLocation ROCKET_BAR = new ResourceLocation(
+    private static final ResourceLocation ROCKET_BAR = ResourceLocation.tryBuild(
             "ad_astra", "textures/gui/sprites/overlay/rocket_bar.png");
-    private static final ResourceLocation ROCKET = new ResourceLocation(
+    private static final ResourceLocation ROCKET = ResourceLocation.tryBuild(
             "ad_astra", "textures/gui/sprites/overlay/rocket.png");
 
     private RocketLaunchHud() {}
