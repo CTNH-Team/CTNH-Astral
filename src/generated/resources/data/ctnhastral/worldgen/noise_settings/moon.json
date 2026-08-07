@@ -4,7 +4,7 @@
     "Name": "ad_astra:moon_stone"
   },
   "default_fluid": {
-    "Name": "gtceu:salt_water",
+    "Name": "ctnhastral:seawater",
     "Properties": {
       "level": "0"
     }
