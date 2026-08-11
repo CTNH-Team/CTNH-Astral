@@ -1,6 +1,8 @@
 package com.ctnh.ctnhastral.common.entity;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -32,6 +34,19 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
             .defineId(RocketContraptionEntity.class, EntityDataSerializers.BOOLEAN);
     private static final double LANDING_MAX_SPEED = 1.2D;
     private static final double LANDING_ACCELERATION = 0.04D;
+    private static final String TAG_ASSEMBLED = "RocketAssembled";
+    private static final String TAG_LAUNCHING = "RocketLaunching";
+    private static final String TAG_LAUNCH_TICKS = "RocketLaunchTicks";
+    private static final String TAG_COUNTDOWN_TICKS = "RocketCountdownTicks";
+    private static final String TAG_LANDING = "RocketLanding";
+    private static final String TAG_LANDING_PAD = "RocketLandingPad";
+    private static final String TAG_THRUST = "RocketThrust";
+    private static final String TAG_FUEL_CAPACITY = "RocketFuelCapacity";
+    private static final String TAG_REMAINING_FUEL = "RocketRemainingFuel";
+    private static final String LEGACY_CONTROLLER_DATA = "CTNHAstralRocket";
+    private int rocketThrust;
+    private long rocketFuelCapacity;
+    private long rocketRemainingFuel;
     private boolean seatsRegistered;
     private boolean landing;
     private BlockPos landingPad;
@@ -40,21 +55,15 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
         super(type, level);
     }
 
-    @SuppressWarnings("rawtypes")
-    public static RocketContraptionEntity create(Level level, Contraption contraption,
-                                                 IContraptionMultiblock controller, Vec3 pivot) {
-        RocketContraptionEntity entity = new RocketContraptionEntity(
-                CARocketEntityTypes.ROCKET_CONTRAPTION.get(), level);
-        entity.controllerPos = controller.getBlockPosition();
-        initialize(entity, contraption, level, pivot);
-        return entity;
+    public static RocketContraptionEntity create(Level level, Contraption contraption, Vec3 pivot) {
+        return createDetached(level, contraption, BlockPos.containing(pivot), pivot);
     }
 
     public static RocketContraptionEntity createDetached(Level level, Contraption contraption,
-                                                         BlockPos controllerPos, Vec3 pivot) {
+                                                         BlockPos persistenceAnchor, Vec3 pivot) {
         RocketContraptionEntity entity = new RocketContraptionEntity(
                 CARocketEntityTypes.ROCKET_CONTRAPTION.get(), level);
-        entity.controllerPos = controllerPos;
+        entity.setPersistenceAnchor(persistenceAnchor);
         initialize(entity, contraption, level, pivot);
         return entity;
     }
@@ -66,6 +75,20 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
         contraption.startMoving(level);
         entity.setPivot(pivot);
         entity.setRunning(true);
+    }
+
+    /**
+     * SimpleRotatingContraptionEntity serializes this position, so keep an inert
+     * anchor for compatibility without making the rocket belong to a controller.
+     */
+    public void setPersistenceAnchor(BlockPos persistenceAnchor) {
+        controllerPos = persistenceAnchor;
+    }
+
+    @Override
+    @SuppressWarnings("rawtypes")
+    protected IContraptionMultiblock getController() {
+        return null;
     }
 
     public void ensureSeatsRegistered() {
@@ -170,6 +193,25 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
         return entityData.get(DATA_COUNTDOWN_TICKS);
     }
 
+    public void setRocketStats(int thrust, long fuelCapacity, long remainingFuel) {
+        if (level().isClientSide) return;
+        rocketThrust = Math.max(0, thrust);
+        rocketFuelCapacity = Math.max(0, fuelCapacity);
+        rocketRemainingFuel = Math.max(0, Math.min(remainingFuel, rocketFuelCapacity));
+    }
+
+    public int getRocketThrust() {
+        return rocketThrust;
+    }
+
+    public long getRocketFuelCapacity() {
+        return rocketFuelCapacity;
+    }
+
+    public long getRocketRemainingFuel() {
+        return rocketRemainingFuel;
+    }
+
     public void beginLanding(BlockPos landingPad) {
         this.landingPad = landingPad;
         setLanding(true);
@@ -178,6 +220,53 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
 
     public boolean isLanding() {
         return entityData.get(DATA_LANDING);
+    }
+
+    @Override
+    protected void writeAdditional(CompoundTag tag, boolean spawnPacket) {
+        if (controllerPos == null) {
+            controllerPos = blockPosition();
+        }
+        ensureSeatsRegistered();
+        super.writeAdditional(tag, spawnPacket);
+        tag.putBoolean(TAG_ASSEMBLED, isRocketAssembled());
+        tag.putBoolean(TAG_LAUNCHING, isRocketLaunching());
+        tag.putInt(TAG_LAUNCH_TICKS, getRocketLaunchTicks());
+        tag.putInt(TAG_COUNTDOWN_TICKS, getRocketCountdownTicks());
+        tag.putBoolean(TAG_LANDING, landing);
+        if (landingPad != null) {
+            tag.putLong(TAG_LANDING_PAD, landingPad.asLong());
+        }
+        tag.putInt(TAG_THRUST, rocketThrust);
+        tag.putLong(TAG_FUEL_CAPACITY, rocketFuelCapacity);
+        tag.putLong(TAG_REMAINING_FUEL, rocketRemainingFuel);
+    }
+
+    @Override
+    protected void readAdditional(CompoundTag tag, boolean spawnData) {
+        super.readAdditional(tag, spawnData);
+        controllerPos = blockPosition();
+        seatsRegistered = false;
+        landing = tag.getBoolean(TAG_LANDING);
+        landingPad = tag.contains(TAG_LANDING_PAD, Tag.TAG_LONG) ?
+                BlockPos.of(tag.getLong(TAG_LANDING_PAD)) : null;
+        rocketThrust = tag.getInt(TAG_THRUST);
+        rocketFuelCapacity = tag.getLong(TAG_FUEL_CAPACITY);
+        rocketRemainingFuel = tag.contains(TAG_REMAINING_FUEL, Tag.TAG_LONG) ?
+                Math.min(tag.getLong(TAG_REMAINING_FUEL), rocketFuelCapacity) : rocketFuelCapacity;
+
+        if (!level().isClientSide) {
+            entityData.set(DATA_ASSEMBLED, tag.getBoolean(TAG_ASSEMBLED));
+            entityData.set(DATA_LAUNCHING, tag.getBoolean(TAG_LAUNCHING));
+            entityData.set(DATA_LAUNCH_TICKS, tag.getInt(TAG_LAUNCH_TICKS));
+            entityData.set(DATA_COUNTDOWN_TICKS, tag.contains(TAG_COUNTDOWN_TICKS, Tag.TAG_INT) ?
+                    tag.getInt(TAG_COUNTDOWN_TICKS) : 200);
+            entityData.set(DATA_LANDING, landing);
+            entityData.set(DATA_MOTION, new Vector3f((float) getDeltaMovement().x,
+                    (float) getDeltaMovement().y, (float) getDeltaMovement().z));
+            getPersistentData().remove(LEGACY_CONTROLLER_DATA);
+            setRunning(true);
+        }
     }
 
     private void setLanding(boolean landing) {

@@ -46,12 +46,8 @@ public final class RocketDimensionTravelHandler {
 
         rocket.ensureContraptionReadyForSave();
         CompoundTag snapshot = rocket.getContraption().writeNBT(false);
-        RocketAssemblyPlatformMachine controller = RocketAssemblyPlatformMachine.findControllerForRocket(rocket);
-        if (controller != null) {
-            controller.prepareRocketDimensionTransfer(rocket);
-        }
         player.stopRiding();
-        PENDING_TRANSFERS.put(player.getUUID(), new PendingTransfer(rocket, controller, snapshot));
+        PENDING_TRANSFERS.put(player.getUUID(), new PendingTransfer(rocket, snapshot, RocketState.capture(rocket)));
     }
 
     @SubscribeEvent
@@ -65,25 +61,18 @@ public final class RocketDimensionTravelHandler {
         BlockPos landingPad = createLandingPlatform(destination, landingCenter);
         RocketContraptionEntity rocket = moveRocket(pending, destination, landingPad);
         if (rocket == null) {
-            if (pending.controller() != null) {
-                pending.controller().cancelRocketDimensionTransfer();
-            }
             return;
         }
 
         int startY = Math.min(landingPad.getY() + 1 + LANDING_START_HEIGHT,
                 destination.getMaxBuildHeight() - 4);
-        rocket.controllerPos = landingPad;
         rocket.setPos(landingCenter.getX(), startY, landingCenter.getZ());
+        rocket.setPersistenceAnchor(rocket.blockPosition());
         rocket.setRunning(true);
         rocket.setContraptionMotion(Vec3.ZERO);
         rocket.beginLanding(landingPad);
         if (!player.startRiding(rocket, true)) {
             rocket.ejectPassengers();
-        }
-
-        if (pending.controller() != null) {
-            pending.controller().completeRocketDimensionTransfer();
         }
     }
 
@@ -99,6 +88,7 @@ public final class RocketDimensionTravelHandler {
         RocketContraptionEntity rocket = RocketContraptionEntity.createDetached(
                 destination, contraption, landingPad,
                 new Vec3(landingPad.getX(), landingPad.getY() + 1, landingPad.getZ()));
+        pending.state().apply(rocket);
         destination.addFreshEntity(rocket);
         return rocket;
     }
@@ -114,7 +104,20 @@ public final class RocketDimensionTravelHandler {
         return new BlockPos(center.getX(), y, center.getZ());
     }
 
-    private record PendingTransfer(RocketContraptionEntity rocket,
-                                   RocketAssemblyPlatformMachine controller,
-                                   CompoundTag snapshot) {}
+    private record PendingTransfer(RocketContraptionEntity rocket, CompoundTag snapshot, RocketState state) {}
+
+    private record RocketState(int thrust, long fuelCapacity, long remainingFuel,
+                               boolean assembled, boolean launching, int launchTicks, int countdownTicks) {
+
+        private static RocketState capture(RocketContraptionEntity rocket) {
+            return new RocketState(rocket.getRocketThrust(), rocket.getRocketFuelCapacity(),
+                    rocket.getRocketRemainingFuel(), rocket.isRocketAssembled(), rocket.isRocketLaunching(),
+                    rocket.getRocketLaunchTicks(), rocket.getRocketCountdownTicks());
+        }
+
+        private void apply(RocketContraptionEntity rocket) {
+            rocket.setRocketStats(thrust, fuelCapacity, remainingFuel);
+            rocket.setRocketLaunchState(assembled, launching, launchTicks, countdownTicks);
+        }
+    }
 }

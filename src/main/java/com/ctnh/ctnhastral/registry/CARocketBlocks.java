@@ -40,7 +40,8 @@ public class CARocketBlocks {
         return STATS.getOrDefault(BuiltInRegistries.BLOCK.getKey(block), RocketPartStats.EMPTY);
     }
 
-    private static BlockEntry<Block> registerRocketPart(String name, String cnName, String type, RocketPartStats stats) {
+    private static BlockEntry<Block> registerRocketPart(String name, String cnName, String type,
+                                                        RocketPartStats stats) {
         BlockEntry<Block> entry = REGISTRATE.block(name, Block::new)
                 .cnlang(cnName)
                 .initialProperties(() -> Blocks.IRON_BLOCK)

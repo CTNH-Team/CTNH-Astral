@@ -15,11 +15,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
@@ -38,8 +35,6 @@ import com.mo_guang.ctpp.api.pattern.StaticBlockPattern;
 import com.mo_guang.ctpp.dynamicPart.rotation.IContraptionMultiblock;
 import com.mo_guang.ctpp.dynamicPart.rotation.SimpleRotatingContraption;
 import com.mo_guang.ctpp.dynamicPart.rotation.SimpleRotatingContraptionEntity;
-import com.simibubi.create.content.contraptions.Contraption;
-import com.simibubi.create.content.contraptions.StructureTransform;
 import earth.terrarium.adastra.common.config.AdAstraConfig;
 import earth.terrarium.adastra.common.menus.base.PlanetsMenuProvider;
 import earth.terrarium.botarium.common.menu.MenuHooks;
@@ -55,7 +50,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
                                            implements IDisplayUIMachine,
@@ -66,15 +60,14 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     private static final String ACTION_CLEAR = "ctnhastral:clear_rocket";
     private static final String TAG_THRUST = "RocketThrust";
     private static final String TAG_FUEL_CAPACITY = "RocketFuelCapacity";
-    private static final String TAG_ENTITY_UUID = "RocketEntityUUID";
-    private static final String TAG_ENTITY_POS = "RocketEntityPos";
     private static final String TAG_LAUNCHING = "RocketLaunching";
     private static final String TAG_LAUNCH_TICKS = "RocketLaunchTicks";
     private static final String TAG_REMAINING_FUEL = "RocketRemainingFuel";
-    private static final String TAG_PIVOT_POS = "RocketPivotPos";
-    private static final String TAG_CONTRAPTION_SNAPSHOT = "RocketContraptionSnapshot";
-    private static final String ENTITY_TAG_PREFIX = "CTNHAstralRocket";
     private static final int COUNTDOWN_TICKS = 200;
+    private static final int PLATFORM_LOOKUP_RADIUS = 8;
+    private static final int PLATFORM_LOOKUP_DEPTH = 64;
+    private static final int ROCKET_SEARCH_HEIGHT = 256;
+    private static final int DOCKED_ROCKET_HEIGHT = 32;
     private static final Direction[] ROCKET_SEARCH_DIRECTIONS = Direction.values();
     private static final TagKey<Block> CREATE_SEATS = TagKey.create(BuiltInRegistries.BLOCK.key(),
             ResourceLocation.tryParse("create:seats"));
@@ -86,14 +79,10 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     private int rocketThrust;
     private long rocketFuelCapacity;
     private long rocketRemainingFuel;
-    private UUID rocketEntityUuid;
-    private BlockPos rocketEntityPos;
     private BlockPos rocketPivotPos;
     private boolean launching;
-    private boolean rocketDimensionTransfer;
     private int launchTicks;
     private TickableSubscription rocketTickSubscription;
-    private CompoundTag rocketContraptionSnapshot = new CompoundTag();
     private List<BlockPos> rocketAssemblyCandidatePositions = new ArrayList<>();
     private Set<Long> rocketAssemblyCandidateLookup = new HashSet<>();
     private BlockPos rocketAssemblyMinPos;
@@ -108,7 +97,7 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         super.onStructureFormed();
         if (!(self().getLevel() instanceof TrackedDummyWorld) && !self().getLevel().isClientSide) {
             cacheRocketAssemblyArea();
-            restoreRocketEntityBinding();
+            refreshRocketEntityReference();
             ensureRocketTickSubscription();
             markDirty();
         }
@@ -117,7 +106,7 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     @Override
     public void onStructureInvalid() {
         super.onStructureInvalid();
-        RocketContraptionEntity entity = getAttachedRocketEntity();
+        RocketContraptionEntity entity = findRocketAbovePlatform();
         if (entity != null && isEntityOnPlatform(entity)) {
             entity.disassemble();
         }
@@ -137,11 +126,11 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
                 self().getLevel() instanceof TrackedDummyWorld) {
             return;
         }
-        restoreRocketEntityBinding();
         if (isFormed()) {
             if (rocketAssemblyCandidatePositions.isEmpty()) {
                 cacheRocketAssemblyArea();
             }
+            refreshRocketEntityReference();
             ensureRocketTickSubscription();
         }
         markDirty();
@@ -195,18 +184,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         tag.putLong(TAG_REMAINING_FUEL, rocketRemainingFuel);
         tag.putBoolean(TAG_LAUNCHING, launching);
         tag.putInt(TAG_LAUNCH_TICKS, launchTicks);
-        if (rocketEntityUuid != null) {
-            tag.putUUID(TAG_ENTITY_UUID, rocketEntityUuid);
-        }
-        if (rocketEntityPos != null) {
-            tag.put(TAG_ENTITY_POS, NbtUtils.writeBlockPos(rocketEntityPos));
-        }
-        if (rocketPivotPos != null) {
-            tag.put(TAG_PIVOT_POS, NbtUtils.writeBlockPos(rocketPivotPos));
-        }
-        if (!rocketContraptionSnapshot.isEmpty()) {
-            tag.put(TAG_CONTRAPTION_SNAPSHOT, rocketContraptionSnapshot.copy());
-        }
     }
 
     @Override
@@ -217,13 +194,8 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         rocketRemainingFuel = tag.contains(TAG_REMAINING_FUEL) ? tag.getLong(TAG_REMAINING_FUEL) : rocketFuelCapacity;
         launching = tag.getBoolean(TAG_LAUNCHING);
         launchTicks = tag.getInt(TAG_LAUNCH_TICKS);
-        rocketEntityUuid = tag.hasUUID(TAG_ENTITY_UUID) ? tag.getUUID(TAG_ENTITY_UUID) : null;
-        rocketEntityPos = tag.contains(TAG_ENTITY_POS, CompoundTag.TAG_COMPOUND) ?
-                NbtUtils.readBlockPos(tag.getCompound(TAG_ENTITY_POS)) : null;
-        rocketPivotPos = tag.contains(TAG_PIVOT_POS, CompoundTag.TAG_COMPOUND) ?
-                NbtUtils.readBlockPos(tag.getCompound(TAG_PIVOT_POS)) : null;
-        rocketContraptionSnapshot = tag.contains(TAG_CONTRAPTION_SNAPSHOT, Tag.TAG_COMPOUND) ?
-                tag.getCompound(TAG_CONTRAPTION_SNAPSHOT).copy() : new CompoundTag();
+        contraptionEntity = new ArrayList<>();
+        rocketPivotPos = null;
     }
 
     @Override
@@ -238,8 +210,9 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         contraption.removeBlocksFromWorld(self().getLevel(), BlockPos.ZERO);
 
         RocketContraptionEntity entity = RocketContraptionEntity
-                .create(self().getLevel(), contraption, this, pivot.getCenter());
+                .create(self().getLevel(), contraption, pivot.getCenter());
         entity.setPos(pivot.getX(), pivot.getY(), pivot.getZ());
+        entity.setPersistenceAnchor(entity.blockPosition());
         self().getLevel().addFreshEntity(entity);
 
         Map<Integer, SimpleRotatingContraptionEntity> assembled = new HashMap<>();
@@ -284,86 +257,72 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         }
         launching = false;
         launchTicks = 0;
-        cacheRocketContraption(entity);
-        writeRocketData(entity);
+        updateRocketSyncedState(entity);
         markDirty();
         self().holder.notifyBlockUpdate();
     }
 
     @Override
     public void attach(SimpleRotatingContraptionEntity contraption) {
-        if (contraption == null) return;
-        if (rocketEntityUuid != null && !rocketEntityUuid.equals(contraption.getUUID()) &&
-                !isEntityBoundToThisController(contraption)) {
-            return;
+        if (!(contraption instanceof RocketContraptionEntity rocket)) return;
+        contraptionEntity = new ArrayList<>(List.of(rocket));
+        rocket.setRunning(true);
+        if (rocket.getRocketFuelCapacity() > 0) {
+            rocketThrust = rocket.getRocketThrust();
+            rocketFuelCapacity = rocket.getRocketFuelCapacity();
+            rocketRemainingFuel = rocket.getRocketRemainingFuel();
         }
-        contraptionEntity = new ArrayList<>(List.of(contraption));
-        contraption.setRunning(true);
-        rocketEntityUuid = contraption.getUUID();
-        rocketEntityPos = contraption.blockPosition();
-        writeRocketData(contraption);
-        self().holder.notifyBlockUpdate();
+        launching = rocket.isRocketLaunching();
+        launchTicks = rocket.getRocketLaunchTicks();
     }
 
     @Override
     public void findAndReattachEntities() {
         if (self().getLevel() == null || self().getLevel().isClientSide) return;
-        restoreRocketEntityBinding();
-    }
-
-    public void prepareRocketDimensionTransfer(RocketContraptionEntity entity) {
-        if (entity == null || entity.getContraption() == null) return;
-        cacheRocketContraption(entity);
-        rocketDimensionTransfer = true;
-        entity.setContraptionMotion(Vec3.ZERO);
-        markDirty();
-    }
-
-    public void completeRocketDimensionTransfer() {
-        clearRocketData();
-        markDirty();
-        self().holder.notifyBlockUpdate();
-    }
-
-    public void cancelRocketDimensionTransfer() {
-        rocketDimensionTransfer = false;
-        markDirty();
+        refreshRocketEntityReference();
     }
 
     @Override
     public void clearAndDisassembleRotatingEntities() {
-        RocketContraptionEntity entity = getAttachedRocketEntity();
+        RocketContraptionEntity entity = findRocketAbovePlatform();
         if (entity != null && entity.isAlive()) {
             entity.disassemble();
-        } else {
-            restoreRocketBlocksFromSnapshot();
         }
         clearRocketData();
         markDirty();
     }
 
     public void handlePassengerJump(ServerPlayer player) {
-        if (isFormed() && getAttachedRocketEntity() != null) {
+        if (isFormed() && findRocketAbovePlatform() != null) {
             startLaunch(player);
         }
     }
 
     public static boolean handleRocketPassengerJump(ServerPlayer player) {
         RocketContraptionEntity rocketEntity = findRocketVehicle(player);
-        RocketAssemblyPlatformMachine machine = findControllerForRocket(rocketEntity);
+        RocketAssemblyPlatformMachine machine = findPlatformBelowRocket(rocketEntity);
         if (machine == null) return false;
         machine.handlePassengerJump(player);
         return true;
     }
 
-    public static RocketAssemblyPlatformMachine findControllerForRocket(RocketContraptionEntity rocketEntity) {
+    public static RocketAssemblyPlatformMachine findPlatformBelowRocket(RocketContraptionEntity rocketEntity) {
         if (rocketEntity == null) return null;
-        CompoundTag data = rocketEntity.getPersistentData();
-        if (!data.getBoolean(ENTITY_TAG_PREFIX)) return null;
-        BlockPos controllerPos = BlockPos.of(data.getLong(ENTITY_TAG_PREFIX + ".ControllerPos"));
-        return MetaMachine.getMachine(rocketEntity.level(),
-                controllerPos) instanceof RocketAssemblyPlatformMachine machine ?
-                        machine : null;
+        BlockPos rocketPos = rocketEntity.blockPosition();
+        int minY = Math.max(rocketEntity.level().getMinBuildHeight(), rocketPos.getY() - PLATFORM_LOOKUP_DEPTH);
+        for (int y = rocketPos.getY(); y >= minY; y--) {
+            for (int x = -PLATFORM_LOOKUP_RADIUS; x <= PLATFORM_LOOKUP_RADIUS; x++) {
+                for (int z = -PLATFORM_LOOKUP_RADIUS; z <= PLATFORM_LOOKUP_RADIUS; z++) {
+                    BlockPos pos = rocketPos.offset(x, y - rocketPos.getY(), z);
+                    if (MetaMachine.getMachine(rocketEntity.level(),
+                            pos) instanceof RocketAssemblyPlatformMachine machine &&
+                            machine.isFormed() && machine.isRocketAbovePlatform(rocketEntity)) {
+                        return machine;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private void assembleRocket() {
@@ -383,21 +342,18 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
 
         SimpleRotatingContraptionEntity entity = assembled.values().iterator().next();
         contraptionEntity = new ArrayList<>(List.of(entity));
-        rocketEntityUuid = entity.getUUID();
-        rocketEntityPos = entity.blockPosition();
         launching = false;
         launchTicks = 0;
-        cacheRocketContraption(entity);
-        writeRocketData(entity);
+        updateRocketSyncedState(entity);
         markDirty();
         self().holder.notifyBlockUpdate();
     }
 
     private void disassembleRocket() {
-        RocketContraptionEntity entity = getAttachedRocketEntity();
+        RocketContraptionEntity entity = findRocketAbovePlatform();
         if (entity != null && isEntityOnPlatform(entity)) {
             clearAndDisassembleRotatingEntities();
-        } else if (!restoreRocketBlocksFromSnapshot()) {
+        } else {
             return;
         }
         clearRocketData();
@@ -406,18 +362,13 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     }
 
     private void clearRocket() {
-        RocketContraptionEntity entity = findRocketEntityForClear();
-        boolean blocksRestored = false;
+        RocketContraptionEntity entity = findRocketAbovePlatform();
         if (entity != null && entity.isAlive()) {
             if (isEntityOnPlatform(entity)) {
                 entity.disassemble();
-                blocksRestored = !entity.isAlive();
             } else {
                 entity.kill();
             }
-        }
-        if (!blocksRestored) {
-            restoreRocketBlocksFromSnapshot();
         }
         clearRocketData();
         markDirty();
@@ -432,7 +383,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         launchTicks = 0;
         entity.setContraptionMotion(Vec3.ZERO);
         updateRocketSyncedState(entity);
-        writeRocketData(entity);
         markDirty();
         if (player != null) {
             player.displayClientMessage(Component.literal("火箭发射序列启动").withStyle(ChatFormatting.GOLD), true);
@@ -442,13 +392,12 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
 
     private void rocketServerTick() {
         if (!isFormed() || self().getLevel() == null || self().getLevel().isClientSide) return;
-        if (rocketDimensionTransfer) return;
         findAndReattachEntities();
         RocketContraptionEntity entity = getAttachedRocketEntity();
         if (entity == null) {
-            if (launching) {
-                launching = false;
-                launchTicks = 0;
+            if (launching || launchTicks != 0 || rocketThrust != 0 || rocketFuelCapacity != 0 ||
+                    rocketRemainingFuel != 0 || !contraptionEntity.isEmpty()) {
+                clearRocketData();
                 markDirty();
             }
             return;
@@ -462,7 +411,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         if (launchTicks <= COUNTDOWN_TICKS) {
             entity.setContraptionMotion(Vec3.ZERO);
             updateRocketSyncedState(entity);
-            writeRocketData(entity);
             markDirty();
             return;
         }
@@ -472,7 +420,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
             launching = false;
             entity.setContraptionMotion(Vec3.ZERO);
             updateRocketSyncedState(entity);
-            writeRocketData(entity);
             markDirty();
             return;
         }
@@ -485,7 +432,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
                 Math.min(1.8D, motion.y + acceleration), motion.z * 0.88D));
         entity.hurtMarked = true;
         updateRocketSyncedState(entity);
-        writeRocketData(entity);
         markDirty();
 
         if (entity.getY() >= AdAstraConfig.atmosphereLeave) {
@@ -493,12 +439,14 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
             launching = false;
             entity.setContraptionMotion(Vec3.ZERO);
             updateRocketSyncedState(entity);
+            clearRocketData();
             markDirty();
         }
     }
 
     private void updateRocketSyncedState(SimpleRotatingContraptionEntity entity) {
         if (entity instanceof RocketContraptionEntity rocket) {
+            rocket.setRocketStats(rocketThrust, rocketFuelCapacity, rocketRemainingFuel);
             rocket.setRocketLaunchState(true, launching, launchTicks, COUNTDOWN_TICKS);
         }
     }
@@ -599,66 +547,49 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
             if (entity instanceof RocketContraptionEntity rocket) return rocket;
             contraptionEntity.clear();
         }
-        if (self().getLevel() == null) return null;
-        AABB search = getRocketSearchBounds();
-        for (RocketContraptionEntity entity : self().getLevel()
-                .getEntitiesOfClass(RocketContraptionEntity.class, search)) {
-            if ((rocketEntityUuid != null && rocketEntityUuid.equals(entity.getUUID())) ||
-                    isEntityBoundToThisController(entity)) {
-                contraptionEntity.add(entity);
-                rocketEntityUuid = entity.getUUID();
-                rocketEntityPos = entity.blockPosition();
-                entity.setRunning(true);
-                return entity;
-            }
+        RocketContraptionEntity rocket = findRocketAbovePlatform();
+        if (rocket != null) {
+            attach(rocket);
         }
-        return null;
-    }
-
-    private RocketContraptionEntity findRocketEntityForClear() {
-        RocketContraptionEntity entity = getAttachedRocketEntity();
-        if (entity != null || rocketEntityUuid == null || !(self().getLevel() instanceof ServerLevel level)) {
-            return entity;
-        }
-        Entity loadedEntity = level.getEntity(rocketEntityUuid);
-        return loadedEntity instanceof RocketContraptionEntity rocket ? rocket : null;
+        return rocket;
     }
 
     private boolean hasAssembledRocket() {
-        return getAttachedRocketEntity() != null || hasRocketSnapshot() || rocketEntityUuid != null;
+        return getAttachedRocketEntity() != null;
     }
 
-    private boolean hasRocketSnapshot() {
-        return rocketPivotPos != null && rocketContraptionSnapshot != null && !rocketContraptionSnapshot.isEmpty();
+    private void refreshRocketEntityReference() {
+        if (contraptionEntity == null || contraptionEntity.isEmpty()) {
+            RocketContraptionEntity rocket = findRocketAbovePlatform();
+            if (rocket != null) {
+                attach(rocket);
+            }
+        }
+    }
+
+    private RocketContraptionEntity findRocketAbovePlatform() {
+        if (self().getLevel() == null) return null;
+        RocketContraptionEntity nearest = null;
+        double nearestDistance = Double.MAX_VALUE;
+        for (RocketContraptionEntity rocket : self().getLevel()
+                .getEntitiesOfClass(RocketContraptionEntity.class, getRocketSearchBounds())) {
+            if (!isRocketAbovePlatform(rocket)) continue;
+            double distance = rocket.position().distanceToSqr(self().getPos().getCenter());
+            if (distance < nearestDistance) {
+                nearest = rocket;
+                nearestDistance = distance;
+            }
+        }
+        return nearest;
+    }
+
+    private boolean isRocketAbovePlatform(RocketContraptionEntity rocket) {
+        return rocket.getY() >= getPlatformFloorY() && getRocketSearchBounds().contains(rocket.position());
     }
 
     private boolean isEntityOnPlatform(Entity entity) {
-        return entity.blockPosition().closerThan(self().getPos(), 32);
-    }
-
-    private void writeRocketData(SimpleRotatingContraptionEntity entity) {
-        rocketEntityUuid = entity.getUUID();
-        rocketEntityPos = entity.blockPosition();
-        CompoundTag data = entity.getPersistentData();
-        data.putBoolean(ENTITY_TAG_PREFIX, true);
-        data.putLong(ENTITY_TAG_PREFIX + ".ControllerPos", self().getPos().asLong());
-        data.putInt(ENTITY_TAG_PREFIX + ".Thrust", rocketThrust);
-        data.putLong(ENTITY_TAG_PREFIX + ".FuelCapacity", rocketFuelCapacity);
-        data.putLong(ENTITY_TAG_PREFIX + ".RemainingFuel", rocketRemainingFuel);
-        data.putBoolean(ENTITY_TAG_PREFIX + ".Launching", launching);
-        data.putInt(ENTITY_TAG_PREFIX + ".LaunchTicks", launchTicks);
-        if (rocketPivotPos != null) {
-            data.putLong(ENTITY_TAG_PREFIX + ".PivotPos", rocketPivotPos.asLong());
-        }
-        updateRocketSyncedState(entity);
-    }
-
-    private void cacheRocketContraption(SimpleRotatingContraptionEntity entity) {
-        if (entity == null || entity.getContraption() == null) {
-            return;
-        }
-        entity.ensureContraptionReadyForSave();
-        rocketContraptionSnapshot = entity.getContraption().writeNBT(false);
+        return entity instanceof RocketContraptionEntity rocket && isRocketAbovePlatform(rocket) &&
+                rocket.getY() <= getDockedRocketMaxY();
     }
 
     private void cacheRocketAssemblyArea() {
@@ -706,69 +637,22 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         }
     }
 
-    private void restoreRocketEntityBinding() {
-        if (rocketDimensionTransfer) return;
-        RocketContraptionEntity entity = getAttachedRocketEntity();
-        if (entity != null) {
-            attach(entity);
-            cacheRocketContraption(entity);
-            return;
-        }
-        if (hasRocketSnapshot()) {
-            SimpleRotatingContraptionEntity respawned = respawnRocketFromSnapshot();
-            if (respawned != null) {
-                attach(respawned);
-            }
-        }
-    }
-
-    private boolean isEntityBoundToThisController(SimpleRotatingContraptionEntity entity) {
-        CompoundTag data = entity.getPersistentData();
-        if (!data.getBoolean(ENTITY_TAG_PREFIX) || !data.contains(ENTITY_TAG_PREFIX + ".ControllerPos", Tag.TAG_LONG)) {
-            return false;
-        }
-        return self().getPos().equals(BlockPos.of(data.getLong(ENTITY_TAG_PREFIX + ".ControllerPos")));
-    }
-
     private AABB getRocketSearchBounds() {
-        AABB controllerSearch = new AABB(self().getPos()).inflate(48, 256, 48);
-        if (rocketEntityPos == null) {
-            return controllerSearch;
-        }
-        AABB entitySearch = new AABB(rocketEntityPos).inflate(24, 192, 24);
-        return controllerSearch.minmax(entitySearch);
+        BlockPos min = rocketAssemblyMinPos == null ? self().getPos().offset(-PLATFORM_LOOKUP_RADIUS, -1,
+                -PLATFORM_LOOKUP_RADIUS) : rocketAssemblyMinPos;
+        BlockPos max = rocketAssemblyMaxPos == null ? self().getPos().offset(PLATFORM_LOOKUP_RADIUS, 1,
+                PLATFORM_LOOKUP_RADIUS) : rocketAssemblyMaxPos;
+        return new AABB(min.getX() - 1, min.getY() - 1, min.getZ() - 1,
+                max.getX() + 2, max.getY() + ROCKET_SEARCH_HEIGHT, max.getZ() + 2);
     }
 
-    private SimpleRotatingContraptionEntity respawnRocketFromSnapshot() {
-        if (!hasRocketSnapshot() || self().getLevel() == null || self().getLevel().isClientSide) {
-            return null;
-        }
-        Contraption contraption = Contraption.fromNBT(self().getLevel(), rocketContraptionSnapshot.copy(), false);
-        if (contraption == null) {
-            return null;
-        }
-        RocketContraptionEntity entity = RocketContraptionEntity.create(
-                self().getLevel(), contraption, this, rocketPivotPos.getCenter());
-        entity.setPos(rocketPivotPos.getX(), rocketPivotPos.getY(), rocketPivotPos.getZ());
-        writeRocketData(entity);
-        self().getLevel().addFreshEntity(entity);
-        contraptionEntity = new ArrayList<>(List.of(entity));
-        rocketEntityUuid = entity.getUUID();
-        rocketEntityPos = entity.blockPosition();
-        return entity;
+    private int getPlatformFloorY() {
+        return rocketAssemblyMinPos == null ? self().getPos().getY() - 1 : rocketAssemblyMinPos.getY() - 1;
     }
 
-    private boolean restoreRocketBlocksFromSnapshot() {
-        if (!hasRocketSnapshot() || self().getLevel() == null || self().getLevel().isClientSide) {
-            return false;
-        }
-        Contraption contraption = Contraption.fromNBT(self().getLevel(), rocketContraptionSnapshot.copy(), false);
-        if (contraption == null) {
-            return false;
-        }
-        contraption.addBlocksToWorld(self().getLevel(), new StructureTransform(rocketPivotPos, 0, 0, 0));
-        markDirty();
-        return true;
+    private int getDockedRocketMaxY() {
+        return (rocketAssemblyMaxPos == null ? self().getPos().getY() : rocketAssemblyMaxPos.getY()) +
+                DOCKED_ROCKET_HEIGHT;
     }
 
     private void openPlanetsScreenForPassengers(RocketContraptionEntity entity) {
@@ -781,15 +665,11 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
 
     private void clearRocketData() {
         contraptionEntity = new ArrayList<>();
-        rocketEntityUuid = null;
-        rocketEntityPos = null;
         rocketPivotPos = null;
-        rocketContraptionSnapshot = new CompoundTag();
         rocketThrust = 0;
         rocketFuelCapacity = 0;
         rocketRemainingFuel = 0;
         launching = false;
-        rocketDimensionTransfer = false;
         launchTicks = 0;
     }
 

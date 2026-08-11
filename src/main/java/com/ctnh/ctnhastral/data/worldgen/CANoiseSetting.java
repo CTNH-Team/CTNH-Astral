@@ -10,6 +10,7 @@ import net.minecraft.world.level.levelgen.*;
 import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.data.CAMaterials;
 import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
+import com.ctnh.ctnhastral.registry.worldgen.MoonBlocks;
 import earth.terrarium.adastra.common.registry.ModBlocks;
 
 import java.util.List;
@@ -112,7 +113,7 @@ public class CANoiseSetting {
                 false,
                 false));
         ctx.register(MOON, new NoiseGeneratorSettings(NoiseSettings.create(-64, 384, 1, 2),
-                ModBlocks.MOON_STONE.get().defaultBlockState(),
+                MoonBlocks.MOON_STONE.get().defaultBlockState(),
                 CAMaterials.Seawater.getFluid().defaultFluidState().createLegacyBlock(),
                 new NoiseRouter(DensityFunctions.noise(holderGetter2.getOrThrow(Noises.AQUIFER_BARRIER),
                         0.5),

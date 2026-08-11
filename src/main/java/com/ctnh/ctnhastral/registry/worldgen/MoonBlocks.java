@@ -7,6 +7,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.*;
 
 import com.ctnh.ctnhastral.CTNHAstral;
+import com.ctnh.ctnhastral.api.loot.LootBuilder;
 import com.ctnh.ctnhastral.common.block.SiliconBuddingBlock;
 import com.tterrag.registrate.util.entry.BlockEntry;
 
@@ -16,19 +17,43 @@ import static com.ctnh.ctnhastral.registry.CABlocks.createStoneLikeBlock;
 
 public class MoonBlocks {
 
-    private static final String MOON_STONE_TEXTURE_ROOT = "block/moon/stone/";
-    private static final String MOON_SAND_TEXTURE_ROOT = "block/moon/sand/";
-    private static final ResourceLocation SILICON_CRYSTAL_BLOCK_TEXTURE = CTNHAstral.id("block/silicon_crystal/silicon_crystal_block");
-    private static final ResourceLocation BUDDING_SILICON_CRYSTAL_TEXTURE = CTNHAstral.id("block/silicon_crystal/silicon_crystal_budding");
-    private static final ResourceLocation SMALL_SILICON_CRYSTAL_BUD_TEXTURE = CTNHAstral.id("block/silicon_crystal/small_silicon_crystal_bud");
-    private static final ResourceLocation MEDIUM_SILICON_CRYSTAL_BUD_TEXTURE = CTNHAstral.id("block/silicon_crystal/medium_silicon_crystal_bud");
-    private static final ResourceLocation LARGE_SILICON_CRYSTAL_BUD_TEXTURE = CTNHAstral.id("block/silicon_crystal/large_silicon_crystal_bud");
-    private static final ResourceLocation SILICON_CRYSTAL_CLUSTER_TEXTURE = CTNHAstral.id("block/silicon_crystal/silicon_crystal_cluster");
+    private static final String MOON_STONE_TEXTURE_ROOT = "block/moon/stones/";
+    private static final String MOON_SAND_TEXTURE_ROOT = "block/moon/sands/";
+    private static final ResourceLocation SILICON_CRYSTAL_BLOCK_TEXTURE = CTNHAstral
+            .id("block/silicon_crystal/silicon_crystal_block");
+    private static final ResourceLocation BUDDING_SILICON_CRYSTAL_TEXTURE = CTNHAstral
+            .id("block/silicon_crystal/silicon_crystal_budding");
+    private static final ResourceLocation SMALL_SILICON_CRYSTAL_BUD_TEXTURE = CTNHAstral
+            .id("block/silicon_crystal/small_silicon_crystal_bud");
+    private static final ResourceLocation MEDIUM_SILICON_CRYSTAL_BUD_TEXTURE = CTNHAstral
+            .id("block/silicon_crystal/medium_silicon_crystal_bud");
+    private static final ResourceLocation LARGE_SILICON_CRYSTAL_BUD_TEXTURE = CTNHAstral
+            .id("block/silicon_crystal/large_silicon_crystal_bud");
+    private static final ResourceLocation SILICON_CRYSTAL_CLUSTER_TEXTURE = CTNHAstral
+            .id("block/silicon_crystal/silicon_crystal_cluster");
 
     public static void init() {}
 
     public static BlockEntry<FallingBlock> MOON_SAND = createSandLikeBlock("moon_sand", "月沙",
             CTNHAstral.id("block/sands/moon_sand"));
+    public static BlockEntry<Block> MOON_COBBLESTONE = createStoneLikeBlock("moon_cobblestone", "月岩圆石",
+            CTNHAstral.id("block/stones/moon_cobblestone"));
+    public static BlockEntry<Block> MOON_STONE = REGISTRATE.block("moon_stone", Block::new)
+            .cnlang("月岩")
+            .initialProperties(() -> Blocks.STONE)
+            .blockstate((ctx, prov) -> {
+                prov.simpleBlock(ctx.getEntry(),
+                        prov.models().cubeAll("moon_stone", CTNHAstral.id("block/stones/moon_stone")));
+            })
+            .properties(p -> p.isValidSpawn((state, level, pos, ent) -> false)).addLayer(() -> RenderType::cutoutMipped)
+            .tag(BlockTags.MINEABLE_WITH_PICKAXE)
+            .loot((registrateBlockLootTables, block) -> {
+                registrateBlockLootTables.add(block,
+                        LootBuilder.createSingleItemTableWithSilkTouch(block, MOON_COBBLESTONE.asItem()));
+            })
+            .item(BlockItem::new)
+            .build()
+            .register();
 
     public static final BlockEntry<Block> SILICON_CRYSTAL_BLOCK = createStoneLikeBlock("silicon_crystal_block", "硅晶块",
             SILICON_CRYSTAL_BLOCK_TEXTURE);
@@ -42,7 +67,8 @@ public class MoonBlocks {
             .item(BlockItem::new)
             .build()
             .register();
-    public static final BlockEntry<AmethystClusterBlock> SMALL_SILICON_CRYSTAL_BUD = createSiliconCluster("small_silicon_crystal_bud",
+    public static final BlockEntry<AmethystClusterBlock> SMALL_SILICON_CRYSTAL_BUD = createSiliconCluster(
+            "small_silicon_crystal_bud",
             "小型硅晶芽", 3, 4, "block/small_amethyst_bud", SMALL_SILICON_CRYSTAL_BUD_TEXTURE);
     public static final BlockEntry<AmethystClusterBlock> MEDIUM_SILICON_CRYSTAL_BUD = createSiliconCluster(
             "medium_silicon_crystal_bud", "中型硅晶芽", 4, 3, "block/medium_amethyst_bud",
