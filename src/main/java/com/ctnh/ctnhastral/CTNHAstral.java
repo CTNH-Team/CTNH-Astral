@@ -20,6 +20,12 @@ public class CTNHAstral {
 
     public CTNHAstral() {
         DistExecutor.unsafeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
+        try {
+            Class.forName("com.ctnh.ctnhastral.registry.CABiomeSource");
+            Class.forName("com.ctnh.ctnhastral.registry.CAChunkGenerator");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static ResourceLocation id(String name) {

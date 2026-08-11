@@ -1,5 +1,6 @@
 package com.ctnh.ctnhastral.data.worldgen;
 
+import com.ctnh.ctnhastral.registry.worldgen.TestMoonGen;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstapContext;
@@ -59,7 +60,7 @@ public class CADimensions {
                                      HolderGetter<DimensionType> dimensionTypes,
                                      HolderGetter<NoiseGeneratorSettings> noiseSettings) {
         ctx.register(MOON, new LevelStem(dimensionTypes.getOrThrow(CADimensionTypes.MOON),
-                new NoiseBasedChunkGenerator(
+                new TestMoonGen(
                         MultiNoiseBiomeSource.createFromList(new Climate.ParameterList<>(
                                 List.of(Pair.of(MOON_WASTELAND_PARAMETER,
                                         biomes.getOrThrow(CABiomes.MOON_WASTELAND)),

@@ -7,6 +7,7 @@ import net.minecraft.world.level.levelgen.placement.CaveSurface;
 
 import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
 import com.ctnh.ctnhastral.registry.worldgen.MarsBlocks;
+import com.ctnh.ctnhastral.registry.worldgen.MoonBlocks;
 import earth.terrarium.adastra.common.registry.ModBlocks;
 
 public class CASurfaceRuleData {
@@ -62,7 +63,16 @@ public class CASurfaceRuleData {
     }
 
     public static SurfaceRules.RuleSource MoonSurface() {
-        return SurfaceRules.state(ModBlocks.MOON_STONE.get().defaultBlockState());
+        SurfaceRules.RuleSource moonStone = SurfaceRules.state(ModBlocks.MOON_STONE.get().defaultBlockState());
+        SurfaceRules.RuleSource moonSand = SurfaceRules.state(MoonBlocks.MOON_SAND.getDefaultState());
+        SurfaceRules.ConditionSource topSurface = SurfaceRules.abovePreliminarySurface();
+        SurfaceRules.ConditionSource floorDepth = SurfaceRules.stoneDepthCheck(0, true, 4, CaveSurface.FLOOR);
+        return SurfaceRules.sequence(
+                SurfaceRules.ifTrue(topSurface,
+                        SurfaceRules.sequence(
+                                SurfaceRules.ifTrue(floorDepth, moonSand),
+                                moonStone)),
+                moonStone);
     }
 
     public static SurfaceRules.RuleSource MarsSurface() {

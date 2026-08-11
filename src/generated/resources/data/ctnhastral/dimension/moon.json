@@ -1,7 +1,7 @@
 {
   "type": "ctnhastral:moon",
   "generator": {
-    "type": "minecraft:noise",
+    "type": "ctnhastral:moon_test",
     "biome_source": {
       "type": "minecraft:multi_noise",
       "biomes": [
