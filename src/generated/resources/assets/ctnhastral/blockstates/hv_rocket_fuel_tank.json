@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "ctnhastral:block/rocket_fuel_tank/hv_rocket_fuel_tank"
+    }
+  }
+}

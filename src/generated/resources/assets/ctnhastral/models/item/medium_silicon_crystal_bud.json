@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "ctnhastral:block/silicon_crystal/medium_silicon_crystal_bud"
+  }
+}
