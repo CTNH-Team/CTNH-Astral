@@ -119,6 +119,7 @@ public class CommonProxy {
     public void commonSetup(FMLCommonSetupEvent event) {
         // CTNHMaterials.tagPrefixIgnore();
         event.enqueueWork(() -> {
+            CAFluidInteractions.register();
             Regions.register(new CAOverworldRegion(2));
             Regions.register(new CANetherRegion(5));
             SurfaceRuleManager.addSurfaceRules(SurfaceRuleManager.RuleCategory.OVERWORLD, CTNHAstral.MODID,
