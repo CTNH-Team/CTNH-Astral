@@ -42,7 +42,7 @@ public class OxygenCondition extends RecipeCondition<OxygenCondition> {
 
     @Override
     protected boolean testCondition(@NotNull GTRecipe recipe, @NotNull RecipeLogic recipeLogic) {
-        return OxygenMachineRules.hasRequiredAtmosphere(recipeLogic.machine.self());
+        return true;
     }
 
     @Override
