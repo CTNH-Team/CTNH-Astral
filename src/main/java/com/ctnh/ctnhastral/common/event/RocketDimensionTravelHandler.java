@@ -16,6 +16,8 @@ import net.minecraftforge.fml.common.Mod;
 import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.common.entity.RocketContraptionEntity;
 import com.ctnh.ctnhastral.common.machine.multiblock.RocketAssemblyPlatformMachine;
+import com.ctnh.ctnhastral.common.universe.CACelestialBodies;
+import com.ctnh.ctnhastral.common.universe.CelestialBody;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.contraptions.Contraption;
 
@@ -47,7 +49,9 @@ public final class RocketDimensionTravelHandler {
         rocket.ensureContraptionReadyForSave();
         CompoundTag snapshot = rocket.getContraption().writeNBT(false);
         player.stopRiding();
-        PENDING_TRANSFERS.put(player.getUUID(), new PendingTransfer(rocket, snapshot, RocketState.capture(rocket)));
+        CelestialBody sourceBody = CACelestialBodies.get(player.serverLevel().dimension());
+        PENDING_TRANSFERS.put(player.getUUID(), new PendingTransfer(rocket, snapshot, RocketState.capture(rocket),
+                sourceBody == null ? null : sourceBody.id()));
     }
 
     @SubscribeEvent
@@ -57,6 +61,13 @@ public final class RocketDimensionTravelHandler {
         if (pending == null) return;
 
         ServerLevel destination = player.serverLevel();
+        CelestialBody destinationBody = CACelestialBodies.get(destination.dimension());
+        CelestialBody sourceBody = pending.sourceBodyId() == null ? null :
+                CACelestialBodies.get(pending.sourceBodyId());
+        if (destinationBody != null) {
+            destinationBody.teleporter().teleport(player, destination, destinationBody, sourceBody);
+        }
+
         BlockPos landingCenter = player.blockPosition();
         BlockPos landingPad = createLandingPlatform(destination, landingCenter);
         RocketContraptionEntity rocket = moveRocket(pending, destination, landingPad);
@@ -67,6 +78,8 @@ public final class RocketDimensionTravelHandler {
         int startY = Math.min(landingPad.getY() + 1 + LANDING_START_HEIGHT,
                 destination.getMaxBuildHeight() - 4);
         rocket.setPos(landingCenter.getX(), startY, landingCenter.getZ());
+        player.teleportTo(destination, landingCenter.getX() + 0.5D, startY, landingCenter.getZ() + 0.5D,
+                player.getYRot(), player.getXRot());
         rocket.setPersistenceAnchor(rocket.blockPosition());
         rocket.setRunning(true);
         rocket.setContraptionMotion(Vec3.ZERO);
@@ -104,7 +117,8 @@ public final class RocketDimensionTravelHandler {
         return new BlockPos(center.getX(), y, center.getZ());
     }
 
-    private record PendingTransfer(RocketContraptionEntity rocket, CompoundTag snapshot, RocketState state) {}
+    private record PendingTransfer(RocketContraptionEntity rocket, CompoundTag snapshot, RocketState state,
+                                   net.minecraft.resources.ResourceLocation sourceBodyId) {}
 
     private record RocketState(int thrust, long fuelCapacity, long remainingFuel,
                                boolean assembled, boolean launching, int launchTicks, int countdownTicks) {

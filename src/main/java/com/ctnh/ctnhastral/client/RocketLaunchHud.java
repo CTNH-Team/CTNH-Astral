@@ -3,25 +3,19 @@ package com.ctnh.ctnhastral.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.client.event.RenderGuiEvent;
 
 import com.ctnh.ctnhastral.common.entity.RocketContraptionEntity;
+import com.ctnh.ctnhastral.common.space.CASpaceConstants;
 import com.ctnhlang.CN;
 import com.ctnhlang.EN;
 import com.ctnhlang.Key;
 import com.mojang.blaze3d.vertex.PoseStack;
-import earth.terrarium.adastra.common.config.AdAstraConfig;
 import tech.vixhentx.mcmod.ctnhlib.langprovider.Lang;
 
 public final class RocketLaunchHud {
-
-    private static final ResourceLocation ROCKET_BAR = ResourceLocation.tryBuild(
-            "ad_astra", "textures/gui/sprites/overlay/rocket_bar.png");
-    private static final ResourceLocation ROCKET = ResourceLocation.tryBuild(
-            "ad_astra", "textures/gui/sprites/overlay/rocket.png");
 
     private RocketLaunchHud() {}
 
@@ -60,11 +54,13 @@ public final class RocketLaunchHud {
             pose.popPose();
         }
 
-        graphics.blit(ROCKET_BAR, 0, height / 2, 0, 0, 16, 128, 16, 128);
+        int barTop = height / 2;
+        graphics.fill(0, barTop, 16, barTop + 128, 0xAA101820);
+        graphics.fill(2, barTop + 2, 14, barTop + 126, 0xFF314A5A);
         float progress = (float) Mth.clamp((rocket.getY() - 100.0D) /
-                (AdAstraConfig.atmosphereLeave - 100.0D), 0.0D, 1.0D);
-        int iconY = height / 2 + 113 - Mth.clamp((int) (progress * 102), 0, 102);
-        graphics.blit(ROCKET, 3, iconY, 0, 0, 8, 11, 8, 11);
+                (CASpaceConstants.ORBIT_ALTITUDE - 100.0D), 0.0D, 1.0D);
+        int iconY = barTop + 113 - Mth.clamp((int) (progress * 102), 0, 102);
+        graphics.fill(4, iconY, 12, iconY + 11, 0xFFFFD166);
     }
 
     private static RocketContraptionEntity findRocketVehicle(Entity entity) {

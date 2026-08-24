@@ -32,6 +32,10 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent
     public void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {
         event.register(new ResourceLocation(CTNHAstral.MODID, "moon"), new MoonEffects());
+        event.register(new ResourceLocation(CTNHAstral.MODID, "mars"), new MoonEffects());
+        event.register(new ResourceLocation(CTNHAstral.MODID, "venus"), new MoonEffects());
+        event.register(new ResourceLocation(CTNHAstral.MODID, "astral_planet"), new MoonEffects());
+        event.register(new ResourceLocation(CTNHAstral.MODID, "astral_orbit"), new MoonEffects());
     }
 
     @SubscribeEvent

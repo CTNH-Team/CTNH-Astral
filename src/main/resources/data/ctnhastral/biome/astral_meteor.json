@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
-    "ad_astra:lunar_wastelands"
+    "ctnhastral:moon_wasteland",
+    "ctnhastral:moon_silicon_plains",
+    "ctnhastral:moonlight_desert"
   ]
 }

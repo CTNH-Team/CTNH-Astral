@@ -1,7 +1,7 @@
 {
   "aquifers_enabled": false,
   "default_block": {
-    "Name": "ad_astra:mars_stone"
+    "Name": "ctnhastral:mars_stone"
   },
   "default_fluid": {
     "Name": "minecraft:air"
@@ -365,7 +365,7 @@
             {
               "type": "minecraft:block",
               "result_state": {
-                "Name": "ad_astra:mars_stone"
+                "Name": "ctnhastral:mars_stone"
               }
             }
           ]

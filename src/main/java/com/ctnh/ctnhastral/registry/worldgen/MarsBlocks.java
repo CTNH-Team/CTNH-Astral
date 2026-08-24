@@ -42,6 +42,8 @@ public class MarsBlocks {
 
     public static void init() {}
 
+    public static final BlockEntry<Block> MARS_STONE = createStoneLikeBlock("mars_stone", "火星岩",
+            CTNHAstral.id(MARS_STONE_TEXTURE_ROOT + "black_basalt"));
     public static final BlockEntry<Block> HEMATITE_SOIL = createStoneLikeBlock("hematite_soil", "赤铁土",
             CTNHAstral.id(MARS_DIRT_TEXTURE_ROOT + "hematite_soil"));
     public static final BlockEntry<FallingBlock> HEMATITE_SAND = createSandLikeBlock("hematite_sand", "赤铁沙",

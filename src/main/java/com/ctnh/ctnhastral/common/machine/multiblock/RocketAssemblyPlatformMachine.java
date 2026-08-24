@@ -25,8 +25,14 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.PacketDistributor;
 
 import com.ctnh.ctnhastral.common.entity.RocketContraptionEntity;
+import com.ctnh.ctnhastral.common.event.CelestialTravelHandler;
+import com.ctnh.ctnhastral.common.network.CANetwork;
+import com.ctnh.ctnhastral.common.network.S2COpenCelestialScreenPacket;
+import com.ctnh.ctnhastral.common.space.CASpaceConstants;
+import com.ctnh.ctnhastral.common.universe.CACelestialBodies;
 import com.ctnh.ctnhastral.registry.CARocketBlocks;
 import com.ctnhlang.CN;
 import com.ctnhlang.EN;
@@ -35,9 +41,6 @@ import com.mo_guang.ctpp.api.pattern.StaticBlockPattern;
 import com.mo_guang.ctpp.dynamicPart.rotation.IContraptionMultiblock;
 import com.mo_guang.ctpp.dynamicPart.rotation.SimpleRotatingContraption;
 import com.mo_guang.ctpp.dynamicPart.rotation.SimpleRotatingContraptionEntity;
-import earth.terrarium.adastra.common.config.AdAstraConfig;
-import earth.terrarium.adastra.common.menus.base.PlanetsMenuProvider;
-import earth.terrarium.botarium.common.menu.MenuHooks;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -63,7 +66,7 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     private static final String TAG_LAUNCHING = "RocketLaunching";
     private static final String TAG_LAUNCH_TICKS = "RocketLaunchTicks";
     private static final String TAG_REMAINING_FUEL = "RocketRemainingFuel";
-    private static final int COUNTDOWN_TICKS = 200;
+    private static final int COUNTDOWN_TICKS = CASpaceConstants.LAUNCH_COUNTDOWN;
     private static final int PLATFORM_LOOKUP_RADIUS = 8;
     private static final int PLATFORM_LOOKUP_DEPTH = 64;
     private static final int ROCKET_SEARCH_HEIGHT = 256;
@@ -434,7 +437,7 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         updateRocketSyncedState(entity);
         markDirty();
 
-        if (entity.getY() >= AdAstraConfig.atmosphereLeave) {
+        if (entity.getY() >= CASpaceConstants.ORBIT_ALTITUDE) {
             openPlanetsScreenForPassengers(entity);
             launching = false;
             entity.setContraptionMotion(Vec3.ZERO);
@@ -656,9 +659,13 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     }
 
     private void openPlanetsScreenForPassengers(RocketContraptionEntity entity) {
+        var currentBody = CACelestialBodies.get(entity.level().dimension());
+        ResourceLocation fromBodyId = currentBody == null ? CACelestialBodies.SOL_ID : currentBody.id();
         for (Entity passenger : entity.getIndirectPassengers()) {
             if (passenger instanceof ServerPlayer player) {
-                MenuHooks.openMenu(player, new PlanetsMenuProvider());
+                CANetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
+                        new S2COpenCelestialScreenPacket(fromBodyId, entity.getRocketTier()));
+                CelestialTravelHandler.openScreen(player, fromBodyId, entity.getRocketTier(), entity.getUUID());
             }
         }
     }

@@ -13,20 +13,15 @@ import com.gregtechceu.gtceu.common.data.GTMaterials;
 import com.gregtechceu.gtceu.common.data.machines.GTMachineUtils;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.state.BlockState;
 
 import com.ctnh.ctnhastral.common.oxygen.OxygenAreaSource;
+import com.ctnh.ctnhastral.common.oxygen.OxygenEnvironmentService;
 import com.ctnhlang.CN;
 import com.ctnhlang.EN;
-import earth.terrarium.adastra.api.systems.OxygenApi;
-import earth.terrarium.adastra.api.systems.TemperatureApi;
-import earth.terrarium.adastra.common.utils.floodfill.FloodFill3D;
 import tech.vixhentx.mcmod.ctnhlib.langprovider.Lang;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -111,30 +106,13 @@ public class OxygenEnricherMachine extends SimpleTieredMachine implements Oxygen
     }
 
     private Set<BlockPos> collectDistributedBlocks(ServerLevel level) {
-        Set<BlockPos> best = Collections.emptySet();
-        for (Direction direction : Direction.values()) {
-            BlockPos seed = getPos().relative(direction);
-            if (!isPassableSpace(level, seed)) {
-                continue;
-            }
-            Set<BlockPos> distributed = new HashSet<>(
-                    FloodFill3D.run(level, seed, getOxygenBlockLimit(), FloodFill3D.TEST_FULL_SEAL, true));
-            distributed.removeIf(pos -> !getPos().closerThan(pos, getOxygenRange() + 1));
-            if (distributed.size() > best.size()) {
-                best = distributed;
-            }
-        }
-        return best;
+        return new HashSet<>(OxygenEnvironmentService.computeOxygenVolume(
+                level, getPos(), getOxygenBlockLimit(), getOxygenRange()));
     }
 
     private int getOxygenBlockLimit() {
         int range = getOxygenRange();
         return Math.min(8192, Math.max(256, range * range * 4));
-    }
-
-    private boolean isPassableSpace(ServerLevel level, BlockPos pos) {
-        BlockState state = level.getBlockState(pos);
-        return state.isAir() || state.canBeReplaced() || state.getCollisionShape(level, pos).isEmpty();
     }
 
     private void updateDistributedBlocks(ServerLevel level, Set<BlockPos> nextBlocks) {
@@ -145,15 +123,15 @@ public class OxygenEnricherMachine extends SimpleTieredMachine implements Oxygen
         Set<BlockPos> removed = new HashSet<>(distributedBlocks);
         removed.removeAll(nextBlocks);
         if (!removed.isEmpty()) {
-            OxygenApi.API.removeOxygen(level, removed);
-            TemperatureApi.API.removeTemperature(level, removed);
+            OxygenEnvironmentService.removeOxygen(level, removed);
+            OxygenEnvironmentService.removeTemperature(level, removed);
         }
 
         Set<BlockPos> added = new HashSet<>(nextBlocks);
         added.removeAll(distributedBlocks);
         if (!added.isEmpty()) {
-            OxygenApi.API.setOxygen(level, added, true);
-            TemperatureApi.API.setTemperature(level, added, HABITABLE_TEMPERATURE);
+            OxygenEnvironmentService.setOxygen(level, added, true);
+            OxygenEnvironmentService.setTemperature(level, added, HABITABLE_TEMPERATURE);
         }
 
         distributedBlocks.clear();
@@ -164,8 +142,8 @@ public class OxygenEnricherMachine extends SimpleTieredMachine implements Oxygen
         if (distributedBlocks.isEmpty() || getLevel() == null) {
             return;
         }
-        OxygenApi.API.removeOxygen(getLevel(), distributedBlocks);
-        TemperatureApi.API.removeTemperature(getLevel(), distributedBlocks);
+        OxygenEnvironmentService.removeOxygen(getLevel(), distributedBlocks);
+        OxygenEnvironmentService.removeTemperature(getLevel(), distributedBlocks);
         distributedBlocks.clear();
     }
 

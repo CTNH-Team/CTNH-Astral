@@ -38,7 +38,6 @@ import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.data.CAMaterials;
 import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
 import com.ctnh.ctnhastral.registry.worldgen.MarsBlocks;
-import earth.terrarium.adastra.common.registry.ModBlocks;
 
 import static com.simibubi.create.content.decoration.palettes.AllPaletteStoneTypes.OCHRUM;
 
@@ -116,7 +115,7 @@ public class CAConfiguredFeatures {
                         BlockStateProvider.simple(AstralBlocks.ASTRAL_COBBLESTONE.getDefaultState())));
 
         FeatureUtils.register(ctx, VENUS_OCHRUM, Feature.ORE, new OreConfiguration(
-                new BlockMatchTest(ModBlocks.VENUS_STONE.get()), OCHRUM.getBaseBlock().get().defaultBlockState(), 9));
+                new BlockMatchTest(Blocks.STONE), OCHRUM.getBaseBlock().get().defaultBlockState(), 9));
         FeatureUtils.register(ctx, GAS_SPROUT, GTFeatures.FLUID_SPROUT.get(),
                 new FluidSproutConfiguration(GTMaterials.RefineryGas.getFluid(FluidStorageKeys.GAS),
                         UniformInt.of(12, 16), UniformInt.of(6, 9),
@@ -159,10 +158,10 @@ public class CAConfiguredFeatures {
                         BlockStateProvider.simple(MarsBlocks.MARTIAN_MOSS.getDefaultState())));
 
         FeatureUtils.register(ctx, MARS_HEMATITE_ORE, Feature.ORE,
-                new OreConfiguration(new BlockMatchTest(ModBlocks.MARS_STONE.get()),
+                new OreConfiguration(new BlockMatchTest(MarsBlocks.MARS_STONE.get()),
                         MarsBlocks.HEMATITE_SOIL.get().defaultBlockState(), 28));
         FeatureUtils.register(ctx, MARS_MAGNETITE_ORE, Feature.ORE,
-                new OreConfiguration(new BlockMatchTest(ModBlocks.MARS_STONE.get()),
+                new OreConfiguration(new BlockMatchTest(MarsBlocks.MARS_STONE.get()),
                         MarsBlocks.RUST_BLOCK.get().defaultBlockState(), 20));
         FeatureUtils.register(ctx, MARS_KRYPTON_ORE, Feature.ORE,
                 new OreConfiguration(new BlockMatchTest(MarsBlocks.DRY_ICE.get()),

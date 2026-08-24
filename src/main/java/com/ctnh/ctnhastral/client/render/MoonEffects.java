@@ -5,7 +5,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -14,7 +13,6 @@ import com.ctnh.ctnhastral.client.ClientProxy;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
-import earth.terrarium.adastra.AdAstra;
 import org.joml.Matrix4f;
 
 import javax.annotation.Nullable;
@@ -22,9 +20,6 @@ import javax.annotation.Nullable;
 @SuppressWarnings("removal")
 @OnlyIn(Dist.CLIENT)
 public class MoonEffects extends DimensionSpecialEffects {
-
-    private static final ResourceLocation EARTH_LOCATION = new ResourceLocation(AdAstra.MOD_ID,
-            "textures/environment/earth.png");
 
     public MoonEffects() {
         super(Float.NaN, true, SkyType.NORMAL, false, false);
@@ -119,7 +114,8 @@ public class MoonEffects extends DimensionSpecialEffects {
             poseStack.popPose();
         }
 
-        // 渲染地球
+        // Render a small procedural homeworld marker without depending on a
+        // texture supplied by another space mod.
 
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -131,15 +127,14 @@ public class MoonEffects extends DimensionSpecialEffects {
 
         Matrix4f matrix4f = poseStack.last().pose();
 
-        RenderSystem.setShaderTexture(0, EARTH_LOCATION);
-
         float size = 40.0F;
 
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferbuilder.vertex(matrix4f, -size, 100.0F, -size).uv(0.0F, 0.0F).color(255, 255, 255, 255).endVertex();
-        bufferbuilder.vertex(matrix4f, size, 100.0F, -size).uv(1.0F, 0.0F).color(255, 255, 255, 255).endVertex();
-        bufferbuilder.vertex(matrix4f, size, 100.0F, size).uv(1.0F, 1.0F).color(255, 255, 255, 255).endVertex();
-        bufferbuilder.vertex(matrix4f, -size, 100.0F, size).uv(0.0F, 1.0F).color(255, 255, 255, 255).endVertex();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        bufferbuilder.vertex(matrix4f, -size, 100.0F, -size).color(48, 112, 190, 255).endVertex();
+        bufferbuilder.vertex(matrix4f, size, 100.0F, -size).color(48, 112, 190, 255).endVertex();
+        bufferbuilder.vertex(matrix4f, size, 100.0F, size).color(48, 112, 190, 255).endVertex();
+        bufferbuilder.vertex(matrix4f, -size, 100.0F, size).color(48, 112, 190, 255).endVertex();
         tesselator.end();
 
         poseStack.popPose();

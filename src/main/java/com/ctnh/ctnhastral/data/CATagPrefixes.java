@@ -3,19 +3,20 @@ package com.ctnh.ctnhastral.data;
 import com.gregtechceu.gtceu.api.data.chemical.material.stack.MaterialStack;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 
-import com.lowdragmc.lowdraglib.LDLib;
-
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 
 import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
-import earth.terrarium.adastra.common.registry.ModBlocks;
+import com.ctnh.ctnhastral.registry.worldgen.MarsBlocks;
+import com.ctnh.ctnhastral.registry.worldgen.MoonBlocks;
+
+import java.util.function.Supplier;
 
 import static com.ctnh.ctnhastral.CTNHAstral.REGISTRATE;
-import static com.ctnh.ctnhastral.utils.ModUtils.AdAstraRL;
 
 public class CATagPrefixes {
 
@@ -34,43 +35,21 @@ public class CATagPrefixes {
     public static TagPrefix oreGlacioStone;
 
     public static void init() {
-        if (LDLib.isModLoaded("ad_astra")) {
-            oreMoonStone = REGISTRATE.oreTagPrefix("moon_stone", BlockTags.MINEABLE_WITH_PICKAXE)
-                    .cnlang("月岩%s矿石")
-                    .lang("Moon Stone %s Ore")
-                    .registerOre(() -> ModBlocks.MOON_STONE.get().defaultBlockState(),
-                            () -> CAMaterials.Moonstone,
-                            () -> BlockBehaviour.Properties.copy(Blocks.STONE).mapColor(MapColor.COLOR_LIGHT_GRAY),
-                            AdAstraRL("block/moon_stone"), false, false, true);
-            oreVenusStone = REGISTRATE.oreTagPrefix("venus_stone", BlockTags.MINEABLE_WITH_PICKAXE)
-                    .cnlang("锃金岩%s矿石")
-                    .lang("Venus Stone %s Ore")
-                    .registerOre(() -> ModBlocks.VENUS_STONE.get().defaultBlockState(),
-                            () -> CAMaterials.Venusstone,
-                            () -> BlockBehaviour.Properties.copy(Blocks.STONE).mapColor(MapColor.TERRACOTTA_ORANGE),
-                            AdAstraRL("block/venus_stone"), false, false, true);
-            oreMarsStone = REGISTRATE.oreTagPrefix("mars_stone", BlockTags.MINEABLE_WITH_PICKAXE)
-                    .cnlang("深红岩%s矿石")
-                    .lang("Mars Stone %s Ore")
-                    .registerOre(() -> ModBlocks.MARS_STONE.get().defaultBlockState(),
-                            () -> CAMaterials.Marsstone,
-                            () -> BlockBehaviour.Properties.copy(Blocks.STONE).mapColor(MapColor.COLOR_RED),
-                            AdAstraRL("block/mars_stone"), false, false, true);
-            oreMercuryStone = REGISTRATE.oreTagPrefix("mercury_stone", BlockTags.MINEABLE_WITH_PICKAXE)
-                    .cnlang("旱海岩%s矿石")
-                    .lang("Mercury Stone %s Ore")
-                    .registerOre(() -> ModBlocks.MERCURY_STONE.get().defaultBlockState(),
-                            () -> CAMaterials.Mercurystone,
-                            () -> BlockBehaviour.Properties.copy(Blocks.STONE).mapColor(MapColor.TERRACOTTA_PURPLE),
-                            AdAstraRL("block/mercury_stone"), false, false, true);
-            oreGlacioStone = REGISTRATE.oreTagPrefix("glacio_stone", BlockTags.MINEABLE_WITH_PICKAXE)
-                    .cnlang("坚冰岩%s矿石")
-                    .lang("Glacio Stone %s Ore")
-                    .registerOre(() -> ModBlocks.GLACIO_STONE.get().defaultBlockState(),
-                            () -> CAMaterials.Glaciostone,
-                            () -> BlockBehaviour.Properties.copy(Blocks.STONE).mapColor(MapColor.ICE),
-                            AdAstraRL("block/glacio_stone"), false, false, true);
-        }
+        oreMoonStone = register("moon_stone", "月岩%s矿石", "Moon Stone %s Ore",
+                MoonBlocks.MOON_STONE::getDefaultState, () -> CAMaterials.Moonstone,
+                MapColor.COLOR_LIGHT_GRAY, "block/stones/moon_stone");
+        oreVenusStone = register("venus_stone", "锃金岩%s矿石", "Venus Stone %s Ore",
+                Blocks.STONE::defaultBlockState, () -> CAMaterials.Venusstone,
+                MapColor.TERRACOTTA_ORANGE, "block/mars/stone/sulfuric_crust");
+        oreMarsStone = register("mars_stone", "深红岩%s矿石", "Mars Stone %s Ore",
+                MarsBlocks.MARS_STONE::getDefaultState, () -> CAMaterials.Marsstone,
+                MapColor.COLOR_RED, "block/mars/stone/mars_stone");
+        oreMercuryStone = register("mercury_stone", "旱海岩%s矿石", "Mercury Stone %s Ore",
+                Blocks.STONE::defaultBlockState, () -> CAMaterials.Mercurystone,
+                MapColor.TERRACOTTA_PURPLE, "block/stones/astral_stone");
+        oreGlacioStone = register("glacio_stone", "坚冰岩%s矿石", "Glacio Stone %s Ore",
+                Blocks.STONE::defaultBlockState, () -> CAMaterials.Glaciostone,
+                MapColor.ICE, "block/mars/stone/dry_ice");
         oreMoonStone
                 .addSecondaryMaterial(new MaterialStack(CAMaterials.Moonstone, TagPrefix.dust.materialAmount()));
         oreVenusStone
@@ -83,5 +62,17 @@ public class CATagPrefixes {
                 new MaterialStack(CAMaterials.Glaciostone, TagPrefix.dust.materialAmount()));
         oreAstralStone
                 .addSecondaryMaterial(new MaterialStack(CAMaterials.AstralStone, TagPrefix.dust.materialAmount()));
+    }
+
+    private static TagPrefix register(String name, String cnName, String enName,
+                                      Supplier<BlockState> baseBlock,
+                                      Supplier<com.gregtechceu.gtceu.api.data.chemical.material.Material> material,
+                                      MapColor mapColor, String texturePath) {
+        return REGISTRATE.oreTagPrefix(name, BlockTags.MINEABLE_WITH_PICKAXE)
+                .cnlang(cnName)
+                .lang(enName)
+                .registerOre(baseBlock, material,
+                        () -> BlockBehaviour.Properties.copy(Blocks.STONE).mapColor(mapColor),
+                        CTNHAstral.id(texturePath), false, false, true);
     }
 }

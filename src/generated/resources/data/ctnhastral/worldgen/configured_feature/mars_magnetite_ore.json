@@ -9,7 +9,7 @@
           "Name": "ctnhastral:rust_block"
         },
         "target": {
-          "block": "ad_astra:mars_stone",
+          "block": "ctnhastral:mars_stone",
           "predicate_type": "minecraft:block_match"
         }
       }

@@ -204,6 +204,10 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
         return rocketThrust;
     }
 
+    public int getRocketTier() {
+        return Math.max(1, (int) Math.ceil(rocketThrust / 1200.0D));
+    }
+
     public long getRocketFuelCapacity() {
         return rocketFuelCapacity;
     }

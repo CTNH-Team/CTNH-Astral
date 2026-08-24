@@ -8,7 +8,6 @@ import net.minecraft.world.level.levelgen.placement.CaveSurface;
 import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
 import com.ctnh.ctnhastral.registry.worldgen.MarsBlocks;
 import com.ctnh.ctnhastral.registry.worldgen.MoonBlocks;
-import earth.terrarium.adastra.common.registry.ModBlocks;
 
 public class CASurfaceRuleData {
 
@@ -67,7 +66,7 @@ public class CASurfaceRuleData {
     }
 
     public static SurfaceRules.RuleSource MarsSurface() {
-        SurfaceRules.RuleSource marsStone = SurfaceRules.state(ModBlocks.MARS_STONE.get().defaultBlockState());
+        SurfaceRules.RuleSource marsStone = SurfaceRules.state(MarsBlocks.MARS_STONE.get().defaultBlockState());
         SurfaceRules.RuleSource hematiteSoil = SurfaceRules.state(MarsBlocks.HEMATITE_SOIL.getDefaultState());
         SurfaceRules.RuleSource hematiteSand = SurfaceRules.state(MarsBlocks.HEMATITE_SAND.getDefaultState());
         SurfaceRules.RuleSource dryIce = SurfaceRules.state(MarsBlocks.DRY_ICE.getDefaultState());

@@ -10,8 +10,8 @@ import net.minecraft.world.level.levelgen.*;
 import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.data.CAMaterials;
 import com.ctnh.ctnhastral.registry.worldgen.AstralBlocks;
+import com.ctnh.ctnhastral.registry.worldgen.MarsBlocks;
 import com.ctnh.ctnhastral.registry.worldgen.MoonBlocks;
-import earth.terrarium.adastra.common.registry.ModBlocks;
 
 import java.util.List;
 
@@ -168,7 +168,7 @@ public class CANoiseSetting {
                 false,
                 false));
         ctx.register(MARS, new NoiseGeneratorSettings(NoiseSettings.create(-64, 384, 1, 2),
-                ModBlocks.MARS_STONE.get().defaultBlockState(),
+                MarsBlocks.MARS_STONE.get().defaultBlockState(),
                 Blocks.AIR.defaultBlockState(),
                 new NoiseRouter(DensityFunctions.noise(holderGetter2.getOrThrow(Noises.AQUIFER_BARRIER),
                         0.5),

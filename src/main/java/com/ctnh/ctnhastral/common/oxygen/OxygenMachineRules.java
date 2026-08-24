@@ -4,8 +4,6 @@ import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 
-import earth.terrarium.adastra.api.systems.OxygenApi;
-
 import java.util.Arrays;
 
 public final class OxygenMachineRules {
@@ -23,6 +21,7 @@ public final class OxygenMachineRules {
     }
 
     public static boolean hasRequiredAtmosphere(MetaMachine machine) {
-        return machine.getLevel() == null || OxygenApi.API.hasOxygen(machine.getLevel(), machine.getPos());
+        return machine.getLevel() == null ||
+                OxygenEnvironmentService.hasBreathableAtmosphere(machine.getLevel(), machine.getPos());
     }
 }

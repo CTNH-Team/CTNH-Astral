@@ -22,6 +22,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegisterEvent;
 
 import com.ctnh.ctnhastral.CTNHAstral;
+import com.ctnh.ctnhastral.common.network.CANetwork;
 import com.ctnh.ctnhastral.data.CAEnchantments;
 import com.ctnh.ctnhastral.data.CAMaterials;
 import com.ctnh.ctnhastral.data.GTMateralAdjust;
@@ -68,6 +69,7 @@ public class CommonProxy {
 
     public static void init() {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        CANetwork.init();
         eventBus.addGenericListener(GTRecipeType.class, CommonProxy::registerRecipeTypes);
         eventBus.addGenericListener(MachineDefinition.class, CommonProxy::registerMachines);
         eventBus.addGenericListener(RecipeConditionType.class, CommonProxy::registerRecipeConditions);
@@ -114,7 +116,6 @@ public class CommonProxy {
     @SubscribeEvent
     public void registerMaterials(MaterialEvent event) {
         CAMaterials.init();
-        CAMaterials.tagPrefixIgnore();
         GTMateralAdjust.init();
     }
 
@@ -122,6 +123,7 @@ public class CommonProxy {
     public void commonSetup(FMLCommonSetupEvent event) {
         // CTNHMaterials.tagPrefixIgnore();
         event.enqueueWork(() -> {
+            CAMaterials.tagPrefixIgnore();
             CAFluidInteractions.register();
             Regions.register(new CAOverworldRegion(2));
             Regions.register(new CANetherRegion(5));

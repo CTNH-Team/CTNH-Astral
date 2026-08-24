@@ -42,11 +42,16 @@ public class OxygenCondition extends RecipeCondition<OxygenCondition> {
 
     @Override
     protected boolean testCondition(@NotNull GTRecipe recipe, @NotNull RecipeLogic recipeLogic) {
-        return true;
+        return OxygenMachineRules.hasRequiredAtmosphere(recipeLogic.getMachine());
     }
 
     @Override
     public OxygenCondition createTemplate() {
         return new OxygenCondition();
+    }
+
+    @Override
+    public boolean perTick() {
+        return true;
     }
 }
