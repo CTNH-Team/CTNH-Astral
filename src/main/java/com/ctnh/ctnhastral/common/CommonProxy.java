@@ -28,6 +28,8 @@ import com.ctnh.ctnhastral.data.GTMateralAdjust;
 import com.ctnh.ctnhastral.data.lang.ChineseLangHandler;
 import com.ctnh.ctnhastral.data.lang.EnglishLangHandler;
 import com.ctnh.ctnhastral.data.worldgen.*;
+import com.ctnh.ctnhastral.data.worldgen.carver.CAConfiguredCarvers;
+import com.ctnh.ctnhastral.data.worldgen.carver.CAWorldCarvers;
 import com.ctnh.ctnhastral.data.worldgen.feature.CAConfiguredFeatures;
 import com.ctnh.ctnhastral.data.worldgen.feature.CAFeatures;
 import com.ctnh.ctnhastral.data.worldgen.feature.CAPlacements;
@@ -73,6 +75,7 @@ public class CommonProxy {
         CAEnchantments.Enchantments.register(eventBus);
         CACreativeModeTabs.init();
         CAFeatures.init(eventBus);
+        CAWorldCarvers.init(eventBus);
         CARocketEntityTypes.init();
         REGISTRATE.registerRegistrate();
         REGISTRATE.addLangProcessor()
@@ -144,6 +147,7 @@ public class CommonProxy {
             var set = Set.of(CTNHAstral.MODID);
             generator.addProvider(true, new DatapackBuiltinEntriesProvider(
                     packOutput, registries, new RegistrySetBuilder()
+                            .add(Registries.CONFIGURED_CARVER, CAConfiguredCarvers::bootstrap)
                             .add(Registries.BIOME, CABiomes::bootstrap)
                             .add(Registries.CONFIGURED_FEATURE, CAConfiguredFeatures::bootstrap)
                             .add(Registries.PLACED_FEATURE, CAPlacements::bootstrap)

@@ -1,0 +1,38 @@
+{
+  "type": "ctnhastral:moon_crater_carver",
+  "config": {
+    "debug_settings": {
+      "barrier_state": {
+        "Name": "minecraft:glass"
+      },
+      "lava_state": {
+        "Name": "minecraft:orange_stained_glass"
+      },
+      "water_state": {
+        "Name": "minecraft:candle",
+        "Properties": {
+          "candles": "1",
+          "lit": "false",
+          "waterlogged": "false"
+        }
+      }
+    },
+    "ideal_range_offset": 8,
+    "lava_level": {
+      "above_bottom": 0
+    },
+    "max_radius": 18,
+    "min_radius": 6,
+    "probability": 0.15,
+    "y": {
+      "type": "minecraft:uniform",
+      "max_inclusive": {
+        "absolute": 96
+      },
+      "min_inclusive": {
+        "absolute": 48
+      }
+    },
+    "y_scale": 0.5
+  }
+}

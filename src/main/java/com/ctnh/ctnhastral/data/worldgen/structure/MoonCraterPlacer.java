@@ -12,7 +12,6 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
 
 import com.ctnh.ctnhastral.registry.worldgen.MoonBlocks;
-import earth.terrarium.adastra.common.registry.ModBlocks;
 
 public class MoonCraterPlacer {
 
@@ -21,7 +20,7 @@ public class MoonCraterPlacer {
         new MoonCraterPlacer(level, pos, radius, boundingBox, random).place();
     }
 
-    private final BlockState moonStone = ModBlocks.MOON_STONE.get().defaultBlockState();
+    private final BlockState moonStone = MoonBlocks.MOON_STONE.getDefaultState();
     private final BlockState moonSand = MoonBlocks.MOON_SAND.getDefaultState();
     private final MeteoriteBlockPutter putter = new MeteoriteBlockPutter();
     private final LevelAccessor level;

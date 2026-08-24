@@ -1,5 +1,7 @@
 {
-  "carvers": {},
+  "carvers": {
+    "air": "ctnhastral:moon_crater_carver"
+  },
   "downfall": 0.0,
   "effects": {
     "fog_color": 1316898,
