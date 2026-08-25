@@ -36,7 +36,7 @@ public final class CACelestialBodies {
             .name(Component.translatable("celestial_body.ctnhastral.sol"))
             .description(Component.translatable("celestial_body.ctnhastral.sol.desc"))
             .position(new StaticCelestialPosition(0, 0))
-            .display(new CelestialDisplay(CTNHAstral.id("textures/block/fluids/fluid.starlight.png"), 16, 16, 1.0f,
+            .display(new CelestialDisplay(celestialTexture("sol"), 8, 8, 1.0f,
                     0xFFFFD166))
             .ring(new CelestialRingDisplay(0xFFFFAA00, 2.0f))
             .tier(0)
@@ -55,8 +55,8 @@ public final class CACelestialBodies {
             .parent(SOL_ID)
             .world(Level.OVERWORLD)
             .position(new OrbitalCelestialPosition(1.0, 1.0, 0.0, true))
-            .display(new CelestialDisplay(ResourceLocation.tryBuild("minecraft", "textures/block/grass_block_top.png"),
-                    16, 16, 1.0f,
+            .display(new CelestialDisplay(celestialTexture("earth"),
+                    8, 8, 1.0f,
                     0xFF4E9FE8))
             .tier(0)
             .gravity(1.0f)
@@ -93,7 +93,7 @@ public final class CACelestialBodies {
             .parent(ASTRAL_PLANET_ID)
             .world(dimension(ASTRAL_ORBIT_ID))
             .position(new OrbitalCelestialPosition(2.0, 0.4, 0.5, false))
-            .display(new CelestialDisplay(CTNHAstral.id("textures/block/moon_bricks.png"), 8, 8, 1.0f,
+            .display(new CelestialDisplay(celestialTexture("space_station"), 16, 16, 1.0f,
                     0xFFB8C7D9))
             .teleporter(OrbitCelestialTeleporter.INSTANCE)
             .tier(6)
@@ -111,7 +111,7 @@ public final class CACelestialBodies {
             .parent(SOL_ID)
             .world(dimension(MOON_ID))
             .position(new OrbitalCelestialPosition(0.8, 1.2, 1.0, true))
-            .display(new CelestialDisplay(CTNHAstral.id("textures/block/stones/moon_stone.png"), 16, 16, 1.0f,
+            .display(new CelestialDisplay(celestialTexture("moon"), 8, 8, 1.0f,
                     0xFFB6C2D1))
             .tier(1)
             .gravity(1.622f)
@@ -128,7 +128,7 @@ public final class CACelestialBodies {
             .parent(SOL_ID)
             .world(dimension(MARS_ID))
             .position(new OrbitalCelestialPosition(1.5, 2.0, 2.0, true))
-            .display(new CelestialDisplay(CTNHAstral.id("textures/block/mars/dirt/martian_regolith.png"), 16, 16,
+            .display(new CelestialDisplay(celestialTexture("mars"), 16, 16,
                     1.0f,
                     0xFFC86452))
             .tier(2)
@@ -146,7 +146,7 @@ public final class CACelestialBodies {
             .parent(SOL_ID)
             .world(dimension(VENUS_ID))
             .position(new OrbitalCelestialPosition(1.1, 1.6, 3.0, true))
-            .display(new CelestialDisplay(CTNHAstral.id("textures/block/mars/stone/sulfuric_crust.png"), 16, 16,
+            .display(new CelestialDisplay(celestialTexture("venus"), 16, 16,
                     1.0f,
                     0xFFE7A85B))
             .tier(3)
@@ -195,5 +195,9 @@ public final class CACelestialBodies {
 
     private static ResourceKey<Level> dimension(ResourceLocation id) {
         return ResourceKey.create(Registries.DIMENSION, id);
+    }
+
+    private static ResourceLocation celestialTexture(String name) {
+        return CTNHAstral.id("textures/gui/celestialbodies/" + name + ".png");
     }
 }

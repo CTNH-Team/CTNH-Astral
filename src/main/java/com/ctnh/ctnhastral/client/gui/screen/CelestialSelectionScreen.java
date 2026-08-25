@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 
+import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.common.network.C2STeleportToBodyPacket;
 import com.ctnh.ctnhastral.common.network.CANetwork;
 import com.ctnh.ctnhastral.common.universe.CACelestialBodies;
@@ -32,6 +33,8 @@ import java.util.Set;
  */
 public final class CelestialSelectionScreen extends Screen {
 
+    private static final ResourceLocation SELECTION_CURSOR_TEXTURE = CTNHAstral.id(
+            "textures/gui/selection_cursor.png");
     private final ResourceLocation fromBodyId;
     private final int rocketTier;
     private final Map<CelestialBody, Vec2> screenPositions = new HashMap<>();
@@ -152,8 +155,11 @@ public final class CelestialSelectionScreen extends Screen {
             int size = Math.max(textureWidth, textureHeight) / 2;
             int color = body.display().color();
             if (body == hoveredBody) {
-                graphics.fill(Mth.floor(position.x) - size - 2, Mth.floor(position.y) - size - 2,
-                        Mth.floor(position.x) + size + 3, Mth.floor(position.y) + size + 3, 0x665EBCFF);
+                int cursorSize = Math.max(32, (size + 4) * 2);
+                graphics.blit(SELECTION_CURSOR_TEXTURE,
+                        Mth.floor(position.x) - cursorSize / 2,
+                        Mth.floor(position.y) - cursorSize / 2,
+                        0, 0.0F, 0.0F, cursorSize, cursorSize, 64, 64);
             }
             graphics.fill(Mth.floor(position.x) - size - 1, Mth.floor(position.y) - size - 1,
                     Mth.floor(position.x) + size + 2, Mth.floor(position.y) + size + 2, color);

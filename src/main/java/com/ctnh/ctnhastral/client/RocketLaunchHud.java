@@ -3,10 +3,12 @@ package com.ctnh.ctnhastral.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.client.event.RenderGuiEvent;
 
+import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.common.entity.RocketContraptionEntity;
 import com.ctnh.ctnhastral.common.space.CASpaceConstants;
 import com.ctnhlang.CN;
@@ -16,6 +18,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import tech.vixhentx.mcmod.ctnhlib.langprovider.Lang;
 
 public final class RocketLaunchHud {
+
+    private static final ResourceLocation LAUNCH_BUTTON_TEXTURE = CTNHAstral
+            .id("textures/gui/rocket_booster.png");
 
     private RocketLaunchHud() {}
 
@@ -36,9 +41,13 @@ public final class RocketLaunchHud {
         int height = minecraft.getWindow().getGuiScaledHeight();
         if (!rocket.isRocketLaunching()) {
             Component key = minecraft.options.keyJump.getTranslatedKeyMessage();
-            graphics.drawCenteredString(minecraft.font,
-                    launch.translate(key),
-                    width / 2, 60, 0xE54B4B);
+            Component message = launch.translate(key);
+            int textWidth = minecraft.font.width(message);
+            int groupWidth = 18 + 6 + textWidth;
+            int groupLeft = (width - groupWidth) / 2;
+            graphics.blit(LAUNCH_BUTTON_TEXTURE, groupLeft, 54, 0, 0.0F, 0.0F,
+                    18, 18, 18, 18);
+            graphics.drawString(minecraft.font, message, groupLeft + 24, 59, 0xFFE54B4B);
             return;
         }
 
