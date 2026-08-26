@@ -26,6 +26,7 @@ import com.ctnh.ctnhastral.data.CAEnchantments;
 import com.ctnh.ctnhastral.data.CAMaterials;
 import com.ctnh.ctnhastral.data.GTMateralAdjust;
 import com.ctnh.ctnhastral.data.lang.ChineseLangHandler;
+import com.ctnh.ctnhastral.data.tags.CABiomeTagsProvider;
 import com.ctnh.ctnhastral.data.lang.EnglishLangHandler;
 import com.ctnh.ctnhastral.data.worldgen.*;
 import com.ctnh.ctnhastral.data.worldgen.carver.CAConfiguredCarvers;
@@ -140,12 +141,10 @@ public class CommonProxy {
         if (event.includeClient()) {
             generator.addProvider(true,
                     new CASoundDefinitionsProvider(packOutput, CTNHAstral.MODID, event.getExistingFileHelper()));
-            // generator.addProvider(true,
-            // new CTNHBiomeTagsProvider(packOutput, registries, existingFileHelper));
         }
         if (event.includeServer()) {
             var set = Set.of(CTNHAstral.MODID);
-            generator.addProvider(true, new DatapackBuiltinEntriesProvider(
+            var datapackEntries = new DatapackBuiltinEntriesProvider(
                     packOutput, registries, new RegistrySetBuilder()
                             .add(Registries.CONFIGURED_CARVER, CAConfiguredCarvers::bootstrap)
                             .add(Registries.BIOME, CABiomes::bootstrap)
@@ -158,7 +157,11 @@ public class CommonProxy {
                             .add(Registries.STRUCTURE, CAStructures::bootstrap)
                             .add(Registries.STRUCTURE_SET, CAStructureSets::bootstrap)
                             .add(Registries.DENSITY_FUNCTION, CADensityFunctions::bootstrap),
-                    set));
+                    set);
+            generator.addProvider(true, datapackEntries);
+            generator.addProvider(true,
+                    new CABiomeTagsProvider(packOutput, datapackEntries.getRegistryProvider(),
+                            event.getExistingFileHelper()));
         }
     }
 }
