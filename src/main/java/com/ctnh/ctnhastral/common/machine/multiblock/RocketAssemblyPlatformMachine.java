@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.machine.multiblock.WorkableMultiblockMachine;
 
 import com.lowdragmc.lowdraglib.gui.util.ClickData;
 import com.lowdragmc.lowdraglib.gui.widget.ComponentPanelWidget;
+import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.utils.TrackedDummyWorld;
 
 import net.minecraft.ChatFormatting;
@@ -76,12 +77,19 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     @Setter
     private List<SimpleRotatingContraptionEntity> contraptionEntity = new ArrayList<>();
 
+    // rocket state is persisted through LDLib managed fields (same NBT keys as before), so value
+    // changes drive both the dirty flag and the save by themselves; no manual markDirty() needed
+    @Persisted(key = TAG_THRUST)
     private int rocketThrust;
+    @Persisted(key = TAG_FUEL_CAPACITY)
     private long rocketFuelCapacity;
+    @Persisted(key = TAG_REMAINING_FUEL)
     private long rocketRemainingFuel;
-    private BlockPos rocketPivotPos;
+    @Persisted(key = TAG_LAUNCHING)
     private boolean launching;
+    @Persisted(key = TAG_LAUNCH_TICKS)
     private int launchTicks;
+    private BlockPos rocketPivotPos;
     private TickableSubscription rocketTickSubscription;
     private List<BlockPos> rocketAssemblyCandidatePositions = new ArrayList<>();
     private Set<Long> rocketAssemblyCandidateLookup = new HashSet<>();
@@ -99,7 +107,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
             cacheRocketAssemblyArea();
             refreshRocketEntityReference();
             ensureRocketTickSubscription();
-            markDirty();
         }
     }
 
@@ -116,7 +123,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
             unsubscribe(rocketTickSubscription);
             rocketTickSubscription = null;
         }
-        markDirty();
     }
 
     @Override
@@ -133,7 +139,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
             refreshRocketEntityReference();
             ensureRocketTickSubscription();
         }
-        markDirty();
     }
 
     @Key("gui.ctnhastral.rocket.clear")
@@ -176,24 +181,10 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
     }
 
     @Override
-    public void saveCustomPersistedData(@NotNull CompoundTag tag, boolean forDrop) {
-        super.saveCustomPersistedData(tag, forDrop);
-        if (forDrop) return;
-        tag.putInt(TAG_THRUST, rocketThrust);
-        tag.putLong(TAG_FUEL_CAPACITY, rocketFuelCapacity);
-        tag.putLong(TAG_REMAINING_FUEL, rocketRemainingFuel);
-        tag.putBoolean(TAG_LAUNCHING, launching);
-        tag.putInt(TAG_LAUNCH_TICKS, launchTicks);
-    }
-
-    @Override
     public void loadCustomPersistedData(@NotNull CompoundTag tag) {
         super.loadCustomPersistedData(tag);
-        rocketThrust = tag.getInt(TAG_THRUST);
-        rocketFuelCapacity = tag.getLong(TAG_FUEL_CAPACITY);
-        rocketRemainingFuel = tag.contains(TAG_REMAINING_FUEL) ? tag.getLong(TAG_REMAINING_FUEL) : rocketFuelCapacity;
-        launching = tag.getBoolean(TAG_LAUNCHING);
-        launchTicks = tag.getInt(TAG_LAUNCH_TICKS);
+        // legacy saves (written before the fuel field existed) start with a full tank
+        if (!tag.contains(TAG_REMAINING_FUEL)) rocketRemainingFuel = rocketFuelCapacity;
         contraptionEntity = new ArrayList<>();
         rocketPivotPos = null;
     }
@@ -258,7 +249,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         launching = false;
         launchTicks = 0;
         updateRocketSyncedState(entity);
-        markDirty();
         self().holder.notifyBlockUpdate();
     }
 
@@ -289,7 +279,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
             entity.disassemble();
         }
         clearRocketData();
-        markDirty();
     }
 
     public void handlePassengerJump(ServerPlayer player) {
@@ -345,7 +334,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         launching = false;
         launchTicks = 0;
         updateRocketSyncedState(entity);
-        markDirty();
         self().holder.notifyBlockUpdate();
     }
 
@@ -357,7 +345,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
             return;
         }
         clearRocketData();
-        markDirty();
         self().holder.notifyBlockUpdate();
     }
 
@@ -371,7 +358,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
             }
         }
         clearRocketData();
-        markDirty();
         self().holder.notifyBlockUpdate();
     }
 
@@ -383,7 +369,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         launchTicks = 0;
         entity.setContraptionMotion(Vec3.ZERO);
         updateRocketSyncedState(entity);
-        markDirty();
         if (player != null) {
             player.displayClientMessage(Component.literal("火箭发射序列启动").withStyle(ChatFormatting.GOLD), true);
         }
@@ -398,7 +383,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
             if (launching || launchTicks != 0 || rocketThrust != 0 || rocketFuelCapacity != 0 ||
                     rocketRemainingFuel != 0 || !contraptionEntity.isEmpty()) {
                 clearRocketData();
-                markDirty();
             }
             return;
         }
@@ -411,7 +395,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
         if (launchTicks <= COUNTDOWN_TICKS) {
             entity.setContraptionMotion(Vec3.ZERO);
             updateRocketSyncedState(entity);
-            markDirty();
             return;
         }
 
@@ -420,7 +403,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
             launching = false;
             entity.setContraptionMotion(Vec3.ZERO);
             updateRocketSyncedState(entity);
-            markDirty();
             return;
         }
 
@@ -432,7 +414,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
                 Math.min(1.8D, motion.y + acceleration), motion.z * 0.88D));
         entity.hurtMarked = true;
         updateRocketSyncedState(entity);
-        markDirty();
 
         if (entity.getY() >= AdAstraConfig.atmosphereLeave) {
             openPlanetsScreenForPassengers(entity);
@@ -440,7 +421,6 @@ public class RocketAssemblyPlatformMachine extends WorkableMultiblockMachine
             entity.setContraptionMotion(Vec3.ZERO);
             updateRocketSyncedState(entity);
             clearRocketData();
-            markDirty();
         }
     }
 

@@ -7,7 +7,6 @@ import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
 
 import net.minecraft.network.chat.Component;
 
-import com.ctnh.ctnhastral.common.oxygen.OxygenMachineRules;
 import com.ctnh.ctnhastral.registry.CARecipeConditions;
 import com.ctnhlang.CN;
 import com.ctnhlang.EN;
