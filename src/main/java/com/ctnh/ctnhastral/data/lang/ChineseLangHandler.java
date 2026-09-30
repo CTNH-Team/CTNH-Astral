@@ -29,5 +29,13 @@ public class ChineseLangHandler {
         provider.add("gui.ctnhastral.celestial_map.tier", "所需火箭等级：%s");
         provider.add("message.ctnhastral.invalid_destination", "目的地无效，或星图已失效");
         provider.add("message.ctnhastral.rocket_tier_low", "火箭等级不足：需要 %s，当前为 %s");
+        provider.add("gtceu.medical_condition.hypoxia_mild", "轻度缺氧");
+        provider.add("gtceu.medical_condition.hypoxia_severe", "重度缺氧");
+        provider.add("gtceu.medical_condition.hypothermia", "失温");
+        provider.add("gtceu.medical_condition.hyperthermia", "热射病");
+        provider.add("death.attack.gtceu.medical_condition/hypoxia_mild", "%1$s 因缺氧而窒息");
+        provider.add("death.attack.gtceu.medical_condition/hypoxia_severe", "%1$s 在严重缺氧中失去了意识");
+        provider.add("death.attack.gtceu.medical_condition/hypothermia", "%1$s 在严寒中失去了体温");
+        provider.add("death.attack.gtceu.medical_condition/hyperthermia", "%1$s 在酷热中中暑身亡");
     }
 }

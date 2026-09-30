@@ -7,6 +7,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 import com.ctnh.ctnhastral.CTNHAstral;
+import com.ctnh.ctnhastral.common.environment.Atmosphere;
+import com.ctnh.ctnhastral.common.environment.Corrosion;
+import com.ctnh.ctnhastral.common.environment.Environment;
+import com.ctnh.ctnhastral.common.environment.Radiation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -18,6 +22,14 @@ import java.util.Map;
  * 天体注册表（代码定义，客户端/服务端同源）。
  * 参考 Galacticraft 1.21.1 的 {@code GCCelestialBodies}：恒星 + 行星 + 轨道，
  * 每个天体带有位置、显示、轨道环、维度与传送器配置。
+ *
+ * <p>
+ * 环境公共底数（群系环境信息的维度基准）数值来源：温度锚点（摄氏度书写，
+ * Environment.ofCelsiusDayNight 直读）与大气按 docs/space-setting-spec.md 环境威胁
+ * 模型；腐蚀按 ISO 9223 mm/a 锚点（无=0 / 弱=0.005 / 中=0.05 / 强=0.5 / 极高=5）、
+ * 辐射按游戏化 rad/s 刻度（无=0 / 弱=0.2 / 中=0.5 / 强=0.75 / 极高=1.0），
+ * 均为建议值，待 M0 规格冻结评审。
+ * 群系级浮动由 PlanetEnvironmentService 按 MC 群系温度派生，不在此登记。
  */
 public final class CACelestialBodies {
 
@@ -41,9 +53,8 @@ public final class CACelestialBodies {
             .ring(new CelestialRingDisplay(0xFFFFAA00, 2.0f))
             .tier(0)
             .gravity(0)
-            .oxygen(false)
-            .dayTemperature(5500)
-            .nightTemperature(5500)
+            .environment(Environment.ofCelsiusDayNight(Atmosphere.VACUUM, 5500, 5500, Corrosion.NONE,
+                    new Radiation(1.0F)))
             .dayLength(24000)
             .solarPower(0)
             .build());
@@ -60,9 +71,7 @@ public final class CACelestialBodies {
                     0xFF4E9FE8))
             .tier(0)
             .gravity(1.0f)
-            .oxygen(true)
-            .dayTemperature(15)
-            .nightTemperature(-10)
+            .environment(Environment.EARTH)
             .dayLength(24000)
             .solarPower(100)
             .build());
@@ -79,9 +88,8 @@ public final class CACelestialBodies {
             .teleporter(OrbitCelestialTeleporter.INSTANCE)
             .tier(6)
             .gravity(7.134f)
-            .oxygen(false)
-            .dayTemperature(-80)
-            .nightTemperature(-100)
+            .environment(Environment.ofCelsiusDayNight(new Atmosphere(1.0F, 0.0F), -80, -100, Corrosion.NONE,
+                    new Radiation(0.3F)))
             .dayLength(24000)
             .solarPower(64)
             .build());
@@ -98,9 +106,8 @@ public final class CACelestialBodies {
             .teleporter(OrbitCelestialTeleporter.INSTANCE)
             .tier(6)
             .gravity(0)
-            .oxygen(false)
-            .dayTemperature(-270)
-            .nightTemperature(-270)
+            .environment(Environment.ofCelsiusDayNight(Atmosphere.VACUUM, -270, -270, Corrosion.NONE,
+                    Radiation.DEEP_SPACE))
             .dayLength(24000)
             .solarPower(64)
             .build());
@@ -115,9 +122,8 @@ public final class CACelestialBodies {
                     0xFFB6C2D1))
             .tier(1)
             .gravity(1.622f)
-            .oxygen(false)
-            .dayTemperature(-173)
-            .nightTemperature(-173)
+            .environment(Environment.ofCelsiusDayNight(Atmosphere.VACUUM, -120, -120, Corrosion.NONE,
+                    new Radiation(0.2F)))
             .dayLength(24000)
             .solarPower(60)
             .build());
@@ -133,9 +139,9 @@ public final class CACelestialBodies {
                     0xFFC86452))
             .tier(2)
             .gravity(3.721f)
-            .oxygen(false)
-            .dayTemperature(-63)
-            .nightTemperature(-120)
+            // 火星(0.3 atm, pO2 0.13 atm→mild 档"勉强可呼吸debuff",规格 L172;原(0.01,0.65)归一化误写,待 M0 评审
+            .environment(Environment.ofCelsiusDayNight(new Atmosphere(0.3F, 0.13F), 20, -60,
+                    new Corrosion(0.05F), new Radiation(0.2F)))
             .dayLength(24000)
             .solarPower(50)
             .build());
@@ -151,9 +157,8 @@ public final class CACelestialBodies {
                     0xFFE7A85B))
             .tier(3)
             .gravity(8.87f)
-            .oxygen(false)
-            .dayTemperature(464)
-            .nightTemperature(440)
+            .environment(Environment.ofCelsiusDayNight(new Atmosphere(90.0F, 0.0F), 464, 440,
+                    Corrosion.VENUS_SURFACE, new Radiation(0.5F)))
             .dayLength(24000)
             .solarPower(55)
             .build());
@@ -177,12 +182,6 @@ public final class CACelestialBodies {
     /** 该维度是否属于本模组的天体系统（太空维度）。 */
     public static boolean isSpace(ResourceKey<Level> dimension) {
         return dimension != null && !Level.OVERWORLD.equals(dimension) && BY_DIMENSION.containsKey(dimension);
-    }
-
-    /** 该维度是否有天然可呼吸大气（非天体维度按可呼吸处理）。 */
-    public static boolean isBreathable(ResourceKey<Level> dimension) {
-        CelestialBody body = get(dimension);
-        return body == null || body.oxygen();
     }
 
     private static CelestialBody register(CelestialBody body) {

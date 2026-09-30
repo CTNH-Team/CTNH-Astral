@@ -5,6 +5,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
+import com.ctnh.ctnhastral.common.environment.Environment;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -30,9 +31,7 @@ public final class CelestialBody {
     private final CelestialTeleporter teleporter;
     private final int tier;
     private final float gravity;
-    private final boolean oxygen;
-    private final int dayTemperature;
-    private final int nightTemperature;
+    private final Environment environment;
     private final long dayLength;
     private final float solarPower;
 
@@ -49,9 +48,7 @@ public final class CelestialBody {
         this.teleporter = builder.teleporter == null ? DirectCelestialTeleporter.INSTANCE : builder.teleporter;
         this.tier = builder.tier;
         this.gravity = builder.gravity;
-        this.oxygen = builder.oxygen;
-        this.dayTemperature = builder.dayTemperature;
-        this.nightTemperature = builder.nightTemperature;
+        this.environment = builder.environment;
         this.dayLength = builder.dayLength;
         this.solarPower = builder.solarPower;
     }
@@ -115,16 +112,12 @@ public final class CelestialBody {
         return gravity;
     }
 
-    public boolean oxygen() {
-        return oxygen;
-    }
-
-    public int dayTemperature() {
-        return dayTemperature;
-    }
-
-    public int nightTemperature() {
-        return nightTemperature;
+    /**
+     * 环境的维度公共底数：同维度所有群系共享的分量基准（大气等）。
+     * 被消费的静态基准是群系环境信息（本底数 + 群系偏移，见 PlanetEnvironmentService）。
+     */
+    public Environment environment() {
+        return environment;
     }
 
     public long dayLength() {
@@ -170,9 +163,7 @@ public final class CelestialBody {
         private CelestialTeleporter teleporter;
         private int tier;
         private float gravity;
-        private boolean oxygen;
-        private int dayTemperature;
-        private int nightTemperature;
+        private Environment environment = Environment.EARTH;
         private long dayLength;
         private float solarPower;
 
@@ -231,18 +222,8 @@ public final class CelestialBody {
             return this;
         }
 
-        public Builder oxygen(boolean oxygen) {
-            this.oxygen = oxygen;
-            return this;
-        }
-
-        public Builder dayTemperature(int dayTemperature) {
-            this.dayTemperature = dayTemperature;
-            return this;
-        }
-
-        public Builder nightTemperature(int nightTemperature) {
-            this.nightTemperature = nightTemperature;
+        public Builder environment(Environment environment) {
+            this.environment = environment;
             return this;
         }
 

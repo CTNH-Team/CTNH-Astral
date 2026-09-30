@@ -18,13 +18,22 @@ import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegisterEvent;
 
 import com.ctnh.ctnhastral.CTNHAstral;
+import com.ctnh.ctnhastral.common.environment.BiomeEnvironmentModifier;
+import com.ctnh.ctnhastral.common.environment.Corrosion;
+import com.ctnh.ctnhastral.common.environment.Environment;
+import com.ctnh.ctnhastral.common.environment.EnvironmentDelta;
+import com.ctnh.ctnhastral.common.environment.EnvironmentType;
 import com.ctnh.ctnhastral.common.network.CANetwork;
+import com.ctnh.ctnhastral.data.CADamageTypeTagsProvider;
+import com.ctnh.ctnhastral.data.CADamageTypes;
 import com.ctnh.ctnhastral.data.CAEnchantments;
 import com.ctnh.ctnhastral.data.CAMaterials;
+import com.ctnh.ctnhastral.data.CAMedicalConditions;
 import com.ctnh.ctnhastral.data.GTMateralAdjust;
 import com.ctnh.ctnhastral.data.lang.ChineseLangHandler;
 import com.ctnh.ctnhastral.data.lang.EnglishLangHandler;
@@ -69,12 +78,16 @@ public class CommonProxy {
 
     public static void init() {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        Environment.init();
+        BiomeEnvironmentModifier.register(CABiomes.MARS_SULFUR_LAKE, EnvironmentDelta.of(Corrosion.TYPE, 0.45F));
         CANetwork.init();
         eventBus.addGenericListener(GTRecipeType.class, CommonProxy::registerRecipeTypes);
         eventBus.addGenericListener(MachineDefinition.class, CommonProxy::registerMachines);
         eventBus.addGenericListener(RecipeConditionType.class, CommonProxy::registerRecipeConditions);
         CASoundEvents.SOUND_EVENTS.register(eventBus);
         CAEnchantments.Enchantments.register(eventBus);
+        CAMedicalConditions.init();
+        CADamageTypes.init();
         CACreativeModeTabs.init();
         CAFeatures.init(eventBus);
         CAWorldCarvers.init(eventBus);
@@ -135,6 +148,14 @@ public class CommonProxy {
     }
 
     @SubscribeEvent
+    public void loadComplete(FMLLoadCompleteEvent event) {
+        // 所有模块应在构造/commonSetup 阶段登记类型与静态群系修饰。
+        event.enqueueWork(() -> {
+            EnvironmentType.freeze();
+        });
+    }
+
+    @SubscribeEvent
     public void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
         PackOutput packOutput = generator.getPackOutput();
@@ -146,8 +167,9 @@ public class CommonProxy {
             // new CTNHBiomeTagsProvider(packOutput, registries, existingFileHelper));
         }
         if (event.includeServer()) {
-            var set = Set.of(CTNHAstral.MODID);
-            generator.addProvider(true, new DatapackBuiltinEntriesProvider(
+            // damage type 键位于 gtceu 命名空间（MedicalCondition API 硬约束），输出集需包含之
+            var set = Set.of(CTNHAstral.MODID, com.gregtechceu.gtceu.GTCEu.MOD_ID);
+            var builtinEntries = new DatapackBuiltinEntriesProvider(
                     packOutput, registries, new RegistrySetBuilder()
                             .add(Registries.CONFIGURED_CARVER, CAConfiguredCarvers::bootstrap)
                             .add(Registries.BIOME, CABiomes::bootstrap)
@@ -156,11 +178,15 @@ public class CommonProxy {
                             .add(Registries.DIMENSION_TYPE, CADimensionTypes::bootstrap)
                             .add(Registries.LEVEL_STEM, CADimensions::bootstrap)
                             .add(Registries.NOISE_SETTINGS, CANoiseSetting::bootstrap)
-                            // .add(Registries.DAMAGE_TYPE, CTNHDamageTypes::bootstrap)
+                            .add(Registries.DAMAGE_TYPE, CADamageTypes::bootstrap)
                             .add(Registries.STRUCTURE, CAStructures::bootstrap)
                             .add(Registries.STRUCTURE_SET, CAStructureSets::bootstrap)
                             .add(Registries.DENSITY_FUNCTION, CADensityFunctions::bootstrap),
-                    set));
+                    set);
+            generator.addProvider(true, builtinEntries);
+            // 标签 provider 需要含 bootstrap 注册表的 lookup（对照 GT DamageTagsLoader 接线）
+            generator.addProvider(true, new CADamageTypeTagsProvider(packOutput,
+                    builtinEntries.getRegistryProvider(), event.getExistingFileHelper()));
         }
     }
 }

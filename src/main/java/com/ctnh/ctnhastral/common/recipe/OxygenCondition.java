@@ -4,6 +4,7 @@ import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
+import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.network.chat.Component;
 
@@ -17,8 +18,8 @@ import tech.vixhentx.mcmod.ctnhlib.langprovider.Lang;
 
 public class OxygenCondition extends RecipeCondition<OxygenCondition> {
 
-    @CN("此机器需要在可供氧环境中运行")
-    @EN("This machine requires a breathable atmosphere")
+    @CN("此机器需要足够的环境气压与氧分压来维持燃烧")
+    @EN("This machine requires sufficient atmospheric pressure and oxygen for combustion")
     public static Lang ctnhMachineOxygenRequired;
 
     public static final Codec<OxygenCondition> CODEC = RecipeCondition.simpleCodec(OxygenCondition::new);
@@ -42,6 +43,9 @@ public class OxygenCondition extends RecipeCondition<OxygenCondition> {
 
     @Override
     protected boolean testCondition(@NotNull GTRecipe recipe, @NotNull RecipeLogic recipeLogic) {
+        if (!ConfigHolder.INSTANCE.gameplay.hazardsEnabled) {
+            return true;
+        }
         return OxygenMachineRules.hasRequiredAtmosphere(recipeLogic.getMachine());
     }
 

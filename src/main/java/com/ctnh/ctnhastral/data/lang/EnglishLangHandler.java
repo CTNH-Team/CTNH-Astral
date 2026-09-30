@@ -30,5 +30,14 @@ public class EnglishLangHandler {
         provider.add("gui.ctnhastral.celestial_map.tier", "Required rocket tier: %s");
         provider.add("message.ctnhastral.invalid_destination", "The destination is invalid or the map expired");
         provider.add("message.ctnhastral.rocket_tier_low", "Rocket tier too low: %s required, %s available");
+        provider.add("gtceu.medical_condition.hypoxia_mild", "Mild Hypoxia");
+        provider.add("gtceu.medical_condition.hypoxia_severe", "Severe Hypoxia");
+        provider.add("gtceu.medical_condition.hypothermia", "Hypothermia");
+        provider.add("gtceu.medical_condition.hyperthermia", "Hyperthermia");
+        provider.add("death.attack.gtceu.medical_condition/hypoxia_mild", "%1$s suffocated from hypoxia");
+        provider.add("death.attack.gtceu.medical_condition/hypoxia_severe",
+                "%1$s lost consciousness in severe hypoxia");
+        provider.add("death.attack.gtceu.medical_condition/hypothermia", "%1$s froze to death");
+        provider.add("death.attack.gtceu.medical_condition/hyperthermia", "%1$s died of heat stroke");
     }
 }
