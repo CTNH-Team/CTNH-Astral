@@ -11,6 +11,8 @@ import com.ctnh.ctnhastral.common.environment.Atmosphere;
 import com.ctnh.ctnhastral.common.environment.Corrosion;
 import com.ctnh.ctnhastral.common.environment.Environment;
 import com.ctnh.ctnhastral.common.environment.Radiation;
+import com.ctnh.ctnhastral.common.environment.Temperature;
+import com.ctnh.ctnhastral.registry.CAGases;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -24,8 +26,8 @@ import java.util.Map;
  * 每个天体带有位置、显示、轨道环、维度与传送器配置。
  *
  * <p>
- * 环境公共底数（群系环境信息的维度基准）数值来源：温度锚点（摄氏度书写，
- * Environment.ofCelsiusDayNight 直读）与大气按 docs/space-setting-spec.md 环境威胁
+ * 环境公共底数（群系环境信息的维度基准）数值来源：温度均值（摄氏度书写，
+ * 昼夜半温差另存为天体温度源的振幅）与大气按 docs/space-setting-spec.md 环境威胁
  * 模型；腐蚀按 ISO 9223 mm/a 锚点（无=0 / 弱=0.005 / 中=0.05 / 强=0.5 / 极高=5）、
  * 辐射按游戏化 rad/s 刻度（无=0 / 弱=0.2 / 中=0.5 / 强=0.75 / 极高=1.0），
  * 均为建议值，待 M0 规格冻结评审。
@@ -53,8 +55,9 @@ public final class CACelestialBodies {
             .ring(new CelestialRingDisplay(0xFFFFAA00, 2.0f))
             .tier(0)
             .gravity(0)
-            .environment(Environment.ofCelsiusDayNight(Atmosphere.VACUUM, 5500, 5500, Corrosion.NONE,
-                    new Radiation(1.0F)))
+            .environment(Environment.DEFAULTS.with(Atmosphere.TYPE, Atmosphere.VACUUM)
+                    .with(Temperature.TYPE, Temperature.ofCelsius(5500.0F))
+                    .with(Corrosion.TYPE, Corrosion.NONE).with(Radiation.TYPE, new Radiation(1.0F)))
             .dayLength(24000)
             .solarPower(0)
             .build());
@@ -72,6 +75,7 @@ public final class CACelestialBodies {
             .tier(0)
             .gravity(1.0f)
             .environment(Environment.EARTH)
+            .temperatureSwingK(2.0F)
             .dayLength(24000)
             .solarPower(100)
             .build());
@@ -88,8 +92,10 @@ public final class CACelestialBodies {
             .teleporter(OrbitCelestialTeleporter.INSTANCE)
             .tier(6)
             .gravity(7.134f)
-            .environment(Environment.ofCelsiusDayNight(new Atmosphere(1.0F, 0.0F), -80, -100, Corrosion.NONE,
-                    new Radiation(0.3F)))
+            .environment(Environment.DEFAULTS.with(Atmosphere.TYPE, new Atmosphere(1.0F, Map.of()))
+                    .with(Temperature.TYPE, Temperature.ofCelsius(-90.0F))
+                    .with(Corrosion.TYPE, Corrosion.NONE).with(Radiation.TYPE, new Radiation(0.3F)))
+            .temperatureSwingK(10.0F)
             .dayLength(24000)
             .solarPower(64)
             .build());
@@ -106,8 +112,9 @@ public final class CACelestialBodies {
             .teleporter(OrbitCelestialTeleporter.INSTANCE)
             .tier(6)
             .gravity(0)
-            .environment(Environment.ofCelsiusDayNight(Atmosphere.VACUUM, -270, -270, Corrosion.NONE,
-                    Radiation.DEEP_SPACE))
+            .environment(Environment.DEFAULTS.with(Atmosphere.TYPE, Atmosphere.VACUUM)
+                    .with(Temperature.TYPE, Temperature.ofCelsius(-270.0F))
+                    .with(Corrosion.TYPE, Corrosion.NONE).with(Radiation.TYPE, Radiation.DEEP_SPACE))
             .dayLength(24000)
             .solarPower(64)
             .build());
@@ -122,8 +129,9 @@ public final class CACelestialBodies {
                     0xFFB6C2D1))
             .tier(1)
             .gravity(1.622f)
-            .environment(Environment.ofCelsiusDayNight(Atmosphere.VACUUM, -120, -120, Corrosion.NONE,
-                    new Radiation(0.2F)))
+            .environment(Environment.DEFAULTS.with(Atmosphere.TYPE, Atmosphere.VACUUM)
+                    .with(Temperature.TYPE, Temperature.ofCelsius(-120.0F))
+                    .with(Corrosion.TYPE, Corrosion.NONE).with(Radiation.TYPE, new Radiation(0.2F)))
             .dayLength(24000)
             .solarPower(60)
             .build());
@@ -140,8 +148,11 @@ public final class CACelestialBodies {
             .tier(2)
             .gravity(3.721f)
             // 火星(0.3 atm, pO2 0.13 atm→mild 档"勉强可呼吸debuff",规格 L172;原(0.01,0.65)归一化误写,待 M0 评审
-            .environment(Environment.ofCelsiusDayNight(new Atmosphere(0.3F, 0.13F), 20, -60,
-                    new Corrosion(0.05F), new Radiation(0.2F)))
+            .environment(Environment.DEFAULTS.with(Atmosphere.TYPE,
+                    new Atmosphere(0.3F, Map.of(CAGases.OXYGEN, 0.13F)))
+                    .with(Temperature.TYPE, Temperature.ofCelsius(-20.0F))
+                    .with(Corrosion.TYPE, new Corrosion(0.05F)).with(Radiation.TYPE, new Radiation(0.2F)))
+            .temperatureSwingK(40.0F)
             .dayLength(24000)
             .solarPower(50)
             .build());
@@ -157,8 +168,10 @@ public final class CACelestialBodies {
                     0xFFE7A85B))
             .tier(3)
             .gravity(8.87f)
-            .environment(Environment.ofCelsiusDayNight(new Atmosphere(90.0F, 0.0F), 464, 440,
-                    Corrosion.VENUS_SURFACE, new Radiation(0.5F)))
+            .environment(Environment.DEFAULTS.with(Atmosphere.TYPE, new Atmosphere(90.0F, Map.of()))
+                    .with(Temperature.TYPE, Temperature.ofCelsius(452.0F))
+                    .with(Corrosion.TYPE, Corrosion.VENUS_SURFACE).with(Radiation.TYPE, new Radiation(0.5F)))
+            .temperatureSwingK(12.0F)
             .dayLength(24000)
             .solarPower(55)
             .build());

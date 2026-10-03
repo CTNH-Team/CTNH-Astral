@@ -19,9 +19,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 
 import com.ctnh.ctnhastral.common.environment.Atmosphere;
+import com.ctnh.ctnhastral.common.environment.EnvironmentArea;
 import com.ctnh.ctnhastral.common.environment.EnvironmentDelta;
 import com.ctnh.ctnhastral.common.environment.EnvironmentEmission;
 import com.ctnh.ctnhastral.common.environment.Temperature;
+import com.ctnh.ctnhastral.registry.CAGases;
 import com.ctnhlang.CN;
 import com.ctnhlang.EN;
 import tech.vixhentx.mcmod.ctnhlib.langprovider.Lang;
@@ -29,6 +31,7 @@ import tech.vixhentx.mcmod.ctnhlib.langprovider.Lang;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class OxygenEnricherMachine extends SimpleTieredMachine {
@@ -57,7 +60,7 @@ public class OxygenEnricherMachine extends SimpleTieredMachine {
     }
 
     /**
-     * 旧供氧设备的应用策略，不是环境框架规则：增量增加总压、氧分压并产生 +8K 废热。
+     * 供氧设备的应用策略：增量增加总压、氧分压并产生 +8K 废热。
      * 房间内均匀生效，否则球形衰减；不替换原有大气，不自动控温、除腐蚀或屏蔽辐射。
      */
     private EnvironmentEmission getEmission(ServerLevel level) {
@@ -68,11 +71,11 @@ public class OxygenEnricherMachine extends SimpleTieredMachine {
         int blockLimit = Math.min(8192, Math.max(256, range * range * 4));
         Set<BlockPos> sealed = computeSealedVolume(level, getPos(), blockLimit, range);
         EnvironmentDelta delta = EnvironmentDelta.of(Temperature.TYPE, 8.0F)
-                .with(Atmosphere.TYPE, new Atmosphere.Delta(0.21F, 0.21F));
+                .with(Atmosphere.TYPE, new Atmosphere.Delta(0.21F, Map.of(CAGases.OXYGEN, 0.21F)));
         if (!sealed.isEmpty()) {
             return EnvironmentEmission.ofUniform(getPos(), sealed, delta);
         }
-        return new EnvironmentEmission(getPos(), range, null, delta);
+        return new EnvironmentEmission(getPos(), new EnvironmentArea.Sphere(range), delta);
     }
 
     @Override

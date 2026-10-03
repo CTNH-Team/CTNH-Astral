@@ -32,6 +32,7 @@ public final class CelestialBody {
     private final int tier;
     private final float gravity;
     private final Environment environment;
+    private final float temperatureSwingK;
     private final long dayLength;
     private final float solarPower;
 
@@ -49,6 +50,7 @@ public final class CelestialBody {
         this.tier = builder.tier;
         this.gravity = builder.gravity;
         this.environment = builder.environment;
+        this.temperatureSwingK = builder.temperatureSwingK;
         this.dayLength = builder.dayLength;
         this.solarPower = builder.solarPower;
     }
@@ -120,6 +122,11 @@ public final class CelestialBody {
         return environment;
     }
 
+    /** 提供给维度自然温度来源的昼夜振幅（ΔK）。 */
+    public float temperatureSwingK() {
+        return temperatureSwingK;
+    }
+
     public long dayLength() {
         return dayLength;
     }
@@ -164,6 +171,7 @@ public final class CelestialBody {
         private int tier;
         private float gravity;
         private Environment environment = Environment.EARTH;
+        private float temperatureSwingK;
         private long dayLength;
         private float solarPower;
 
@@ -224,6 +232,15 @@ public final class CelestialBody {
 
         public Builder environment(Environment environment) {
             this.environment = environment;
+            return this;
+        }
+
+        /** 昼夜温度源的振幅（ΔK）；基准温度由 environment 提供，默认振幅为零。 */
+        public Builder temperatureSwingK(float temperatureSwingK) {
+            if (!Float.isFinite(temperatureSwingK)) {
+                throw new IllegalArgumentException("Temperature swing must be finite");
+            }
+            this.temperatureSwingK = temperatureSwingK;
             return this;
         }
 

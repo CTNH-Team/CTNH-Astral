@@ -51,11 +51,13 @@ import com.ctnh.ctnhastral.data.worldgen.structure.MarsStargateRuinsStructure;
 import com.ctnh.ctnhastral.data.worldgen.structure.MoonAbandonedOutpostStructure;
 import com.ctnh.ctnhastral.data.worldgen.structure.MoonCraterStructure;
 import com.ctnh.ctnhastral.registry.CACreativeModeTabs;
+import com.ctnh.ctnhastral.registry.CADimensionEnvironments;
 import com.ctnh.ctnhastral.registry.CAMachines;
 import com.ctnh.ctnhastral.registry.CAMultiblocks;
 import com.ctnh.ctnhastral.registry.CARecipeConditions;
 import com.ctnh.ctnhastral.registry.CARecipeTypes;
 import com.ctnh.ctnhastral.registry.CARocketEntityTypes;
+import com.ctnh.ctnhastral.registry.CATemperatureSources;
 import com.ctnh.ctnhastral.registry.sound.CASoundDefinitionsProvider;
 import com.ctnh.ctnhastral.registry.sound.CASoundEvents;
 import com.tterrag.registrate.providers.ProviderType;
@@ -79,6 +81,8 @@ public class CommonProxy {
     public static void init() {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
         Environment.init();
+        CADimensionEnvironments.init();
+        CATemperatureSources.init();
         BiomeEnvironmentModifier.register(CABiomes.MARS_SULFUR_LAKE, EnvironmentDelta.of(Corrosion.TYPE, 0.45F));
         CANetwork.init();
         eventBus.addGenericListener(GTRecipeType.class, CommonProxy::registerRecipeTypes);
@@ -149,7 +153,7 @@ public class CommonProxy {
 
     @SubscribeEvent
     public void loadComplete(FMLLoadCompleteEvent event) {
-        // 所有模块应在构造/commonSetup 阶段登记类型与静态群系修饰。
+        // 所有模块应在构造/commonSetup 阶段登记类型、维度定义与静态群系修饰。
         event.enqueueWork(() -> {
             EnvironmentType.freeze();
         });

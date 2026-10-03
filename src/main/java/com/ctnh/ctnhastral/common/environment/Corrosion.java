@@ -1,7 +1,6 @@
 package com.ctnh.ctnhastral.common.environment;
 
 import com.ctnh.ctnhastral.CTNHAstral;
-import com.mojang.serialization.Codec;
 
 /**
  * 腐蚀环境分量：腐蚀深度速率，单位毫米每年（mm/a，ISO 9223 大气腐蚀性工程单位）。
@@ -20,10 +19,8 @@ public record Corrosion(float rate) {
     /** 金星硫酸云参考档（极高）。 */
     public static final Corrosion VENUS_SURFACE = new Corrosion(5.0F);
 
-    public static final Codec<Corrosion> CODEC = EnvironmentType.FINITE_FLOAT.xmap(Corrosion::new, Corrosion::rate);
-
     public static final EnvironmentType<Corrosion, Float> TYPE = EnvironmentType.registerScalar(
-            CTNHAstral.id("corrosion"), NONE, CODEC, Corrosion::withBonus);
+            CTNHAstral.id("corrosion"), NONE, Corrosion::withBonus);
 
     public Corrosion {
         if (!Float.isFinite(rate)) {

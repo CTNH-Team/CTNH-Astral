@@ -1,49 +1,74 @@
 package com.ctnh.ctnhastral.common.environment;
 
+import net.minecraft.resources.ResourceLocation;
+
 import com.ctnh.ctnhastral.CTNHAstral;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.ctnh.ctnhastral.registry.CAGases;
+
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
- * 大气的客观分量，单位 atm。总压与氧分压均为绝对值，满足 0 ≤ pO₂ ≤ p。
- * 呼吸、低压伤害及燃烧阈值属于各自消费者，不在环境值对象中定义。
+ * 大气的客观分量，单位 atm。总压独立保存，成分按稳定气体标识记录分压，未列出的成分读取为零。
+ * 已知分压之和不超过总压；剩余压力只代表未描述的背景，不能推断为氮气或其他具体成分。
+ * 气体地位平等，呼吸、燃烧及具体机器需求属于各自消费者，不在环境值对象中定义。
  */
-public record Atmosphere(float pressure, float oxygenPartial) {
+public record Atmosphere(float pressure, Map<ResourceLocation, Float> partialPressures) {
 
-    public static final Atmosphere EARTH = new Atmosphere(1.0F, 0.21F);
-    public static final Atmosphere VACUUM = new Atmosphere(0.0F, 0.0F);
-
-    public static final Codec<Atmosphere> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            EnvironmentType.FINITE_FLOAT.fieldOf("pressure").forGetter(Atmosphere::pressure),
-            EnvironmentType.FINITE_FLOAT.fieldOf("oxygen").forGetter(Atmosphere::oxygenPartial))
-            .apply(instance, Atmosphere::new));
+    public static final Atmosphere EARTH = new Atmosphere(1.0F, Map.of(CAGases.OXYGEN, 0.21F));
+    public static final Atmosphere VACUUM = new Atmosphere(0.0F, Map.of());
 
     public static final EnvironmentType<Atmosphere, Delta> TYPE = EnvironmentType.register(
-            CTNHAstral.id("atmosphere"), EARTH, new Delta(0.0F, 0.0F), CODEC, Delta.CODEC,
-            (a, b) -> new Delta(a.pressure() + b.pressure(), a.oxygenPartial() + b.oxygenPartial()),
-            (delta, factor) -> new Delta(delta.pressure() * factor, delta.oxygenPartial() * factor),
-            (value, delta) -> new Atmosphere(value.pressure() + delta.pressure(),
-                    value.oxygenPartial() + delta.oxygenPartial()));
+            CTNHAstral.id("atmosphere"), EARTH, new Delta(0.0F, Map.of()),
+            Delta::add, Delta::scale, Atmosphere::applyDelta);
 
-    /** 大气增量不使用 Atmosphere：负数合法，pO₂ ≤ P 只约束最终值，不约束增量。 */
-    public record Delta(float pressure, float oxygenPartial) {
+    public Atmosphere {
+        pressure = Math.max(0.0F, EnvironmentType.finite(pressure));
+        Map<ResourceLocation, Float> normalized = new TreeMap<>(partialPressures);
+        normalized.replaceAll((gas, value) -> Math.max(0.0F, EnvironmentType.finite(value)));
+        double sum = normalized.values().stream().mapToDouble(Float::doubleValue).sum();
+        if (sum > pressure) {
+            double factor = pressure / sum;
+            normalized.replaceAll((gas, value) -> (float) (value * factor));
+        }
+        normalized.values().removeIf(value -> value == 0.0F);
+        partialPressures = Map.copyOf(normalized);
+    }
 
-        public static final Codec<Delta> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                EnvironmentType.FINITE_FLOAT.fieldOf("pressure").forGetter(Delta::pressure),
-                EnvironmentType.FINITE_FLOAT.fieldOf("oxygen").forGetter(Delta::oxygenPartial))
-                .apply(instance, Delta::new));
+    public float partialPressure(ResourceLocation gas) {
+        return partialPressures.getOrDefault(gas, 0.0F);
+    }
+
+    private Atmosphere applyDelta(Delta delta) {
+        return new Atmosphere(pressure + delta.pressure(), addPressures(partialPressures, delta.partialPressures()));
+    }
+
+    /** 总压和各气体分压的有符号增量；最终值的非负及总压约束只在应用全部增量后执行。 */
+    public record Delta(float pressure, Map<ResourceLocation, Float> partialPressures) {
 
         public Delta {
             pressure = EnvironmentType.finite(pressure) + 0.0F;
-            oxygenPartial = EnvironmentType.finite(oxygenPartial) + 0.0F;
+            Map<ResourceLocation, Float> values = new TreeMap<>(partialPressures);
+            values.replaceAll((gas, value) -> EnvironmentType.finite(value));
+            values.values().removeIf(value -> value == 0.0F);
+            partialPressures = Map.copyOf(values);
+        }
+
+        private Delta add(Delta other) {
+            return new Delta(pressure + other.pressure(), addPressures(partialPressures, other.partialPressures()));
+        }
+
+        private Delta scale(float factor) {
+            Map<ResourceLocation, Float> values = new TreeMap<>(partialPressures);
+            values.replaceAll((gas, value) -> value * factor);
+            return new Delta(pressure * factor, values);
         }
     }
 
-    public Atmosphere {
-        if (!Float.isFinite(pressure) || !Float.isFinite(oxygenPartial)) {
-            throw new IllegalArgumentException("Atmospheric pressures must be finite");
-        }
-        pressure = Math.max(0.0F, pressure);
-        oxygenPartial = Math.max(0.0F, Math.min(pressure, oxygenPartial));
+    private static Map<ResourceLocation, Float> addPressures(Map<ResourceLocation, Float> left,
+                                                             Map<ResourceLocation, Float> right) {
+        Map<ResourceLocation, Float> result = new TreeMap<>(left);
+        right.forEach((gas, value) -> result.merge(gas, value, Float::sum));
+        return result;
     }
 }

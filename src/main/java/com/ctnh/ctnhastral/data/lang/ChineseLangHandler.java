@@ -6,6 +6,8 @@ import tech.vixhentx.mcmod.ctnhlib.registrate.lang.RegistrateCNLangProvider;
 public class ChineseLangHandler {
 
     public static void init(RegistrateCNLangProvider provider) {
+        provider.add("gas.ctnhastral.oxygen", "氧气");
+        provider.add("gas.ctnhastral.nitrogen", "氮气");
         provider.addEnchantment(CAEnchantments.VACUUM_SEAL, "真空密封");
         provider.add("enchantment.ctnhastral.vacuum_seal.desc", "使你不再受到真空的伤害。注：必须所有装备均拥有该附魔");
         provider.add("celestial_body.ctnhastral.sol", "太阳");

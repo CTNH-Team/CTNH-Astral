@@ -11,7 +11,8 @@ import com.gregtechceu.gtceu.api.data.medicalcondition.Symptom;
  * （stage = 进度 / (阈值 × 满程 × stages)），症状仅在 阈值×stages ≤ 1 时可点亮——
  * 本类一律 stages=1：阈值分位激活，每再进一档阈值分位强度 +1
  * （GT 自带的 .2~.75 × 10 档配置在该实现下休眠，勿模仿）。进度单位为"秒"，
- * HEAL 条件净速率 = 喂给速率 - 1/s。生理学与数值依据见 docs/oxygen-env-design.md，
+ * HEAL 条件净速率 = 喂给速率 - 1/s；温度暴露在消费端补偿这部分回落。
+ * 生理学与数值依据见工作区 docs/oxygen-env-design.md，
  * 数值均为待评审的建议值。
  */
 public class CAMedicalConditions {

@@ -1,7 +1,6 @@
 package com.ctnh.ctnhastral.common.environment;
 
 import com.ctnh.ctnhastral.CTNHAstral;
-import com.mojang.serialization.Codec;
 
 /**
  * 辐射环境分量：剂量率，单位 rad/s（规格定案，与 GT 辐射语境同单位）。
@@ -21,10 +20,8 @@ public record Radiation(float rate) {
     /** 无屏蔽轨道环境参考档（强）。 */
     public static final Radiation DEEP_SPACE = new Radiation(0.75F);
 
-    public static final Codec<Radiation> CODEC = EnvironmentType.FINITE_FLOAT.xmap(Radiation::new, Radiation::rate);
-
     public static final EnvironmentType<Radiation, Float> TYPE = EnvironmentType.registerScalar(
-            CTNHAstral.id("radiation"), NONE, CODEC, Radiation::withBonus);
+            CTNHAstral.id("radiation"), NONE, Radiation::withBonus);
 
     public Radiation {
         if (!Float.isFinite(rate)) {

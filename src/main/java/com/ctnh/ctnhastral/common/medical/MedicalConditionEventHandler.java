@@ -9,8 +9,10 @@ import com.gregtechceu.gtceu.config.ConfigHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -20,7 +22,10 @@ import com.ctnh.ctnhastral.common.enchantment.VacuumSealEnchantment;
 import com.ctnh.ctnhastral.common.environment.Atmosphere;
 import com.ctnh.ctnhastral.common.environment.Environment;
 import com.ctnh.ctnhastral.common.environment.PlanetEnvironmentService;
+import com.ctnh.ctnhastral.common.environment.Radiation;
+import com.ctnh.ctnhastral.common.environment.Temperature;
 import com.ctnh.ctnhastral.data.CAMedicalConditions;
+import com.ctnh.ctnhastral.registry.CAGases;
 
 /**
  * 医疗条件域的原因桥：环境快照（只读）→ GT 医疗条件进度。
@@ -51,8 +56,9 @@ public final class MedicalConditionEventHandler {
      */
     private static final float HYPOXIA_PROGRESSION_PER_SECOND = 2.0F;
     /**
-     * 温度阈值（℃）：阈值外温差每 20℃ 贡献毛速率 1/s（净速率需再过 HEAL -1/s），
-     * 上限 8/s。阈值给地球昼夜留 10℃ 安全余量（地球全程零进度）。
+     * 温度阈值（℃）：防护后的阈值外温差每 20 K 贡献净进度 1/s，上限 8/s。
+     * 暴露时补偿 tracker 的 HEAL 回落，脱离暴露后由其以 1/s 自愈。
+     * 玩家状态只保存在 Astral 医疗条件中，不再维护另一份目标温度或体温。
      */
     private static final float COLD_THRESHOLD_C = -20.0F;
     private static final float HEAT_THRESHOLD_C = 40.0F;
@@ -96,9 +102,9 @@ public final class MedicalConditionEventHandler {
         if (entity instanceof Player player) {
             tickPlayer(player, environment, sealedSuit);
         } else if (!sealedSuit) {
-            Atmosphere atmosphere = environment.atmosphere();
+            Atmosphere atmosphere = environment.get(Atmosphere.TYPE);
             if (atmosphere.pressure() < LOW_PRESSURE_THRESHOLD ||
-                    atmosphere.oxygenPartial() < SEVERE_HYPOXIA_OXYGEN) {
+                    atmosphere.partialPressure(CAGases.OXYGEN) < SEVERE_HYPOXIA_OXYGEN) {
                 entity.hurt(level.damageSources().drown(),
                         atmosphere.pressure() < LOW_PRESSURE_THRESHOLD ? VACUUM_MOB_DAMAGE : SEVERE_MOB_DAMAGE);
             }
@@ -106,7 +112,7 @@ public final class MedicalConditionEventHandler {
     }
 
     private static void tickPlayer(Player player, Environment environment, boolean sealedSuit) {
-        Atmosphere atmosphere = environment.atmosphere();
+        Atmosphere atmosphere = environment.get(Atmosphere.TYPE);
         boolean lowPressure = atmosphere.pressure() < LOW_PRESSURE_THRESHOLD;
         if (!sealedSuit && lowPressure) {
             CompoundTag data = player.getPersistentData();
@@ -123,29 +129,41 @@ public final class MedicalConditionEventHandler {
             return;
         }
         if (!sealedSuit) {
-            if (!lowPressure && atmosphere.oxygenPartial() < BREATHABLE_OXYGEN) {
-                MedicalCondition hypoxia = atmosphere.oxygenPartial() < SEVERE_HYPOXIA_OXYGEN ?
+            if (!lowPressure && atmosphere.partialPressure(CAGases.OXYGEN) < BREATHABLE_OXYGEN) {
+                MedicalCondition hypoxia = atmosphere.partialPressure(CAGases.OXYGEN) < SEVERE_HYPOXIA_OXYGEN ?
                         CAMedicalConditions.HYPOXIA_SEVERE : CAMedicalConditions.HYPOXIA_MILD;
                 tracker.progressCondition(hypoxia, HYPOXIA_PROGRESSION_PER_SECOND * SECONDS_PER_INTERVAL);
             }
-            progressThermal(tracker, environment.celsius());
+            progressThermal(player, tracker, environment.get(Temperature.TYPE).celsius());
         }
-        float radiationRate = environment.radiation().rate();
+        float radiationRate = environment.get(Radiation.TYPE).rate();
         if (radiationRate > 0.0F) {
             tracker.progressCondition(GTMedicalConditions.CARCINOGEN,
                     radiationRate * RADIATION_PROGRESSION_FACTOR * SECONDS_PER_INTERVAL);
         }
     }
 
-    /** 失温/热射进度：阈值内零进度，阈值外温差线性换算（见常量注释）。 */
-    private static void progressThermal(IMedicalConditionTracker tracker, float celsius) {
-        if (celsius < COLD_THRESHOLD_C) {
-            float rate = Math.min((COLD_THRESHOLD_C - celsius) / DEGREES_PER_PROGRESSION, THERMAL_RATE_CAP);
-            tracker.progressCondition(CAMedicalConditions.HYPOTHERMIA, rate * SECONDS_PER_INTERVAL);
-        } else if (celsius > HEAT_THRESHOLD_C) {
-            float rate = Math.min((celsius - HEAT_THRESHOLD_C) / DEGREES_PER_PROGRESSION, THERMAL_RATE_CAP);
-            tracker.progressCondition(CAMedicalConditions.HYPERTHERMIA, rate * SECONDS_PER_INTERVAL);
-        }
+    /** 环境是客观值；只在玩家消费端扣除装备和效果提供的防护。 */
+    private static void progressThermal(Player player, IMedicalConditionTracker tracker, float celsius) {
+        var protection = new PlayerThermalProtectionEvent(player);
+        if (player.hasEffect(MobEffects.FIRE_RESISTANCE)) protection.addProtection(0.0F, 1.0F);
+        MinecraftForge.EVENT_BUS.post(protection);
+        float personalTemperature = celsius + protection.getTemperatureOffsetK();
+        float coldExposure = Math.max(0.0F,
+                COLD_THRESHOLD_C - personalTemperature - protection.getColdResistanceK()) *
+                (1.0F - protection.getColdProtection());
+        float heatExposure = Math.max(0.0F,
+                personalTemperature - HEAT_THRESHOLD_C - protection.getHeatResistanceK()) *
+                (1.0F - protection.getHeatProtection());
+        progressThermalCondition(tracker, CAMedicalConditions.HYPOTHERMIA, coldExposure);
+        progressThermalCondition(tracker, CAMedicalConditions.HYPERTHERMIA, heatExposure);
+    }
+
+    private static void progressThermalCondition(IMedicalConditionTracker tracker, MedicalCondition condition,
+                                                 float exposureK) {
+        if (exposureK <= 0.0F) return;
+        float rate = Math.min(exposureK / DEGREES_PER_PROGRESSION, THERMAL_RATE_CAP);
+        tracker.progressCondition(condition, (rate + condition.idleProgressionRate) * SECONDS_PER_INTERVAL);
     }
 
     private static void resetVacuumExposure(LivingEntity entity) {
