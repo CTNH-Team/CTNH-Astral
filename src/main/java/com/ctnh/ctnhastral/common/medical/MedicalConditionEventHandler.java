@@ -22,10 +22,8 @@ import com.ctnh.ctnhastral.common.enchantment.VacuumSealEnchantment;
 import com.ctnh.ctnhastral.common.environment.Atmosphere;
 import com.ctnh.ctnhastral.common.environment.Environment;
 import com.ctnh.ctnhastral.common.environment.PlanetEnvironmentService;
-import com.ctnh.ctnhastral.common.environment.Radiation;
-import com.ctnh.ctnhastral.common.environment.Temperature;
 import com.ctnh.ctnhastral.data.CAMedicalConditions;
-import com.ctnh.ctnhastral.registry.CAGases;
+import com.ctnh.ctnhastral.registry.CAEnvironments;
 
 /**
  * 医疗条件域的原因桥：环境快照（只读）→ GT 医疗条件进度。
@@ -102,9 +100,9 @@ public final class MedicalConditionEventHandler {
         if (entity instanceof Player player) {
             tickPlayer(player, environment, sealedSuit);
         } else if (!sealedSuit) {
-            Atmosphere atmosphere = environment.get(Atmosphere.TYPE);
+            Atmosphere atmosphere = environment.get(CAEnvironments.ATMOSPHERE);
             if (atmosphere.pressure() < LOW_PRESSURE_THRESHOLD ||
-                    atmosphere.partialPressure(CAGases.OXYGEN) < SEVERE_HYPOXIA_OXYGEN) {
+                    atmosphere.partialPressure(CAEnvironments.OXYGEN) < SEVERE_HYPOXIA_OXYGEN) {
                 entity.hurt(level.damageSources().drown(),
                         atmosphere.pressure() < LOW_PRESSURE_THRESHOLD ? VACUUM_MOB_DAMAGE : SEVERE_MOB_DAMAGE);
             }
@@ -112,7 +110,7 @@ public final class MedicalConditionEventHandler {
     }
 
     private static void tickPlayer(Player player, Environment environment, boolean sealedSuit) {
-        Atmosphere atmosphere = environment.get(Atmosphere.TYPE);
+        Atmosphere atmosphere = environment.get(CAEnvironments.ATMOSPHERE);
         boolean lowPressure = atmosphere.pressure() < LOW_PRESSURE_THRESHOLD;
         if (!sealedSuit && lowPressure) {
             CompoundTag data = player.getPersistentData();
@@ -129,14 +127,14 @@ public final class MedicalConditionEventHandler {
             return;
         }
         if (!sealedSuit) {
-            if (!lowPressure && atmosphere.partialPressure(CAGases.OXYGEN) < BREATHABLE_OXYGEN) {
-                MedicalCondition hypoxia = atmosphere.partialPressure(CAGases.OXYGEN) < SEVERE_HYPOXIA_OXYGEN ?
+            if (!lowPressure && atmosphere.partialPressure(CAEnvironments.OXYGEN) < BREATHABLE_OXYGEN) {
+                MedicalCondition hypoxia = atmosphere.partialPressure(CAEnvironments.OXYGEN) < SEVERE_HYPOXIA_OXYGEN ?
                         CAMedicalConditions.HYPOXIA_SEVERE : CAMedicalConditions.HYPOXIA_MILD;
                 tracker.progressCondition(hypoxia, HYPOXIA_PROGRESSION_PER_SECOND * SECONDS_PER_INTERVAL);
             }
-            progressThermal(player, tracker, environment.get(Temperature.TYPE).celsius());
+            progressThermal(player, tracker, environment.get(CAEnvironments.TEMPERATURE).celsius());
         }
-        float radiationRate = environment.get(Radiation.TYPE).rate();
+        float radiationRate = environment.get(CAEnvironments.RADIATION).rate();
         if (radiationRate > 0.0F) {
             tracker.progressCondition(GTMedicalConditions.CARCINOGEN,
                     radiationRate * RADIATION_PROGRESSION_FACTOR * SECONDS_PER_INTERVAL);

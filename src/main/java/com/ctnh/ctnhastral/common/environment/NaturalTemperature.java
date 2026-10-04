@@ -16,7 +16,7 @@ import java.util.Map;
  * 自然温度来源，不保存温度状态。群系参数以参考值为零点换算为 ΔK。
  * 群系参数表仅供环境计算，不修改世界生成；所有维度统一采用九点采样。
  * Surface 显式启用地表气候：干旱夜间降温、海拔、地下、季节、天气与遮蔽。
- * 主世界与下界参数参考 LSO 1.20.1-2.3.20.1；其他维度继续使用各自的群系与昼夜参数。
+ * 具体数值由 data/environment 中的环境定义提供，本类不包含维度预设。
  */
 public record NaturalTemperature(float referenceBiomeTemperature, float biomeScaleK, float diurnalAmplitudeK,
                                  long dayLength, @Nullable Surface surface,
@@ -37,12 +37,17 @@ public record NaturalTemperature(float referenceBiomeTemperature, float biomeSca
         biomeTemperatures.values().forEach(EnvironmentType::finite);
     }
 
+    /** 未接入外部气候来源时，读取原版降水并使用等长昼夜，不增加季节偏移。 */
+    public static Temperature.Climate vanillaClimate(ServerLevel level, BlockPos pos) {
+        return new Temperature.Climate(0.0F, 12000, level.isRaining() ?
+                level.getBiome(pos).value().getPrecipitationAt(pos) : Biome.Precipitation.NONE);
+    }
+
     /** 只读取已加载区块；地下只修正自然来源，不衰减设备或方块热源。 */
-    public float offsetK(ServerLevel level, BlockPos pos) {
+    public float offsetK(ServerLevel level, BlockPos pos, Temperature.Climate climate) {
         if (surface == null) {
             return sampleBiomeOffsetK(level, pos) + diurnalOffsetK(level.getDayTime());
         }
-        TemperatureClimate climate = TemperatureClimate.sample(level, pos);
         float sun = sunPhase(level.getDayTime(), climate.daylightTicks());
         float biomeOffset = 0.0F;
         float undergroundBiomeOffset = 0.0F;
@@ -133,9 +138,6 @@ public record NaturalTemperature(float referenceBiomeTemperature, float biomeSca
     public record Surface(int seaLevel, float altitudeKPer64Blocks, int undergroundStart, int undergroundEnd,
                           float undergroundBiomeMultiplier, float dryNightFraction, float extremeBiomeTimeMultiplier,
                           float rainOffsetK, float snowOffsetK, float shadeOffsetK, float shadeThresholdK) {
-
-        public static final Surface OVERWORLD = new Surface(64, -6.0F, 10, 16, 0.8F, 0.2F, 1.75F,
-                -2.0F, -6.0F, -6.0F, 9.0F);
 
         public Surface {
             if (undergroundStart < 0 || undergroundEnd <= undergroundStart || dryNightFraction < 0.0F ||

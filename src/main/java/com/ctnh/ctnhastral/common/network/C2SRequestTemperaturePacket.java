@@ -9,7 +9,7 @@ import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.PacketDistributor;
 
 import com.ctnh.ctnhastral.common.environment.PlanetEnvironmentService;
-import com.ctnh.ctnhastral.common.environment.Temperature;
+import com.ctnh.ctnhastral.registry.CAEnvironments;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -43,7 +43,8 @@ public record C2SRequestTemperaturePacket(ResourceLocation dimension, BlockPos p
             int used = budget != null && budget.epoch() == epoch ? budget.used() : 0;
             if (used >= 16) return;
             BUDGETS.put(player, new Budget(epoch, used + 1));
-            float kelvin = PlanetEnvironmentService.getEnvironment(level, msg.pos()).get(Temperature.TYPE).kelvin();
+            float kelvin = PlanetEnvironmentService.getEnvironment(level, msg.pos()).get(CAEnvironments.TEMPERATURE)
+                    .kelvin();
             CANetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
                     new S2CTemperaturePacket(msg.dimension(), msg.pos(), kelvin));
         });

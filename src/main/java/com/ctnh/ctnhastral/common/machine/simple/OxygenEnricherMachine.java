@@ -19,11 +19,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 
 import com.ctnh.ctnhastral.common.environment.Atmosphere;
-import com.ctnh.ctnhastral.common.environment.EnvironmentArea;
-import com.ctnh.ctnhastral.common.environment.EnvironmentDelta;
+import com.ctnh.ctnhastral.common.environment.Environment;
 import com.ctnh.ctnhastral.common.environment.EnvironmentEmission;
-import com.ctnh.ctnhastral.common.environment.Temperature;
-import com.ctnh.ctnhastral.registry.CAGases;
+import com.ctnh.ctnhastral.common.environment.PlanetEnvironmentService;
+import com.ctnh.ctnhastral.registry.CAEnvironments;
 import com.ctnhlang.CN;
 import com.ctnhlang.EN;
 import tech.vixhentx.mcmod.ctnhlib.langprovider.Lang;
@@ -70,12 +69,12 @@ public class OxygenEnricherMachine extends SimpleTieredMachine {
         int range = 12 + getTier() * 4;
         int blockLimit = Math.min(8192, Math.max(256, range * range * 4));
         Set<BlockPos> sealed = computeSealedVolume(level, getPos(), blockLimit, range);
-        EnvironmentDelta delta = EnvironmentDelta.of(Temperature.TYPE, 8.0F)
-                .with(Atmosphere.TYPE, new Atmosphere.Delta(0.21F, Map.of(CAGases.OXYGEN, 0.21F)));
+        Environment.Delta delta = Environment.Delta.of(CAEnvironments.TEMPERATURE, 8.0F)
+                .with(CAEnvironments.ATMOSPHERE, new Atmosphere.Delta(0.21F, Map.of(CAEnvironments.OXYGEN, 0.21F)));
         if (!sealed.isEmpty()) {
             return EnvironmentEmission.ofUniform(getPos(), sealed, delta);
         }
-        return new EnvironmentEmission(getPos(), new EnvironmentArea.Sphere(range), delta);
+        return new EnvironmentEmission(getPos(), new EnvironmentEmission.Sphere(range), delta);
     }
 
     @Override
@@ -164,16 +163,16 @@ public class OxygenEnricherMachine extends SimpleTieredMachine {
         if (getLevel() instanceof ServerLevel level) {
             EnvironmentEmission emission = getEmission(level);
             if (emission == null) {
-                EnvironmentEmission.cease(level, getPos());
+                PlanetEnvironmentService.cease(level, getPos());
             } else {
-                emission.emit(level, 40L);
+                PlanetEnvironmentService.emit(level, emission, 40L);
             }
         }
     }
 
     private void ceaseEmission() {
         if (getLevel() instanceof ServerLevel level) {
-            EnvironmentEmission.cease(level, getPos());
+            PlanetEnvironmentService.cease(level, getPos());
         }
     }
 

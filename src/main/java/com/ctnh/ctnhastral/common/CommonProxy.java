@@ -23,10 +23,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegisterEvent;
 
 import com.ctnh.ctnhastral.CTNHAstral;
-import com.ctnh.ctnhastral.common.environment.BiomeEnvironmentModifier;
-import com.ctnh.ctnhastral.common.environment.Corrosion;
-import com.ctnh.ctnhastral.common.environment.Environment;
-import com.ctnh.ctnhastral.common.environment.EnvironmentDelta;
 import com.ctnh.ctnhastral.common.environment.EnvironmentType;
 import com.ctnh.ctnhastral.common.network.CANetwork;
 import com.ctnh.ctnhastral.data.CADamageTypeTagsProvider;
@@ -51,13 +47,12 @@ import com.ctnh.ctnhastral.data.worldgen.structure.MarsStargateRuinsStructure;
 import com.ctnh.ctnhastral.data.worldgen.structure.MoonAbandonedOutpostStructure;
 import com.ctnh.ctnhastral.data.worldgen.structure.MoonCraterStructure;
 import com.ctnh.ctnhastral.registry.CACreativeModeTabs;
-import com.ctnh.ctnhastral.registry.CADimensionEnvironments;
+import com.ctnh.ctnhastral.registry.CAEnvironments;
 import com.ctnh.ctnhastral.registry.CAMachines;
 import com.ctnh.ctnhastral.registry.CAMultiblocks;
 import com.ctnh.ctnhastral.registry.CARecipeConditions;
 import com.ctnh.ctnhastral.registry.CARecipeTypes;
 import com.ctnh.ctnhastral.registry.CARocketEntityTypes;
-import com.ctnh.ctnhastral.registry.CATemperatureSources;
 import com.ctnh.ctnhastral.registry.sound.CASoundDefinitionsProvider;
 import com.ctnh.ctnhastral.registry.sound.CASoundEvents;
 import com.tterrag.registrate.providers.ProviderType;
@@ -80,10 +75,7 @@ public class CommonProxy {
 
     public static void init() {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        Environment.init();
-        CADimensionEnvironments.init();
-        CATemperatureSources.init();
-        BiomeEnvironmentModifier.register(CABiomes.MARS_SULFUR_LAKE, EnvironmentDelta.of(Corrosion.TYPE, 0.45F));
+        CAEnvironments.init();
         CANetwork.init();
         eventBus.addGenericListener(GTRecipeType.class, CommonProxy::registerRecipeTypes);
         eventBus.addGenericListener(MachineDefinition.class, CommonProxy::registerMachines);

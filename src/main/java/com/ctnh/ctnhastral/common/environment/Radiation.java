@@ -1,7 +1,5 @@
 package com.ctnh.ctnhastral.common.environment;
 
-import com.ctnh.ctnhastral.CTNHAstral;
-
 /**
  * 辐射环境分量：剂量率，单位 rad/s（规格定案，与 GT 辐射语境同单位）。
  * 与 {@link Atmosphere} 平级的独立环境概念。来源"维度 + 距离辐射源"。
@@ -16,12 +14,6 @@ public record Radiation(float rate) {
 
     public static final Radiation NONE = new Radiation(0.0F);
     private static final float MAX_RATE = 10.0F;
-
-    /** 无屏蔽轨道环境参考档（强）。 */
-    public static final Radiation DEEP_SPACE = new Radiation(0.75F);
-
-    public static final EnvironmentType<Radiation, Float> TYPE = EnvironmentType.registerScalar(
-            CTNHAstral.id("radiation"), NONE, Radiation::withBonus);
 
     public Radiation {
         if (!Float.isFinite(rate)) {

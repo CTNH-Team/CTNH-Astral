@@ -6,7 +6,7 @@ import net.minecraft.server.level.ServerLevel;
 
 import com.ctnh.ctnhastral.common.environment.Atmosphere;
 import com.ctnh.ctnhastral.common.environment.PlanetEnvironmentService;
-import com.ctnh.ctnhastral.registry.CAGases;
+import com.ctnh.ctnhastral.registry.CAEnvironments;
 
 /** 氧气环境消费规则。燃烧阈值独立于医疗阈值，是否接入由机器显式声明。 */
 public final class OxygenMachineRules {
@@ -23,8 +23,8 @@ public final class OxygenMachineRules {
             return true;
         }
         Atmosphere atmosphere = PlanetEnvironmentService.getEnvironment(level,
-                machine.getPos().relative(machine.getFrontFacing())).get(Atmosphere.TYPE);
+                machine.getPos().relative(machine.getFrontFacing())).get(CAEnvironments.ATMOSPHERE);
         return atmosphere.pressure() >= MIN_COMBUSTION_PRESSURE &&
-                atmosphere.partialPressure(CAGases.OXYGEN) >= MIN_COMBUSTION_OXYGEN;
+                atmosphere.partialPressure(CAEnvironments.OXYGEN) >= MIN_COMBUSTION_OXYGEN;
     }
 }

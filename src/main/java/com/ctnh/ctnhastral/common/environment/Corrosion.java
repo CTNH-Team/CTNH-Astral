@@ -1,7 +1,5 @@
 package com.ctnh.ctnhastral.common.environment;
 
-import com.ctnh.ctnhastral.CTNHAstral;
-
 /**
  * 腐蚀环境分量：腐蚀深度速率，单位毫米每年（mm/a，ISO 9223 大气腐蚀性工程单位）。
  * 与 {@link Atmosphere} 平级的独立环境概念。来源"维度/群系 + 流体接触"。
@@ -15,12 +13,6 @@ public record Corrosion(float rate) {
 
     public static final Corrosion NONE = new Corrosion(0.0F);
     private static final float MAX_RATE = 100.0F;
-
-    /** 金星硫酸云参考档（极高）。 */
-    public static final Corrosion VENUS_SURFACE = new Corrosion(5.0F);
-
-    public static final EnvironmentType<Corrosion, Float> TYPE = EnvironmentType.registerScalar(
-            CTNHAstral.id("corrosion"), NONE, Corrosion::withBonus);
 
     public Corrosion {
         if (!Float.isFinite(rate)) {

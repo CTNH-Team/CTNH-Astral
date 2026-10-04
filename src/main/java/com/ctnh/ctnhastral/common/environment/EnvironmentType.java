@@ -65,7 +65,7 @@ public final class EnvironmentType<V, D> {
         frozen = true;
     }
 
-    static void requireRegistrationOpen() {
+    public static void requireRegistrationOpen() {
         if (frozen) {
             throw new IllegalStateException("Environment types and static modifiers are frozen");
         }

@@ -31,9 +31,7 @@ public final class CelestialBody {
     private final CelestialTeleporter teleporter;
     private final int tier;
     private final float gravity;
-    private final Environment environment;
-    private final float temperatureSwingK;
-    private final long dayLength;
+    private final Environment.Definition environment;
     private final float solarPower;
 
     private CelestialBody(Builder builder) {
@@ -49,9 +47,7 @@ public final class CelestialBody {
         this.teleporter = builder.teleporter == null ? DirectCelestialTeleporter.INSTANCE : builder.teleporter;
         this.tier = builder.tier;
         this.gravity = builder.gravity;
-        this.environment = builder.environment;
-        this.temperatureSwingK = builder.temperatureSwingK;
-        this.dayLength = builder.dayLength;
+        this.environment = Objects.requireNonNull(builder.environment, "environment for " + builder.id);
         this.solarPower = builder.solarPower;
     }
 
@@ -114,21 +110,9 @@ public final class CelestialBody {
         return gravity;
     }
 
-    /**
-     * 环境的维度公共底数：同维度所有群系共享的分量基准（大气等）。
-     * 被消费的静态基准是群系环境信息（本底数 + 群系偏移，见 PlanetEnvironmentService）。
-     */
-    public Environment environment() {
+    /** 引用数据层的完整环境定义，不在天体中复制基准或昼夜温度参数。 */
+    public Environment.Definition environment() {
         return environment;
-    }
-
-    /** 提供给维度自然温度来源的昼夜振幅（ΔK）。 */
-    public float temperatureSwingK() {
-        return temperatureSwingK;
-    }
-
-    public long dayLength() {
-        return dayLength;
     }
 
     public float solarPower() {
@@ -170,9 +154,7 @@ public final class CelestialBody {
         private CelestialTeleporter teleporter;
         private int tier;
         private float gravity;
-        private Environment environment = Environment.EARTH;
-        private float temperatureSwingK;
-        private long dayLength;
+        private Environment.Definition environment;
         private float solarPower;
 
         private Builder(ResourceLocation id, CelestialBodyType type) {
@@ -230,22 +212,8 @@ public final class CelestialBody {
             return this;
         }
 
-        public Builder environment(Environment environment) {
+        public Builder environment(Environment.Definition environment) {
             this.environment = environment;
-            return this;
-        }
-
-        /** 昼夜温度源的振幅（ΔK）；基准温度由 environment 提供，默认振幅为零。 */
-        public Builder temperatureSwingK(float temperatureSwingK) {
-            if (!Float.isFinite(temperatureSwingK)) {
-                throw new IllegalArgumentException("Temperature swing must be finite");
-            }
-            this.temperatureSwingK = temperatureSwingK;
-            return this;
-        }
-
-        public Builder dayLength(long dayLength) {
-            this.dayLength = dayLength;
             return this;
         }
 

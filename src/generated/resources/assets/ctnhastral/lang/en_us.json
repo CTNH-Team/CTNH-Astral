@@ -76,6 +76,7 @@
   "death.attack.gtceu.medical_condition/hypoxia_severe": "%1$s lost consciousness in severe hypoxia",
   "enchantment.ctnhastral.vacuum_seal.desc": "Protects you from vacuum damage. Note: All equipped items must have this enchantment to take effect",
   "entity.ctnhastral.rocket_contraption": "Rocket Contraption",
+  "gas.ctnhastral.carbon_dioxide": "Carbon Dioxide",
   "gas.ctnhastral.nitrogen": "Nitrogen",
   "gas.ctnhastral.oxygen": "Oxygen",
   "gtceu.medical_condition.hyperthermia": "Hyperthermia",

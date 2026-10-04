@@ -7,6 +7,7 @@ public class EnglishLangHandler {
     public static void init(RegistrateLangProvider provider) {
         provider.add("gas.ctnhastral.oxygen", "Oxygen");
         provider.add("gas.ctnhastral.nitrogen", "Nitrogen");
+        provider.add("gas.ctnhastral.carbon_dioxide", "Carbon Dioxide");
         provider.add("enchantment.ctnhastral.vacuum_seal.desc",
                 "Protects you from vacuum damage. Note: All equipped items must have this enchantment to take effect");
         provider.add("celestial_body.ctnhastral.sol", "Sol");
