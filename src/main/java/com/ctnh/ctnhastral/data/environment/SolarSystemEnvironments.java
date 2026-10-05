@@ -9,7 +9,7 @@ import com.ctnh.ctnhastral.common.environment.Environment;
 import com.ctnh.ctnhastral.common.environment.NaturalTemperature;
 import com.ctnh.ctnhastral.common.environment.Radiation;
 import com.ctnh.ctnhastral.common.environment.Temperature;
-import com.ctnh.ctnhastral.data.worldgen.CABiomes;
+import com.ctnh.ctnhastral.data.worldgen.WorldgenKeys;
 import com.ctnh.ctnhastral.registry.CAEnvironments;
 
 import java.util.Map;
@@ -30,7 +30,13 @@ public final class SolarSystemEnvironments {
             Environment.DEFAULTS.with(ATMOSPHERE, Atmosphere.VACUUM)
                     .with(TEMPERATURE, Temperature.ofCelsius(-120.0F))
                     .with(CORROSION, Corrosion.NONE).with(RADIATION, new Radiation(0.2F)),
-            new NaturalTemperature(0.0F, 40.0F, 0.0F, 24000L, null, Map.of()), false);
+            // New geological biomes retain the established wasteland temperature until equipment balancing.
+            new NaturalTemperature(0.0F, 40.0F, 0.0F, 24000L, null, Map.of(
+                    WorldgenKeys.Biomes.MOON_SHADOW_ICEFIELD, -.4F,
+                    WorldgenKeys.Biomes.MOON_HIGHLANDS, -.4F,
+                    WorldgenKeys.Biomes.MOON_BASALT_PLATEAU, -.4F,
+                    WorldgenKeys.Biomes.MOON_LAVA_TUBES, -.4F)),
+            false);
 
     // 延续游戏化火星大气：总压 0.3 atm、氧分压 0.13 atm。
     public static final Environment.Definition MARS = new Environment.Definition(
@@ -48,7 +54,7 @@ public final class SolarSystemEnvironments {
 
     // 保持按群系键作用的原有语义；火星硫磺湖在火星基准上增加 0.45 mm/a。
     public static final Map<ResourceKey<Biome>, Environment.Delta> BIOME_MODIFIERS = Map.of(
-            CABiomes.MARS_SULFUR_LAKE, Environment.Delta.of(CORROSION, 0.45F));
+            WorldgenKeys.Biomes.MARS_SULFUR_LAKE, Environment.Delta.of(CORROSION, 0.45F));
 
     private SolarSystemEnvironments() {}
 }

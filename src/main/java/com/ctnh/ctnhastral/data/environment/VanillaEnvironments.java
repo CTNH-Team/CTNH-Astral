@@ -12,7 +12,7 @@ import com.ctnh.ctnhastral.common.environment.Environment;
 import com.ctnh.ctnhastral.common.environment.NaturalTemperature;
 import com.ctnh.ctnhastral.common.environment.Radiation;
 import com.ctnh.ctnhastral.common.environment.Temperature;
-import com.ctnh.ctnhastral.data.worldgen.CABiomes;
+import com.ctnh.ctnhastral.data.worldgen.WorldgenKeys;
 
 import java.util.Map;
 import java.util.function.ToDoubleFunction;
@@ -44,7 +44,7 @@ public final class VanillaEnvironments {
             new NaturalTemperature(0.75F, 12.8F, 0.0F, 24000L, null, Map.of(
                     Biomes.NETHER_WASTES, 1.0F, Biomes.SOUL_SAND_VALLEY, 1.0F,
                     Biomes.CRIMSON_FOREST, 0.75F, Biomes.WARPED_FOREST, 0.75F,
-                    Biomes.BASALT_DELTAS, 1.45F, CABiomes.ACID_VALLEY, 1.0F)),
+                    Biomes.BASALT_DELTAS, 1.45F, WorldgenKeys.Biomes.ACID_VALLEY, 1.0F)),
             true);
 
     public static final Environment.Definition END = new Environment.Definition(

@@ -5,6 +5,13 @@ import com.tterrag.registrate.providers.RegistrateLangProvider;
 public class EnglishLangHandler {
 
     public static void init(RegistrateLangProvider provider) {
+        provider.add("biome.ctnhastral.moon_crater", "Lunar Crater");
+        provider.add("biome.ctnhastral.moon_canyon", "Moonscar Canyon");
+        provider.add("biome.ctnhastral.moon_shadow_icefield", "Shadowed Icefield");
+        provider.add("biome.ctnhastral.moon_highlands", "Lunar Highlands");
+        provider.add("biome.ctnhastral.moon_basalt_plateau", "Basalt Plateau");
+        provider.add("biome.ctnhastral.moon_lava_tubes", "Lunar Lava Tubes");
+        provider.add("biome.ctnhastral.moonlight_desert", "Moonlight Desert");
         provider.add("gas.ctnhastral.oxygen", "Oxygen");
         provider.add("gas.ctnhastral.nitrogen", "Nitrogen");
         provider.add("gas.ctnhastral.carbon_dioxide", "Carbon Dioxide");

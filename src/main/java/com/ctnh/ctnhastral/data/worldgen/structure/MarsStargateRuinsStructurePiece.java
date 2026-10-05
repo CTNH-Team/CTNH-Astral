@@ -18,8 +18,7 @@ import com.ctnh.ctnhastral.registry.worldgen.MarsBlocks;
 
 public class MarsStargateRuinsStructurePiece extends StructurePiece {
 
-    public static final StructurePieceType TYPE = StructurePieceType.setPieceId(MarsStargateRuinsStructurePiece::new,
-            "ctnhastral_mars_stargate_ruins");
+    public static final StructurePieceType TYPE = (context, tag) -> new MarsStargateRuinsStructurePiece(tag);
 
     private final BlockPos origin;
 
@@ -32,8 +31,6 @@ public class MarsStargateRuinsStructurePiece extends StructurePiece {
         super(TYPE, tag);
         this.origin = BlockPos.of(tag.getLong("origin"));
     }
-
-    public static void register() {}
 
     private static BoundingBox createBoundingBox(BlockPos origin) {
         return new BoundingBox(origin.getX() - 10, origin.getY() - 2, origin.getZ() - 10,

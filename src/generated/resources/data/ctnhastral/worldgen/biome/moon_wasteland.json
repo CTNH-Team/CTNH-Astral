@@ -1,7 +1,5 @@
 {
-  "carvers": {
-    "air": "ctnhastral:moon_crater_carver"
-  },
+  "carvers": {},
   "downfall": 0.0,
   "effects": {
     "fog_color": 987416,
@@ -21,7 +19,16 @@
     "water_color": 7047313,
     "water_fog_color": 3228232
   },
-  "features": [],
+  "features": [
+    [
+      "ctnhastral:moon_crater"
+    ],
+    [],
+    [
+      "ctnhastral:moonlight_desert",
+      "ctnhastral:moon_wasteland_rocks"
+    ]
+  ],
   "has_precipitation": false,
   "spawn_costs": {},
   "spawners": {

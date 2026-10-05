@@ -1,0 +1,15 @@
+{
+  "type": "ctnhastral:moon_crater",
+  "config": {
+    "debris_cell": 8,
+    "rubble": {
+      "Name": "ctnhastral:moon_cobblestone"
+    },
+    "sediment": {
+      "Name": "ctnhastral:moon_sand"
+    },
+    "stone": {
+      "Name": "ctnhastral:moon_stone"
+    }
+  }
+}

@@ -5,11 +5,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.dimension.LevelStem;
 
 import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.data.environment.AstralEnvironments;
 import com.ctnh.ctnhastral.data.environment.SolarSystemEnvironments;
 import com.ctnh.ctnhastral.data.environment.VanillaEnvironments;
+import com.ctnh.ctnhastral.data.worldgen.WorldgenKeys;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -73,7 +75,7 @@ public final class CACelestialBodies {
             .name(Component.translatable("celestial_body.ctnhastral.astral_planet"))
             .description(Component.translatable("celestial_body.ctnhastral.astral_planet.desc"))
             .parent(SOL_ID)
-            .world(dimension(ASTRAL_PLANET_ID))
+            .world(dimension(WorldgenKeys.Dimensions.ASTRAL_PLANET))
             .position(new OrbitalCelestialPosition(1.0, 3.0, 0.0, true))
             .display(new CelestialDisplay(CTNHAstral.id("textures/block/stones/astral_stone.png"), 16, 16, 1.0f,
                     0xFFB26BFF))
@@ -89,7 +91,7 @@ public final class CACelestialBodies {
             .name(Component.translatable("celestial_body.ctnhastral.astral_orbit"))
             .description(Component.translatable("celestial_body.ctnhastral.astral_orbit.desc"))
             .parent(ASTRAL_PLANET_ID)
-            .world(dimension(ASTRAL_ORBIT_ID))
+            .world(dimension(WorldgenKeys.Dimensions.ASTRAL_ORBIT))
             .position(new OrbitalCelestialPosition(2.0, 0.4, 0.5, false))
             .display(new CelestialDisplay(celestialTexture("space_station"), 16, 16, 1.0f,
                     0xFFB8C7D9))
@@ -104,7 +106,7 @@ public final class CACelestialBodies {
             .name(Component.translatable("celestial_body.ctnhastral.moon"))
             .description(Component.translatable("celestial_body.ctnhastral.moon.desc"))
             .parent(SOL_ID)
-            .world(dimension(MOON_ID))
+            .world(dimension(WorldgenKeys.Dimensions.MOON))
             .position(new OrbitalCelestialPosition(0.8, 1.2, 1.0, true))
             .display(new CelestialDisplay(celestialTexture("moon"), 8, 8, 1.0f,
                     0xFFB6C2D1))
@@ -118,7 +120,7 @@ public final class CACelestialBodies {
             .name(Component.translatable("celestial_body.ctnhastral.mars"))
             .description(Component.translatable("celestial_body.ctnhastral.mars.desc"))
             .parent(SOL_ID)
-            .world(dimension(MARS_ID))
+            .world(dimension(WorldgenKeys.Dimensions.MARS))
             .position(new OrbitalCelestialPosition(1.5, 2.0, 2.0, true))
             .display(new CelestialDisplay(celestialTexture("mars"), 16, 16,
                     1.0f,
@@ -133,7 +135,7 @@ public final class CACelestialBodies {
             .name(Component.translatable("celestial_body.ctnhastral.venus"))
             .description(Component.translatable("celestial_body.ctnhastral.venus.desc"))
             .parent(SOL_ID)
-            .world(dimension(VENUS_ID))
+            .world(dimension(WorldgenKeys.Dimensions.VENUS))
             .position(new OrbitalCelestialPosition(1.1, 1.6, 3.0, true))
             .display(new CelestialDisplay(celestialTexture("venus"), 16, 16,
                     1.0f,
@@ -173,8 +175,8 @@ public final class CACelestialBodies {
         return body;
     }
 
-    private static ResourceKey<Level> dimension(ResourceLocation id) {
-        return ResourceKey.create(Registries.DIMENSION, id);
+    private static ResourceKey<Level> dimension(ResourceKey<LevelStem> definition) {
+        return ResourceKey.create(Registries.DIMENSION, definition.location());
     }
 
     private static ResourceLocation celestialTexture(String name) {

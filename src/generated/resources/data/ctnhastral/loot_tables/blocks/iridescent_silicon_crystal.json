@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "ctnhastral:iridescent_silicon_crystal"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "ctnhastral:blocks/iridescent_silicon_crystal"
+}

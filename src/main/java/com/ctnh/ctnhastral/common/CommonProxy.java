@@ -33,19 +33,7 @@ import com.ctnh.ctnhastral.data.CAMedicalConditions;
 import com.ctnh.ctnhastral.data.GTMateralAdjust;
 import com.ctnh.ctnhastral.data.lang.ChineseLangHandler;
 import com.ctnh.ctnhastral.data.lang.EnglishLangHandler;
-import com.ctnh.ctnhastral.data.worldgen.*;
-import com.ctnh.ctnhastral.data.worldgen.carver.CAConfiguredCarvers;
-import com.ctnh.ctnhastral.data.worldgen.carver.CAWorldCarvers;
-import com.ctnh.ctnhastral.data.worldgen.feature.CAConfiguredFeatures;
-import com.ctnh.ctnhastral.data.worldgen.feature.CAFeatures;
-import com.ctnh.ctnhastral.data.worldgen.feature.CAPlacements;
-import com.ctnh.ctnhastral.data.worldgen.structure.AstralMeteorStructure;
-import com.ctnh.ctnhastral.data.worldgen.structure.CAStructureSets;
-import com.ctnh.ctnhastral.data.worldgen.structure.CAStructures;
-import com.ctnh.ctnhastral.data.worldgen.structure.MarsResearchGraveyardStructure;
-import com.ctnh.ctnhastral.data.worldgen.structure.MarsStargateRuinsStructure;
-import com.ctnh.ctnhastral.data.worldgen.structure.MoonAbandonedOutpostStructure;
-import com.ctnh.ctnhastral.data.worldgen.structure.MoonCraterStructure;
+import com.ctnh.ctnhastral.data.worldgen.CAWorldgen;
 import com.ctnh.ctnhastral.registry.CACreativeModeTabs;
 import com.ctnh.ctnhastral.registry.CAEnvironments;
 import com.ctnh.ctnhastral.registry.CAMachines;
@@ -56,8 +44,6 @@ import com.ctnh.ctnhastral.registry.CARocketEntityTypes;
 import com.ctnh.ctnhastral.registry.sound.CASoundDefinitionsProvider;
 import com.ctnh.ctnhastral.registry.sound.CASoundEvents;
 import com.tterrag.registrate.providers.ProviderType;
-import terrablender.api.Regions;
-import terrablender.api.SurfaceRuleManager;
 
 import java.util.Set;
 
@@ -85,8 +71,7 @@ public class CommonProxy {
         CAMedicalConditions.init();
         CADamageTypes.init();
         CACreativeModeTabs.init();
-        CAFeatures.init(eventBus);
-        CAWorldCarvers.init(eventBus);
+        CAWorldgen.init(eventBus);
         CARocketEntityTypes.init();
         REGISTRATE.registerRegistrate();
         REGISTRATE.addLangProcessor()
@@ -109,15 +94,6 @@ public class CommonProxy {
     }
 
     @SubscribeEvent
-    public void registerMisc(RegisterEvent event) {
-        AstralMeteorStructure.init();
-        MoonCraterStructure.init();
-        MoonAbandonedOutpostStructure.init();
-        MarsResearchGraveyardStructure.init();
-        MarsStargateRuinsStructure.init();
-    }
-
-    @SubscribeEvent
     public void registerMaterial(MaterialRegistryEvent event) {
         MaterialRegistryManager.getInstance().createRegistry(CTNHAstral.MODID);
     }
@@ -134,12 +110,7 @@ public class CommonProxy {
         event.enqueueWork(() -> {
             CAMaterials.tagPrefixIgnore();
             CAFluidInteractions.register();
-            Regions.register(new CAOverworldRegion(2));
-            Regions.register(new CANetherRegion(5));
-            SurfaceRuleManager.addSurfaceRules(SurfaceRuleManager.RuleCategory.OVERWORLD, CTNHAstral.MODID,
-                    CASurfaceRuleData.customSurface());
-            SurfaceRuleManager.addSurfaceRules(SurfaceRuleManager.RuleCategory.NETHER, CTNHAstral.MODID,
-                    CASurfaceRuleData.acidValleySurface());
+            CAWorldgen.commonSetup();
         });
     }
 
@@ -166,18 +137,8 @@ public class CommonProxy {
             // damage type 键位于 gtceu 命名空间（MedicalCondition API 硬约束），输出集需包含之
             var set = Set.of(CTNHAstral.MODID, com.gregtechceu.gtceu.GTCEu.MOD_ID);
             var builtinEntries = new DatapackBuiltinEntriesProvider(
-                    packOutput, registries, new RegistrySetBuilder()
-                            .add(Registries.CONFIGURED_CARVER, CAConfiguredCarvers::bootstrap)
-                            .add(Registries.BIOME, CABiomes::bootstrap)
-                            .add(Registries.CONFIGURED_FEATURE, CAConfiguredFeatures::bootstrap)
-                            .add(Registries.PLACED_FEATURE, CAPlacements::bootstrap)
-                            .add(Registries.DIMENSION_TYPE, CADimensionTypes::bootstrap)
-                            .add(Registries.LEVEL_STEM, CADimensions::bootstrap)
-                            .add(Registries.NOISE_SETTINGS, CANoiseSetting::bootstrap)
-                            .add(Registries.DAMAGE_TYPE, CADamageTypes::bootstrap)
-                            .add(Registries.STRUCTURE, CAStructures::bootstrap)
-                            .add(Registries.STRUCTURE_SET, CAStructureSets::bootstrap)
-                            .add(Registries.DENSITY_FUNCTION, CADensityFunctions::bootstrap),
+                    packOutput, registries, CAWorldgen.addRegistries(new RegistrySetBuilder())
+                            .add(Registries.DAMAGE_TYPE, CADamageTypes::bootstrap),
                     set);
             generator.addProvider(true, builtinEntries);
             // 标签 provider 需要含 bootstrap 注册表的 lookup（对照 GT DamageTagsLoader 接线）

@@ -18,8 +18,7 @@ import com.ctnh.ctnhastral.registry.worldgen.MarsBlocks;
 
 public class MarsResearchGraveyardStructurePiece extends StructurePiece {
 
-    public static final StructurePieceType TYPE = StructurePieceType.setPieceId(
-            MarsResearchGraveyardStructurePiece::new, "ctnhastral_mars_research_graveyard");
+    public static final StructurePieceType TYPE = (context, tag) -> new MarsResearchGraveyardStructurePiece(tag);
 
     private final BlockPos origin;
 
@@ -32,8 +31,6 @@ public class MarsResearchGraveyardStructurePiece extends StructurePiece {
         super(TYPE, tag);
         this.origin = BlockPos.of(tag.getLong("origin"));
     }
-
-    public static void register() {}
 
     private static BoundingBox createBoundingBox(BlockPos origin) {
         return new BoundingBox(origin.getX() - 8, origin.getY() - 2, origin.getZ() - 8,

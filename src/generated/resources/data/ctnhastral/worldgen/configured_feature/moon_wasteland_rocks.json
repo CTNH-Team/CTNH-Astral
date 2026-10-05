@@ -1,0 +1,26 @@
+{
+  "type": "ctnhastral:moon_wasteland_rocks",
+  "config": {
+    "biomes": "ctnhastral:moon_wasteland",
+    "layout": {
+      "cell_size": 24,
+      "chance": 0.85,
+      "max_height": 8,
+      "patch_start": -0.5,
+      "salt": 5570758461887562571,
+      "scarp_max": 0.16,
+      "scarp_min": 0.028
+    },
+    "patches": "ctnhastral:moon_wasteland_patches",
+    "rubble": {
+      "Name": "ctnhastral:moon_cobblestone"
+    },
+    "sand": {
+      "Name": "ctnhastral:moon_sand"
+    },
+    "scarps": "ctnhastral:moon_scarps",
+    "stone": {
+      "Name": "ctnhastral:moon_stone"
+    }
+  }
+}

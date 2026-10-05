@@ -14,8 +14,7 @@ import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 
 public class AstralMeteorStructurePiece extends StructurePiece {
 
-    public static final StructurePieceType TYPE = StructurePieceType.setPieceId(AstralMeteorStructurePiece::new,
-            "ctnhastral_meteor");
+    public static final StructurePieceType TYPE = (context, tag) -> new AstralMeteorStructurePiece(tag);
     public BlockPos center;
     public float radius;
 
@@ -24,8 +23,6 @@ public class AstralMeteorStructurePiece extends StructurePiece {
         this.center = center;
         this.radius = coreRadius;
     }
-
-    public static void register() {}
 
     private static BoundingBox createBoundingBox(BlockPos origin) {
         // Assume a normal max height of 128 blocks for most biomes,

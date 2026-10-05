@@ -15,7 +15,7 @@ public class AstralMeteorStructure extends Structure {
 
     public static final Codec<AstralMeteorStructure> CODEC = simpleCodec(AstralMeteorStructure::new);
 
-    public static StructureType<AstralMeteorStructure> TYPE;
+    public static final StructureType<AstralMeteorStructure> TYPE = () -> CODEC;
 
     public AstralMeteorStructure(StructureSettings settings) {
         super(settings);
@@ -73,11 +73,6 @@ public class AstralMeteorStructure extends Structure {
 
         piecesBuilder.addPiece(
                 new AstralMeteorStructurePiece(actualPos, meteoriteRadius));
-    }
-
-    public static void init() {
-        AstralMeteorStructurePiece.register();
-        AstralMeteorStructure.TYPE = StructureType.register("ctnh_meteor", AstralMeteorStructure.CODEC);
     }
 
     @Override

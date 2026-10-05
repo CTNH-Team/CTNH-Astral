@@ -6,6 +6,13 @@ import tech.vixhentx.mcmod.ctnhlib.registrate.lang.RegistrateCNLangProvider;
 public class ChineseLangHandler {
 
     public static void init(RegistrateCNLangProvider provider) {
+        provider.add("biome.ctnhastral.moon_crater", "月球环形山");
+        provider.add("biome.ctnhastral.moon_canyon", "月痕峡谷");
+        provider.add("biome.ctnhastral.moon_shadow_icefield", "永影冰原");
+        provider.add("biome.ctnhastral.moon_highlands", "月球高地");
+        provider.add("biome.ctnhastral.moon_basalt_plateau", "玄武岩台地");
+        provider.add("biome.ctnhastral.moon_lava_tubes", "月下熔管");
+        provider.add("biome.ctnhastral.moonlight_desert", "月光沙漠");
         provider.add("gas.ctnhastral.oxygen", "氧气");
         provider.add("gas.ctnhastral.nitrogen", "氮气");
         provider.add("gas.ctnhastral.carbon_dioxide", "二氧化碳");

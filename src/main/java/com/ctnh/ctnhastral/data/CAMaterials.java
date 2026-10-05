@@ -107,7 +107,8 @@ public class CAMaterials {
     }
 
     public static void tagPrefixIgnore() {
-        TagPrefix.block.setIgnoredBlock(Moonstone, MoonBlocks.MOON_STONE.get());
+        // Natural host rock, like GT's Stone; not a storage block containing nine dusts.
+        TagPrefix.rock.setIgnoredBlock(Moonstone, MoonBlocks.MOON_STONE.get());
         TagPrefix.block.setIgnoredBlock(Marsstone, MarsBlocks.MARS_STONE.get());
     }
 
