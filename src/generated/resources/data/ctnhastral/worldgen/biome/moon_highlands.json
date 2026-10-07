@@ -21,7 +21,13 @@
   },
   "features": [
     [
-      "ctnhastral:moon_crater"
+      "ctnhastral:moon_crater",
+      "ctnhastral:moon_silicon_landscape"
+    ],
+    [],
+    [
+      "ctnhastral:moonlight_desert",
+      "ctnhastral:moon_wasteland_rocks"
     ]
   ],
   "has_precipitation": false,

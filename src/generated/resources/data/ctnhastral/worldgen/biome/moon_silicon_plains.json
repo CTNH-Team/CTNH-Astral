@@ -26,7 +26,8 @@
     ],
     [],
     [
-      "ctnhastral:moonlight_desert"
+      "ctnhastral:moonlight_desert",
+      "ctnhastral:moon_wasteland_rocks"
     ]
   ],
   "has_precipitation": false,

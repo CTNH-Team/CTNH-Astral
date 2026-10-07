@@ -48,66 +48,45 @@
         "argument2": {
           "type": "minecraft:add",
           "argument1": {
-            "type": "minecraft:mul",
+            "type": "minecraft:add",
             "argument1": {
-              "type": "minecraft:spline",
-              "spline": {
-                "coordinate": "ctnhastral:moon_continents",
-                "points": [
-                  {
-                    "derivative": 0.0,
-                    "location": 0.05,
-                    "value": 0.0
-                  },
-                  {
-                    "derivative": 0.0,
-                    "location": 0.35,
-                    "value": 1.0
-                  }
-                ]
+              "type": "minecraft:mul",
+              "argument1": 6.0,
+              "argument2": {
+                "type": "minecraft:clamp",
+                "input": {
+                  "type": "minecraft:noise",
+                  "noise": "ctnhastral:moon_wasteland_patches",
+                  "xz_scale": 0.45,
+                  "y_scale": 0.0
+                },
+                "max": 1.0,
+                "min": -1.0
               }
             },
             "argument2": {
-              "type": "minecraft:add",
-              "argument1": {
-                "type": "minecraft:mul",
-                "argument1": 6.0,
-                "argument2": {
+              "type": "minecraft:mul",
+              "argument1": -3.0,
+              "argument2": {
+                "type": "minecraft:square",
+                "argument": {
                   "type": "minecraft:clamp",
                   "input": {
-                    "type": "minecraft:noise",
-                    "noise": "ctnhastral:moon_wasteland_patches",
-                    "xz_scale": 0.45,
-                    "y_scale": 0.0
+                    "type": "minecraft:mul",
+                    "argument1": -2.0,
+                    "argument2": {
+                      "type": "minecraft:add",
+                      "argument1": 0.2,
+                      "argument2": {
+                        "type": "minecraft:noise",
+                        "noise": "minecraft:surface_secondary",
+                        "xz_scale": 1.0,
+                        "y_scale": 0.0
+                      }
+                    }
                   },
                   "max": 1.0,
-                  "min": -1.0
-                }
-              },
-              "argument2": {
-                "type": "minecraft:mul",
-                "argument1": -3.0,
-                "argument2": {
-                  "type": "minecraft:square",
-                  "argument": {
-                    "type": "minecraft:clamp",
-                    "input": {
-                      "type": "minecraft:mul",
-                      "argument1": -2.0,
-                      "argument2": {
-                        "type": "minecraft:add",
-                        "argument1": 0.2,
-                        "argument2": {
-                          "type": "minecraft:noise",
-                          "noise": "minecraft:surface_secondary",
-                          "xz_scale": 1.0,
-                          "y_scale": 0.0
-                        }
-                      }
-                    },
-                    "max": 1.0,
-                    "min": 0.0
-                  }
+                  "min": 0.0
                 }
               }
             }
@@ -117,98 +96,77 @@
             "argument1": {
               "type": "minecraft:spline",
               "spline": {
-                "coordinate": "ctnhastral:moon_continents",
+                "coordinate": {
+                  "type": "minecraft:noise",
+                  "noise": "ctnhastral:moon_scarps",
+                  "xz_scale": 1.0,
+                  "y_scale": 0.0
+                },
                 "points": [
                   {
                     "derivative": 0.0,
-                    "location": -0.12,
+                    "location": -0.224,
                     "value": 0.0
                   },
                   {
                     "derivative": 0.0,
-                    "location": -0.095,
+                    "location": -0.16,
+                    "value": 0.08
+                  },
+                  {
+                    "derivative": 0.0,
+                    "location": -0.072,
+                    "value": 0.85
+                  },
+                  {
+                    "derivative": 0.0,
+                    "location": -0.036,
                     "value": 1.0
+                  },
+                  {
+                    "derivative": 0.0,
+                    "location": 0.0,
+                    "value": 1.0
+                  },
+                  {
+                    "derivative": 0.0,
+                    "location": 0.028,
+                    "value": 0.12
+                  },
+                  {
+                    "derivative": 0.0,
+                    "location": 0.08,
+                    "value": 0.0
                   }
                 ]
               }
             },
             "argument2": {
-              "type": "minecraft:mul",
-              "argument1": {
-                "type": "minecraft:spline",
-                "spline": {
-                  "coordinate": {
-                    "type": "minecraft:noise",
-                    "noise": "ctnhastral:moon_scarps",
-                    "xz_scale": 1.0,
-                    "y_scale": 0.0
+              "type": "minecraft:spline",
+              "spline": {
+                "coordinate": {
+                  "type": "minecraft:noise",
+                  "noise": "ctnhastral:moon_wasteland_patches",
+                  "xz_scale": 1.0,
+                  "y_scale": 0.0
+                },
+                "points": [
+                  {
+                    "derivative": 0.0,
+                    "location": -0.5,
+                    "value": 14.0
                   },
-                  "points": [
-                    {
-                      "derivative": 0.0,
-                      "location": -0.224,
-                      "value": 0.0
-                    },
-                    {
-                      "derivative": 0.0,
-                      "location": -0.16,
-                      "value": 0.08
-                    },
-                    {
-                      "derivative": 0.0,
-                      "location": -0.072,
-                      "value": 0.85
-                    },
-                    {
-                      "derivative": 0.0,
-                      "location": -0.036,
-                      "value": 1.0
-                    },
-                    {
-                      "derivative": 0.0,
-                      "location": 0.0,
-                      "value": 1.0
-                    },
-                    {
-                      "derivative": 0.0,
-                      "location": 0.028,
-                      "value": 0.12
-                    },
-                    {
-                      "derivative": 0.0,
-                      "location": 0.08,
-                      "value": 0.0
-                    }
-                  ]
-                }
-              },
-              "argument2": {
-                "type": "minecraft:spline",
-                "spline": {
-                  "coordinate": {
-                    "type": "minecraft:noise",
-                    "noise": "ctnhastral:moon_wasteland_patches",
-                    "xz_scale": 1.0,
-                    "y_scale": 0.0
+                  {
+                    "derivative": 0.0,
+                    "location": 0.0,
+                    "value": 18.0
                   },
-                  "points": [
-                    {
-                      "derivative": 0.0,
-                      "location": -0.5,
-                      "value": 14.0
-                    },
-                    {
-                      "derivative": 0.0,
-                      "location": 0.0,
-                      "value": 18.0
-                    },
-                    {
-                      "derivative": 0.0,
-                      "location": 0.5,
-                      "value": 24.0
-                    }
-                  ]
-                }
+                  {
+                    "derivative": 0.0,
+                    "location": 0.5,
+                    "value": 24.0
+                  }
+                ]
               }
             }
           }
@@ -222,42 +180,21 @@
           "argument2": {
             "type": "minecraft:mul",
             "argument1": {
-              "type": "minecraft:mul",
-              "argument1": {
-                "type": "minecraft:spline",
-                "spline": {
-                  "coordinate": "ctnhastral:moon_continents",
-                  "points": [
-                    {
-                      "derivative": 0.0,
-                      "location": 0.08,
-                      "value": 0.0
-                    },
-                    {
-                      "derivative": 0.0,
-                      "location": 0.19999999,
-                      "value": 1.0
-                    }
-                  ]
-                }
-              },
-              "argument2": {
-                "type": "minecraft:spline",
-                "spline": {
-                  "coordinate": "ctnhastral:moon_ice_conditions",
-                  "points": [
-                    {
-                      "derivative": 0.0,
-                      "location": 0.27,
-                      "value": 0.0
-                    },
-                    {
-                      "derivative": 0.0,
-                      "location": 0.37,
-                      "value": 1.0
-                    }
-                  ]
-                }
+              "type": "minecraft:spline",
+              "spline": {
+                "coordinate": "ctnhastral:moon_ice_conditions",
+                "points": [
+                  {
+                    "derivative": 0.0,
+                    "location": 0.27,
+                    "value": 0.0
+                  },
+                  {
+                    "derivative": 0.0,
+                    "location": 0.37,
+                    "value": 1.0
+                  }
+                ]
               }
             },
             "argument2": {
@@ -279,58 +216,37 @@
                 "argument1": {
                   "type": "minecraft:spline",
                   "spline": {
-                    "coordinate": "ctnhastral:moon_continents",
+                    "coordinate": "ctnhastral:moon_ice_conditions",
                     "points": [
                       {
                         "derivative": 0.0,
-                        "location": 0.08,
-                        "value": 0.0
+                        "location": 0.17000002,
+                        "value": 1.0
                       },
                       {
                         "derivative": 0.0,
-                        "location": 0.19999999,
-                        "value": 1.0
+                        "location": 0.27,
+                        "value": 0.0
                       }
                     ]
                   }
                 },
                 "argument2": {
-                  "type": "minecraft:mul",
-                  "argument1": {
-                    "type": "minecraft:spline",
-                    "spline": {
-                      "coordinate": "ctnhastral:moon_ice_conditions",
-                      "points": [
-                        {
-                          "derivative": 0.0,
-                          "location": 0.17000002,
-                          "value": 1.0
-                        },
-                        {
-                          "derivative": 0.0,
-                          "location": 0.27,
-                          "value": 0.0
-                        }
-                      ]
-                    }
-                  },
-                  "argument2": {
-                    "type": "minecraft:spline",
-                    "spline": {
-                      "coordinate": "ctnhastral:moon_uplift",
-                      "points": [
-                        {
-                          "derivative": 0.0,
-                          "location": 0.3,
-                          "value": 0.0
-                        },
-                        {
-                          "derivative": 0.0,
-                          "location": 0.43,
-                          "value": 1.0
-                        }
-                      ]
-                    }
+                  "type": "minecraft:spline",
+                  "spline": {
+                    "coordinate": "ctnhastral:moon_uplift",
+                    "points": [
+                      {
+                        "derivative": 0.0,
+                        "location": 0.3,
+                        "value": 0.0
+                      },
+                      {
+                        "derivative": 0.0,
+                        "location": 0.43,
+                        "value": 1.0
+                      }
+                    ]
                   }
                 }
               },
@@ -351,58 +267,37 @@
                 "argument1": {
                   "type": "minecraft:spline",
                   "spline": {
-                    "coordinate": "ctnhastral:moon_continents",
+                    "coordinate": "ctnhastral:moon_ice_conditions",
                     "points": [
                       {
                         "derivative": 0.0,
-                        "location": 0.08,
-                        "value": 0.0
+                        "location": 0.17000002,
+                        "value": 1.0
                       },
                       {
                         "derivative": 0.0,
-                        "location": 0.19999999,
-                        "value": 1.0
+                        "location": 0.27,
+                        "value": 0.0
                       }
                     ]
                   }
                 },
                 "argument2": {
-                  "type": "minecraft:mul",
-                  "argument1": {
-                    "type": "minecraft:spline",
-                    "spline": {
-                      "coordinate": "ctnhastral:moon_ice_conditions",
-                      "points": [
-                        {
-                          "derivative": 0.0,
-                          "location": 0.17000002,
-                          "value": 1.0
-                        },
-                        {
-                          "derivative": 0.0,
-                          "location": 0.27,
-                          "value": 0.0
-                        }
-                      ]
-                    }
-                  },
-                  "argument2": {
-                    "type": "minecraft:spline",
-                    "spline": {
-                      "coordinate": "ctnhastral:moon_uplift",
-                      "points": [
-                        {
-                          "derivative": 0.0,
-                          "location": -0.4,
-                          "value": 1.0
-                        },
-                        {
-                          "derivative": 0.0,
-                          "location": -0.3,
-                          "value": 0.0
-                        }
-                      ]
-                    }
+                  "type": "minecraft:spline",
+                  "spline": {
+                    "coordinate": "ctnhastral:moon_uplift",
+                    "points": [
+                      {
+                        "derivative": 0.0,
+                        "location": -0.4,
+                        "value": 1.0
+                      },
+                      {
+                        "derivative": 0.0,
+                        "location": -0.3,
+                        "value": 0.0
+                      }
+                    ]
                   }
                 }
               },

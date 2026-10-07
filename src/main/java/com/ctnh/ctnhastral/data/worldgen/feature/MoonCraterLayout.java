@@ -185,6 +185,16 @@ public final class MoonCraterLayout {
             return normalizedRadius(blockX, blockZ) <= shape.outerJoin();
         }
 
+        /** Same excavation profile used by block placement and underground roof protection. */
+        public double surfaceHeight(int blockX, int blockZ, double originalHeight) {
+            double rho = normalizedRadius(blockX, blockZ);
+            double plane = planeY + slopeX * (blockX - x) + slopeZ * (blockZ - z);
+            double blend = Mth.clamp((rho - .45) / .55, 0, 1);
+            blend = blend * blend * (3 - 2 * blend);
+            return plane + shape.profile(rho) + blend * (originalHeight - plane) +
+                    shape.roughness(seed, blockX, blockZ, rho);
+        }
+
         private boolean touches(ChunkPos chunk) {
             double nearestX = Mth.clamp(x, chunk.getMinBlockX(), chunk.getMaxBlockX());
             double nearestZ = Mth.clamp(z, chunk.getMinBlockZ(), chunk.getMaxBlockZ());

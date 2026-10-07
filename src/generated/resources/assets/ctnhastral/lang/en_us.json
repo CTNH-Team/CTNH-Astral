@@ -28,6 +28,7 @@
   "block.ctnhastral.iridescent_silicon_crystal": "Iridescent Silicon Crystal",
   "block.ctnhastral.krypton_crystal_ore": "Krypton Crystal Ore",
   "block.ctnhastral.large_silicon_crystal_bud": "Large Silicon Crystal Bud",
+  "block.ctnhastral.layered_moonlight_crystal": "Layered Moonlight Crystal",
   "block.ctnhastral.luminous_moon_sand": "Luminous Moon Sand",
   "block.ctnhastral.mars_base_platform": "Mars Base Platform",
   "block.ctnhastral.mars_stone": "Mars Stone",
@@ -113,6 +114,7 @@
   "material.ctnhastral.glacio_stone": "Glacio Stone",
   "material.ctnhastral.mars_stone": "Mars Stone",
   "material.ctnhastral.mercury_stone": "Mercury Stone",
+  "material.ctnhastral.moon_enriched_brine": "Moon Enriched Brine",
   "material.ctnhastral.moon_stone": "Moon Stone",
   "material.ctnhastral.seawater": "Seawater",
   "material.ctnhastral.starlight": "Starlight",
@@ -120,5 +122,6 @@
   "material.ctnhastral.venus_stone": "Venus Stone",
   "message.ctnhastral.invalid_destination": "The destination is invalid or the map expired",
   "message.ctnhastral.rocket.launch": "Press %1$s to launch",
-  "message.ctnhastral.rocket_tier_low": "Rocket tier too low: %s required, %s available"
+  "message.ctnhastral.rocket_tier_low": "Rocket tier too low: %s required, %s available",
+  "structure.ctnhastral.moon_subsurface_sea": "Subsurface Salt Sea"
 }

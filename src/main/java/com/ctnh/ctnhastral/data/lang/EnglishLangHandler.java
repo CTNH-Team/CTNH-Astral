@@ -11,6 +11,7 @@ public class EnglishLangHandler {
         provider.add("biome.ctnhastral.moon_highlands", "Lunar Highlands");
         provider.add("biome.ctnhastral.moon_basalt_plateau", "Basalt Plateau");
         provider.add("biome.ctnhastral.moon_lava_tubes", "Lunar Lava Tubes");
+        provider.add("structure.ctnhastral.moon_subsurface_sea", "Subsurface Salt Sea");
         provider.add("biome.ctnhastral.moonlight_desert", "Moonlight Desert");
         provider.add("gas.ctnhastral.oxygen", "Oxygen");
         provider.add("gas.ctnhastral.nitrogen", "Nitrogen");

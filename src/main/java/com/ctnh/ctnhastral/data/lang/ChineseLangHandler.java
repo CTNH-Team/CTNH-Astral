@@ -12,6 +12,7 @@ public class ChineseLangHandler {
         provider.add("biome.ctnhastral.moon_highlands", "月球高地");
         provider.add("biome.ctnhastral.moon_basalt_plateau", "玄武岩台地");
         provider.add("biome.ctnhastral.moon_lava_tubes", "月下熔管");
+        provider.add("structure.ctnhastral.moon_subsurface_sea", "月下盐海");
         provider.add("biome.ctnhastral.moonlight_desert", "月光沙漠");
         provider.add("gas.ctnhastral.oxygen", "氧气");
         provider.add("gas.ctnhastral.nitrogen", "氮气");

@@ -7,9 +7,12 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.biome.Climate;
 import net.minecraft.world.level.biome.MultiNoiseBiomeSource;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.levelgen.DensityFunction;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
 import net.minecraft.world.level.levelgen.RandomState;
@@ -19,11 +22,15 @@ import com.ctnh.ctnhastral.data.worldgen.terrain.MoonCanyonLayout;
 import com.ctnh.ctnhastral.data.worldgen.terrain.MoonCanyonTerrain;
 import com.ctnh.ctnhastral.data.worldgen.terrain.MoonGeologyTerrain;
 import com.ctnh.ctnhastral.data.worldgen.terrain.MoonSiliconLandscape;
+import com.ctnh.ctnhastral.data.worldgen.terrain.MoonSubsurfaceSea;
+import com.ctnh.ctnhastral.data.worldgen.terrain.MoonSurfaceTransition;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.DoubleBinaryOperator;
@@ -44,7 +51,9 @@ public final class MoonBiomeSource extends BiomeSource {
             Biome.LIST_CODEC.fieldOf("silicon_biomes").forGetter(source -> source.siliconBiomes),
             MoonSiliconLandscape.Settings.CODEC.fieldOf("silicon_landscape")
                     .forGetter(source -> source.siliconSettings),
-            MoonGeologyTerrain.Configuration.CODEC.fieldOf("geology").forGetter(source -> source.geologyConfig))
+            MoonGeologyTerrain.Configuration.CODEC.fieldOf("geology").forGetter(source -> source.geologyConfig),
+            MoonSurfaceTransition.Configuration.CODEC.fieldOf("surface_transition")
+                    .forGetter(source -> source.surfaceConfig))
             .apply(instance, MoonBiomeSource::new));
 
     private final MultiNoiseBiomeSource base;
@@ -58,19 +67,27 @@ public final class MoonBiomeSource extends BiomeSource {
     private final HolderSet<Biome> siliconBiomes;
     private final MoonSiliconLandscape.Settings siliconSettings;
     private final MoonGeologyTerrain.Configuration geologyConfig;
+    private final MoonSurfaceTransition.Configuration surfaceConfig;
+    private MoonSurfaceTransition surface;
+    private final Map<MoonSubsurfaceSea.Settings, MoonSubsurfaceSea> seas = new HashMap<>();
     private volatile MoonGeologyTerrain geology;
     private volatile MoonCraterLayout craters;
     private volatile MoonCanyonLayout canyons;
     private volatile MoonSiliconLandscape silicon;
     // Generation queries every vertical quart cell; local overlays only depend on horizontal coordinates.
     private final Cache<Long, Optional<Holder<Biome>>> overlays = CacheBuilder.newBuilder().maximumSize(8192).build();
+    private final Cache<Long, Double> groundHeights = CacheBuilder.newBuilder().maximumSize(16384).build();
+    private DoubleBinaryOperator ground;
+    private long seed;
+    private int craterMinY;
 
     public MoonBiomeSource(MultiNoiseBiomeSource base, Holder<Biome> crater, HolderSet<Biome> excludedBiomes,
                            MoonCraterLayout.Settings layout, Holder<Biome> canyon,
                            MoonCanyonLayout.Settings canyonLayout,
                            HolderSet<Biome> canyonPreferred, MoonCanyonTerrain.Configuration canyonTerrain,
                            HolderSet<Biome> siliconBiomes, MoonSiliconLandscape.Settings siliconSettings,
-                           MoonGeologyTerrain.Configuration geologyConfig) {
+                           MoonGeologyTerrain.Configuration geologyConfig,
+                           MoonSurfaceTransition.Configuration surfaceConfig) {
         this.base = base;
         this.crater = crater;
         this.excludedBiomes = excludedBiomes;
@@ -82,14 +99,20 @@ public final class MoonBiomeSource extends BiomeSource {
         this.siliconBiomes = siliconBiomes;
         this.siliconSettings = siliconSettings;
         this.geologyConfig = geologyConfig;
+        this.surfaceConfig = surfaceConfig;
     }
 
     // ChunkGenerator#createState binds the seed before structure, biome or /locate queries run.
     public void initialize(NoiseBasedChunkGenerator generator, RandomState randomState, long seed) {
         var noise = generator.generatorSettings().value().noiseSettings();
         var height = LevelHeightAccessor.create(noise.minY(), noise.height());
-        DoubleBinaryOperator ground = (x, z) -> generator.getBaseHeight(Mth.floor(x), Mth.floor(z),
-                Heightmap.Types.OCEAN_FLOOR_WG, height, randomState) - 1;
+        groundHeights.invalidateAll();
+        this.seed = seed;
+        craterMinY = noise.minY() + 6;
+        seas.clear();
+        ground = (x, z) -> groundHeights.asMap().computeIfAbsent(
+                ChunkPos.asLong(Mth.floor(x), Mth.floor(z)), key -> generator.getBaseHeight(Mth.floor(x), Mth.floor(z),
+                        Heightmap.Types.OCEAN_FLOOR_WG, height, randomState) - 1.0);
         canyons = new MoonCanyonLayout(seed, canyonLayout, ground, (x, z) -> {
             Holder<Biome> biome = base.getNoiseBiome(QuartPos.fromBlock(Mth.floor(x)), 0,
                     QuartPos.fromBlock(Mth.floor(z)), randomState.sampler());
@@ -99,10 +122,22 @@ public final class MoonBiomeSource extends BiomeSource {
         craters = new MoonCraterLayout(seed, layout, ground, generator.getSeaLevel(), canyons,
                 (x, z) -> !excludedBiomes.contains(base.getNoiseBiome(QuartPos.fromBlock(x), 0,
                         QuartPos.fromBlock(z), randomState.sampler())));
+        var router = randomState.router();
+        surface = new MoonSurfaceTransition(seed, surfaceConfig.settings(),
+                horizontal(router.temperature()),
+                horizontal(router.vegetation()),
+                horizontal(router.erosion()),
+                horizontal(router.ridges()));
         silicon = new MoonSiliconLandscape(seed, siliconSettings, ground,
                 (x, z) -> siliconBiomes.contains(base.getNoiseBiome(QuartPos.fromBlock(x), 0,
                         QuartPos.fromBlock(z), randomState.sampler())) &&
                         !canyons.intersectsDisc(x, z, siliconSettings.canyonClearance()) && craters.at(x, z).isEmpty(),
+                (x, z) -> !surfaceAllowed(x, z, siliconSettings.canyonClearance()) || geology().hasSurfaceSite(x, z) ?
+                        -1 :
+                        surface.sample(x, z).selected() != MoonSurfaceTransition.Region.SILICON ? 0 :
+                                surface.sample(x, z).edge() ? 2 : 1,
+                (x, z) -> surfaceAllowed(x, z, siliconSettings.canyonClearance()) && !geology().hasSurfaceSite(x, z) ?
+                        surface.probability(MoonSurfaceTransition.Region.SILICON, x, z, false) : 0,
                 generator.getSeaLevel(), noise.minY() + noise.height());
         geology = new MoonGeologyTerrain(seed, geologyConfig, ground, (x, z) -> {
             Holder<Biome> biome = base.getNoiseBiome(QuartPos.fromBlock(x), 0, QuartPos.fromBlock(z),
@@ -110,8 +145,60 @@ public final class MoonBiomeSource extends BiomeSource {
             if (biome.equals(geologyConfig.iceBiome())) return 1;
             if (biome.equals(geologyConfig.highlandBiome())) return 2;
             return biome.equals(geologyConfig.basaltBiome()) ? 3 : 0;
-        }, (x, z) -> !canyons.intersectsDisc(x, z, geologyConfig.canyonClearance()) && craters.at(x, z).isEmpty());
+        }, (x, z) -> surfaceAllowed(x, z, 0) ?
+                surface.sample(x, z).selected() == MoonSurfaceTransition.Region.ICE ? 1 : 0 :
+                base.getNoiseBiome(QuartPos.fromBlock(x), 0, QuartPos.fromBlock(z), randomState.sampler())
+                        .equals(geologyConfig.iceBiome()) ? 1 : 0,
+                (x, z) -> surfaceAllowed(x, z, geologyConfig.canyonClearance()));
         overlays.invalidateAll();
+    }
+
+    private static DoubleBinaryOperator horizontal(DensityFunction field) {
+        return (x, z) -> field.compute(new DensityFunction.SinglePointContext((int) x, 0, (int) z));
+    }
+
+    public BiomeManager surfaceBiomes(BiomeManager original) {
+        return surface().biomes(original, surfaceConfig.biomes(), (x, z) -> !surfaceAllowed(x, z, 0));
+    }
+
+    public void finishSurface(ChunkAccess chunk) {
+        geology().apply(chunk);
+        surface().apply(chunk, surfaceConfig.edgeMaterials(),
+                (x, z) -> !surfaceAllowed(x, z, 0) || geology().hasSurfaceSite(x, z));
+    }
+
+    /** World-scoped terrain service requested by the structure; it never changes a biome. */
+    public synchronized MoonSubsurfaceSea seas(MoonSubsurfaceSea.Settings settings) {
+        return seas.computeIfAbsent(settings, this::createSea);
+    }
+
+    private MoonSubsurfaceSea createSea(MoonSubsurfaceSea.Settings settings) {
+        Objects.requireNonNull(ground, "Moon terrain must be initialized by the chunk generator");
+        DoubleBinaryOperator surface = (x, z) -> {
+            int bx = Mth.floor(x), bz = Mth.floor(z);
+            double top = geology.surfaceHeight(bx, bz);
+            var canyonSample = canyons.sample(bx, bz);
+            if (canyonSample != null) top = Math.min(top, canyonSample.floorY());
+            var craterSite = craters.at(bx, bz);
+            if (craterSite.isPresent()) top = Math.min(top, Math.max(craterMinY,
+                    Mth.floor(craterSite.get().surfaceHeight(bx, bz, top) + .5)));
+            return top;
+        };
+        Cache<Long, Double> ceilings = CacheBuilder.newBuilder().maximumSize(16384).build();
+        DoubleBinaryOperator ceiling = (x, z) -> ceilings.asMap().computeIfAbsent(
+                ChunkPos.asLong(Mth.floor(x), Mth.floor(z)), key -> {
+                    int bx = Mth.floor(x), bz = Mth.floor(z), gap = settings.caveClearance();
+                    double limit = surface.applyAsDouble(bx, bz) - settings.roofThickness();
+                    for (int[] offset : new int[][] { { 0, 0 }, { gap, 0 }, { -gap, 0 }, { 0, gap }, { 0, -gap } }) {
+                        limit = Math.min(limit, surface.applyAsDouble(bx + offset[0], bz + offset[1]) -
+                                settings.roofThickness());
+                        limit = Math.min(limit, geology.tubeFloor(bx + offset[0], bz + offset[1]) - gap);
+                    }
+                    return limit;
+                });
+        return new MoonSubsurfaceSea(seed, settings, surface, ceiling,
+                (x, z) -> !canyons.intersectsDisc(x, z, geologyConfig.canyonClearance()) &&
+                        craters.at(x, z).isEmpty() && geology.tubeFloor(x, z) == Integer.MAX_VALUE);
     }
 
     public MoonCanyonLayout canyons() {
@@ -134,6 +221,20 @@ public final class MoonBiomeSource extends BiomeSource {
         return Objects.requireNonNull(geology, "Moon geology must be initialized by the chunk generator");
     }
 
+    public MoonSurfaceTransition surface() {
+        return Objects.requireNonNull(surface, "Moon surface must be initialized by the chunk generator");
+    }
+
+    public boolean surfaceAllowed(int x, int z, int clearance) {
+        return !canyons().intersectsDisc(x, z, clearance) && craters().at(x, z).isEmpty();
+    }
+
+    public boolean smallFeatureAllowed(int x, int z) {
+        return surfaceAllowed(x, z, 0) && !geology().hasSurfaceSite(x, z) &&
+                silicon().sitesInArea(x, z, x, z).stream()
+                        .noneMatch(s -> Math.hypot(x - s.x(), z - s.z()) <= s.reach());
+    }
+
     @Override
     protected Codec<? extends BiomeSource> codec() {
         return CODEC;
@@ -141,7 +242,8 @@ public final class MoonBiomeSource extends BiomeSource {
 
     @Override
     protected Stream<Holder<Biome>> collectPossibleBiomes() {
-        return Stream.concat(base.possibleBiomes().stream(), Stream.of(crater, canyon, geologyConfig.tubeBiome()));
+        return Stream.concat(base.possibleBiomes().stream(),
+                Stream.of(crater, canyon, geologyConfig.tubeBiome()));
     }
 
     @Override

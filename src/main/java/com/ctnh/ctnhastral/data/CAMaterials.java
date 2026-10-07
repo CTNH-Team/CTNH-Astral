@@ -29,6 +29,7 @@ public class CAMaterials {
     public static Material Starlight;
     public static Material Starmetal;
     public static Material Seawater;
+    public static Material MoonEnrichedBrine;
 
     public static Material Acid;
 
@@ -100,6 +101,14 @@ public class CAMaterials {
                 .flags(DISABLE_DECOMPOSITION)
                 .buildAndRegister()
                 .setFormula("Cl?Br?I?[H2O]", false);
+        MoonEnrichedBrine = REGISTRATE.material(CTNHAstral.id("moon_enriched_brine"))
+                .lang("Moon Enriched Brine")
+                .cnlang("月海富集卤水")
+                .formula("(NaCl)16(MgCl2)2(CaCl2)(LiCl)6+Br?+I?+H2O")
+                .liquid(new FluidBuilder().temperature(288).block().textures(true, true))
+                .color(0x2D5274)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
         Acid = REGISTRATE.material(CTNHAstral.id("acid"))
                 .cnlang("酸液")
                 .liquid(new FluidBuilder().textures(true, true).block())

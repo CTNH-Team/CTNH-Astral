@@ -1,12 +1,9 @@
 package com.ctnh.ctnhastral.data.worldgen.feature;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.QuartPos;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -14,6 +11,8 @@ import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
 import com.ctnh.ctnhastral.data.worldgen.biome.MoonBiomeSource;
+import com.ctnh.ctnhastral.data.worldgen.terrain.MoonSurfaceTransition;
+import com.ctnh.ctnhastral.data.worldgen.terrain.TerrainNoise;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -54,12 +53,11 @@ public class MoonlightDesertFeature extends Feature<MoonlightDesertFeature.Confi
         }
     }
 
-    public record Configuration(HolderSet<Biome> biomes, BlockState crystal, BlockState sand,
+    public record Configuration(BlockState crystal, BlockState sand,
                                 BlockState glowSand, BlockState stone, Settings layout)
             implements FeatureConfiguration {
 
         public static final Codec<Configuration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Biome.LIST_CODEC.fieldOf("biomes").forGetter(Configuration::biomes),
                 BlockState.CODEC.fieldOf("crystal").forGetter(Configuration::crystal),
                 BlockState.CODEC.fieldOf("sand").forGetter(Configuration::sand),
                 BlockState.CODEC.fieldOf("glow_sand").forGetter(Configuration::glowSand),
@@ -84,9 +82,6 @@ public class MoonlightDesertFeature extends Feature<MoonlightDesertFeature.Confi
         // Seeded terrain, never a neighboring chunk whose decorations depend on generation order.
         IntBinaryOperator ground = (x, z) -> heights.computeIfAbsent(ChunkPos.asLong(x, z),
                 key -> context.chunkGenerator().getBaseHeight(x, z, Heightmap.Types.OCEAN_FLOOR_WG, level, random) - 1);
-        BiPredicate<Integer, Integer> permitted = (x, z) -> config.biomes().contains(moon.getNoiseBiome(
-                QuartPos.fromBlock(x), 0, QuartPos.fromBlock(z), random.sampler())) &&
-                !moon.canyons().intersectsDisc(x, z, 0) && moon.craters().at(x, z).isEmpty();
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         boolean changed = false;
         for (int cx = Math.floorDiv(chunkPos.getMinBlockX() - layout.reach(), layout.cellSize()); cx <=
@@ -94,6 +89,15 @@ public class MoonlightDesertFeature extends Feature<MoonlightDesertFeature.Confi
             for (int cz = Math.floorDiv(chunkPos.getMinBlockZ() - layout.reach(), layout.cellSize()); cz <=
                     Math.floorDiv(chunkPos.getMaxBlockZ() + layout.reach(), layout.cellSize()); cz++) {
                 for (Spire candidate : Spire.inCell(level.getSeed(), layout, cx, cz)) {
+                    boolean large = candidate.height() >= layout.largeHeight();
+                    BiPredicate<Integer, Integer> permitted = (x, z) -> {
+                        double weight = moon.surface().sample(x, z).weight(MoonSurfaceTransition.Region.DESERT);
+                        return weight > (large ? .75 : .03) && moon.smallFeatureAllowed(x, z);
+                    };
+                    if (TerrainNoise.unit(level.getSeed() ^ candidate.shapeSeed() ^ 0x5350495245L) >=
+                            moon.surface().probability(MoonSurfaceTransition.Region.DESERT, candidate.x(),
+                                    candidate.z(), large))
+                        continue;
                     if (candidate.x() - 2 > chunkPos.getMaxBlockX() ||
                             candidate.x() + candidate.width() + 1 < chunkPos.getMinBlockX() ||
                             candidate.z() - 2 > chunkPos.getMaxBlockZ() ||
@@ -124,8 +128,11 @@ public class MoonlightDesertFeature extends Feature<MoonlightDesertFeature.Confi
                             continue;
                         int groundY = chunk.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x, z);
                         BlockState surface = chunk.getBlockState(pos.set(x, groundY, z));
-                        if (!surface.is(config.sand().getBlock()) && !surface.is(config.glowSand().getBlock()) &&
-                                !surface.is(config.stone().getBlock()))
+                        boolean nativeSurface = surface.is(config.sand().getBlock()) ||
+                                surface.is(config.glowSand().getBlock()) ||
+                                surface.is(config.stone().getBlock());
+                        if (!nativeSurface && (surface.isAir() || !surface.getFluidState().isEmpty() ||
+                                Math.abs(groundY - ground.applyAsInt(x, z)) > 2))
                             continue;
                         // Preserve the leaning body's underside instead of extending every overhang to the ground.
                         for (int y = Math.max(groundY, spire.base() + column.bottom()); y <=

@@ -1,5 +1,9 @@
 package com.ctnh.ctnhastral.data.worldgen.preset;
 
+import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
+import com.gregtechceu.gtceu.common.data.GTMaterialBlocks;
+import com.gregtechceu.gtceu.common.data.GTMaterials;
+
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
@@ -49,6 +53,7 @@ import com.ctnh.ctnhastral.data.worldgen.feature.MoonSiliconFeature;
 import com.ctnh.ctnhastral.data.worldgen.feature.MoonWastelandRocksFeature;
 import com.ctnh.ctnhastral.data.worldgen.feature.MoonlightDesertFeature;
 import com.ctnh.ctnhastral.data.worldgen.structure.MoonAbandonedOutpostStructure;
+import com.ctnh.ctnhastral.data.worldgen.structure.MoonSubsurfaceSeaStructure;
 import com.ctnh.ctnhastral.data.worldgen.terrain.MoonCanyonLayout;
 import com.ctnh.ctnhastral.data.worldgen.terrain.MoonCanyonTerrain;
 import com.ctnh.ctnhastral.data.worldgen.terrain.MoonGeologyTerrain;
@@ -56,6 +61,8 @@ import com.ctnh.ctnhastral.data.worldgen.terrain.MoonHighlands;
 import com.ctnh.ctnhastral.data.worldgen.terrain.MoonIcefield;
 import com.ctnh.ctnhastral.data.worldgen.terrain.MoonLavaTubes;
 import com.ctnh.ctnhastral.data.worldgen.terrain.MoonSiliconLandscape;
+import com.ctnh.ctnhastral.data.worldgen.terrain.MoonSubsurfaceSea;
+import com.ctnh.ctnhastral.data.worldgen.terrain.MoonSurfaceTransition;
 import com.ctnh.ctnhastral.registry.sound.CAMusics;
 import com.ctnh.ctnhastral.registry.worldgen.MoonBlocks;
 import com.mojang.datafixers.util.Pair;
@@ -88,25 +95,26 @@ public final class MoonWorldgen {
 
     public static final int LAVA_LEVEL = DimensionType.MIN_Y + 10;
 
+    private static final MoonSubsurfaceSea.Settings SUBSURFACE_SEAS = new MoonSubsurfaceSea.Settings(
+            1024, .65, 48, -46, 32, 32, -18, -8, 8, 3, 6,
+            new MoonSubsurfaceSea.Shape(2, 4, 110, 175, 70, 115, 440, 740, 28, 40, 18, 30, 14, .35,
+                    40, new MoonSubsurfaceSea.Waterway(18, 32, 40, 7, 10)),
+            new MoonSubsurfaceSea.Noise(180, 18, 100, 32, 54, 21),
+            new MoonSubsurfaceSea.Access(5, 9, 7, 120, 320, .5, 72, 22, 46, 6, 12, 48, 96, .95, 8, 3),
+            new MoonSubsurfaceSea.Shore(1, 3, 12, 32, 1.15, 7, 2, 1.2, .40, 0x4C415945524544L),
+            0x4D4F4F4E5345414CL);
+    private static final int SEA_SEGMENT_CHUNKS = 8;
+
     public static final float MOON_SILICATE_SPLIT = 0.10F;
 
     public static final float MOON_REGOLITH_SPLIT = 0.0F;
 
-    public static final float MOON_COAST_CONTINENTALNESS = -0.12F;
-
-    public static final int MOON_SEA_LEVEL = 64;
-    private static final float GEOLOGY_INLAND = .08F;
+    public static final int MOON_SEA_LEVEL = 0;
     private static final float ICE_SPLIT = .27F;
     private static final float HIGHLAND_SPLIT = .30F;
     private static final float BASALT_SPLIT = -.30F;
 
     private static final Climate.Parameter FULL_RANGE = Climate.Parameter.span(-1.0F, 1.0F);
-
-    private static final Climate.Parameter MOON_OCEAN_CONTINENTS = Climate.Parameter.span(-1.0F,
-            MOON_COAST_CONTINENTALNESS);
-
-    private static final Climate.Parameter MOON_LAND_CONTINENTS = Climate.Parameter.span(MOON_COAST_CONTINENTALNESS,
-            1.0F);
 
     private static final Climate.Parameter MOON_YOUNG_REGOLITH = Climate.Parameter.span(-1.0F, MOON_REGOLITH_SPLIT);
 
@@ -118,19 +126,16 @@ public final class MoonWorldgen {
 
     private static final Climate.ParameterPoint MOON_WASTELAND_PARAMETER = createSurfaceParameter(MOON_YOUNG_REGOLITH,
             MOON_LOW_SILICATE,
-            MOON_LAND_CONTINENTS);
-
-    private static final Climate.ParameterPoint MOON_SALT_SEA_PARAMETER = createSurfaceParameter(FULL_RANGE, FULL_RANGE,
-            MOON_OCEAN_CONTINENTS);
+            FULL_RANGE);
 
     private static final Climate.ParameterPoint MOON_SILICON_PLAINS_PARAMETER = createSurfaceParameter(FULL_RANGE,
             MOON_HIGH_SILICATE,
-            MOON_LAND_CONTINENTS);
+            FULL_RANGE);
 
     private static final Climate.ParameterPoint MOONLIGHT_DESERT_PARAMETER = createSurfaceParameter(
             MOON_MATURE_REGOLITH,
             MOON_LOW_SILICATE,
-            MOON_LAND_CONTINENTS);
+            FULL_RANGE);
 
     public static Map<ResourceKey<ConfiguredFeature<?, ?>>, ConfiguredFeature<?, ?>> configuredFeatures(HolderGetter<Biome> biomes) {
         Map<ResourceKey<ConfiguredFeature<?, ?>>, ConfiguredFeature<?, ?>> entries = new LinkedHashMap<>();
@@ -154,7 +159,6 @@ public final class MoonWorldgen {
         entries.put(WorldgenKeys.ConfiguredFeatures.MOONLIGHT_DESERT, new ConfiguredFeature<>(
                 MoonlightDesertFeature.INSTANCE,
                 new MoonlightDesertFeature.Configuration(
-                        HolderSet.direct(biomes.getOrThrow(WorldgenKeys.Biomes.MOONLIGHT_DESERT)),
                         MoonBlocks.MOONLIGHT_CRYSTAL.getDefaultState(), MoonBlocks.MOONLIGHT_SAND.getDefaultState(),
                         MoonBlocks.LUMINOUS_MOON_SAND.getDefaultState(), MoonBlocks.MOON_STONE.getDefaultState(),
                         new MoonlightDesertFeature.Settings(128, 20, 28, 34, 40, 4, .65, .35, .55,
@@ -163,7 +167,6 @@ public final class MoonWorldgen {
         entries.put(WorldgenKeys.ConfiguredFeatures.MOON_WASTELAND_ROCKS, new ConfiguredFeature<>(
                 MoonWastelandRocksFeature.INSTANCE,
                 new MoonWastelandRocksFeature.Configuration(
-                        HolderSet.direct(biomes.getOrThrow(WorldgenKeys.Biomes.MOON_WASTELAND)),
                         MoonBlocks.MOON_STONE.getDefaultState(), MoonBlocks.MOON_COBBLESTONE.getDefaultState(),
                         MoonBlocks.MOON_SAND.getDefaultState(), WorldgenKeys.Noise.MOON_SCARPS,
                         WorldgenKeys.Noise.MOON_WASTELAND_PATCHES,
@@ -191,10 +194,6 @@ public final class MoonWorldgen {
         SurfaceRules.RuleSource moonStone = SurfaceRules.state(MoonBlocks.MOON_STONE.getDefaultState());
         SurfaceRules.RuleSource moonSand = SurfaceRules.state(MoonBlocks.MOON_SAND.getDefaultState());
         SurfaceRules.RuleSource moonRubble = SurfaceRules.state(MoonBlocks.MOON_COBBLESTONE.getDefaultState());
-        SurfaceRules.ConditionSource underwater = SurfaceRules.not(SurfaceRules.waterBlockCheck(0, 0));
-        // waterStartCheck measures from the seabed surface, so a deposit keeps one material through its depth.
-        SurfaceRules.ConditionSource shallowShelf = SurfaceRules.waterStartCheck(-14, 0);
-        SurfaceRules.ConditionSource aboveDeepBasin = SurfaceRules.waterStartCheck(-46, 0);
 
         return SurfaceRules.sequence(
                 SurfaceRules.ifTrue(SurfaceRules.isBiome(WorldgenKeys.Biomes.MOON_SHADOW_ICEFIELD),
@@ -216,19 +215,6 @@ public final class MoonWorldgen {
                                 SurfaceRules.ifTrue(SurfaceRules.steep(),
                                         SurfaceRules.state(Blocks.BASALT.defaultBlockState())),
                                 SurfaceRules.state(Blocks.SMOOTH_BASALT.defaultBlockState()))),
-                SurfaceRules.ifTrue(underwater,
-                        SurfaceRules.sequence(
-                                SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR,
-                                        SurfaceRules.ifTrue(SurfaceRules.noiseCondition(Noises.SURFACE, 0.45),
-                                                moonRubble)),
-                                SurfaceRules.ifTrue(shallowShelf,
-                                        SurfaceRules.ifTrue(
-                                                SurfaceRules.stoneDepthCheck(1, false, 1, CaveSurface.FLOOR),
-                                                moonSand)),
-                                // Underwater WORLD_SURFACE_WG is the waterline; steep() cannot detect these slopes.
-                                SurfaceRules.ifTrue(aboveDeepBasin, moonStone),
-                                SurfaceRules.ifTrue(SurfaceRules.stoneDepthCheck(0, false, 1, CaveSurface.FLOOR),
-                                        moonSand))),
                 SurfaceRules.ifTrue(SurfaceRules.isBiome(WorldgenKeys.Biomes.MOONLIGHT_DESERT),
                         SurfaceRules.sequence(
                                 SurfaceRules.ifTrue(SurfaceRules.noiseCondition(Noises.SURFACE, 0.60), moonStone),
@@ -264,50 +250,25 @@ public final class MoonWorldgen {
 
     private static Biome moonWasteland(HolderGetter<PlacedFeature> placedFeatures,
                                        HolderGetter<ConfiguredWorldCarver<?>> carvers) {
-        BiomeGenerationSettings.Builder biomeBuilder = new BiomeGenerationSettings.Builder(placedFeatures, carvers);
-        biomeBuilder.addFeature(GenerationStep.Decoration.RAW_GENERATION, WorldgenKeys.PlacedFeatures.MOON_CRATER);
-        biomeBuilder.addFeature(GenerationStep.Decoration.LOCAL_MODIFICATIONS,
-                WorldgenKeys.PlacedFeatures.MOONLIGHT_DESERT);
-        biomeBuilder.addFeature(GenerationStep.Decoration.LOCAL_MODIFICATIONS,
-                WorldgenKeys.PlacedFeatures.MOON_WASTELAND_ROCKS);
+        var biomeBuilder = moonFeatures(placedFeatures, carvers);
         return WorldgenBiomes.barren(biomeBuilder, 0x6b8891, 0x314248, 0x0f1118, 0x1a2334, -0.4F, CAMusics.ASTRAL_BGM);
     }
 
     private static Biome moonSiliconPlains(HolderGetter<PlacedFeature> placedFeatures,
                                            HolderGetter<ConfiguredWorldCarver<?>> carvers) {
-        BiomeGenerationSettings.Builder biomeBuilder = new BiomeGenerationSettings.Builder(placedFeatures, carvers);
-        biomeBuilder.addFeature(GenerationStep.Decoration.RAW_GENERATION, WorldgenKeys.PlacedFeatures.MOON_CRATER);
-        biomeBuilder.addFeature(GenerationStep.Decoration.RAW_GENERATION,
-                WorldgenKeys.PlacedFeatures.MOON_SILICON_LANDSCAPE);
-        biomeBuilder.addFeature(GenerationStep.Decoration.LOCAL_MODIFICATIONS,
-                WorldgenKeys.PlacedFeatures.MOONLIGHT_DESERT);
+        var biomeBuilder = moonFeatures(placedFeatures, carvers);
         return WorldgenBiomes.barren(biomeBuilder, 0x8ea0b0, 0x46505a, 0x141822, 0x29344f, -0.2F, CAMusics.ASTRAL_BGM);
-    }
-
-    private static Biome moonSaltSea(HolderGetter<PlacedFeature> placedFeatures,
-                                     HolderGetter<ConfiguredWorldCarver<?>> carvers) {
-        BiomeGenerationSettings.Builder biomeBuilder = new BiomeGenerationSettings.Builder(placedFeatures, carvers);
-        biomeBuilder.addFeature(GenerationStep.Decoration.RAW_GENERATION, WorldgenKeys.PlacedFeatures.MOON_CRATER);
-        biomeBuilder.addFeature(GenerationStep.Decoration.LOCAL_MODIFICATIONS,
-                WorldgenKeys.PlacedFeatures.MOONLIGHT_DESERT);
-        return WorldgenBiomes.barren(biomeBuilder, 0x77818a, 0x2e363d, 0x0a0d14, 0x202738, -0.3F, CAMusics.ASTRAL_BGM);
     }
 
     private static Biome moonlightDesert(HolderGetter<PlacedFeature> placedFeatures,
                                          HolderGetter<ConfiguredWorldCarver<?>> carvers) {
-        BiomeGenerationSettings.Builder biomeBuilder = new BiomeGenerationSettings.Builder(placedFeatures, carvers);
-        biomeBuilder.addFeature(GenerationStep.Decoration.RAW_GENERATION, WorldgenKeys.PlacedFeatures.MOON_CRATER);
-        biomeBuilder.addFeature(GenerationStep.Decoration.LOCAL_MODIFICATIONS,
-                WorldgenKeys.PlacedFeatures.MOONLIGHT_DESERT);
+        var biomeBuilder = moonFeatures(placedFeatures, carvers);
         return WorldgenBiomes.barren(biomeBuilder, 0xc8c2a6, 0x5e5a4d, 0x151515, 0x323a4f, 0.1F, CAMusics.ASTRAL_BGM);
     }
 
     private static Biome moonCrater(HolderGetter<PlacedFeature> placedFeatures,
                                     HolderGetter<ConfiguredWorldCarver<?>> carvers) {
-        BiomeGenerationSettings.Builder biomeBuilder = new BiomeGenerationSettings.Builder(placedFeatures, carvers);
-        biomeBuilder.addFeature(GenerationStep.Decoration.RAW_GENERATION, WorldgenKeys.PlacedFeatures.MOON_CRATER);
-        biomeBuilder.addFeature(GenerationStep.Decoration.LOCAL_MODIFICATIONS,
-                WorldgenKeys.PlacedFeatures.MOONLIGHT_DESERT);
+        var biomeBuilder = moonFeatures(placedFeatures, carvers);
         return WorldgenBiomes.barren(biomeBuilder, 0x6b8891, 0x314248, 0x0f1118, 0x1a2334, -0.4F, CAMusics.ASTRAL_BGM);
     }
 
@@ -317,7 +278,6 @@ public final class MoonWorldgen {
 
         entries.put(WorldgenKeys.Biomes.MOON_WASTELAND, moonWasteland(placedFeatures, carvers));
         entries.put(WorldgenKeys.Biomes.MOON_SILICON_PLAINS, moonSiliconPlains(placedFeatures, carvers));
-        entries.put(WorldgenKeys.Biomes.MOON_SALT_SEA, moonSaltSea(placedFeatures, carvers));
         entries.put(WorldgenKeys.Biomes.MOONLIGHT_DESERT, moonlightDesert(placedFeatures, carvers));
         entries.put(WorldgenKeys.Biomes.MOON_CRATER, moonCrater(placedFeatures, carvers));
         entries.put(WorldgenKeys.Biomes.MOON_CANYON, WorldgenBiomes.barren(
@@ -332,9 +292,49 @@ public final class MoonWorldgen {
 
     private static Biome regionalBiome(HolderGetter<PlacedFeature> placedFeatures,
                                        HolderGetter<ConfiguredWorldCarver<?>> carvers, int color, float temperature) {
-        var builder = new BiomeGenerationSettings.Builder(placedFeatures, carvers);
-        builder.addFeature(GenerationStep.Decoration.RAW_GENERATION, WorldgenKeys.PlacedFeatures.MOON_CRATER);
+        var builder = moonFeatures(placedFeatures, carvers);
         return WorldgenBiomes.barren(builder, color, 0x343c49, 0x0b0d13, 0x1a2334, temperature, CAMusics.ASTRAL_BGM);
+    }
+
+    private static BiomeGenerationSettings.Builder moonFeatures(HolderGetter<PlacedFeature> features,
+                                                                HolderGetter<ConfiguredWorldCarver<?>> carvers) {
+        var builder = new BiomeGenerationSettings.Builder(features, carvers);
+        builder.addFeature(GenerationStep.Decoration.RAW_GENERATION, WorldgenKeys.PlacedFeatures.MOON_CRATER);
+        builder.addFeature(GenerationStep.Decoration.RAW_GENERATION,
+                WorldgenKeys.PlacedFeatures.MOON_SILICON_LANDSCAPE);
+        builder.addFeature(GenerationStep.Decoration.LOCAL_MODIFICATIONS, WorldgenKeys.PlacedFeatures.MOONLIGHT_DESERT);
+        builder.addFeature(GenerationStep.Decoration.LOCAL_MODIFICATIONS,
+                WorldgenKeys.PlacedFeatures.MOON_WASTELAND_ROCKS);
+        return builder;
+    }
+
+    private static MoonSurfaceTransition.Configuration surfaceTransition(HolderGetter<Biome> biomes) {
+        return new MoonSurfaceTransition.Configuration(List.of(
+                biomes.getOrThrow(WorldgenKeys.Biomes.MOON_WASTELAND),
+                biomes.getOrThrow(WorldgenKeys.Biomes.MOON_SILICON_PLAINS),
+                biomes.getOrThrow(WorldgenKeys.Biomes.MOONLIGHT_DESERT),
+                biomes.getOrThrow(WorldgenKeys.Biomes.MOON_SHADOW_ICEFIELD),
+                biomes.getOrThrow(WorldgenKeys.Biomes.MOON_HIGHLANDS),
+                biomes.getOrThrow(WorldgenKeys.Biomes.MOON_BASALT_PLATEAU)),
+                List.of(
+                        MoonBlocks.MOON_COBBLESTONE.getDefaultState(), MoonBlocks.SILICON_GRAVEL.getDefaultState(),
+                        MoonBlocks.MOON_SAND.getDefaultState(), MoonBlocks.MOON_DUSTY_ICE.getDefaultState(),
+                        MoonBlocks.MOON_BROKEN_ANORTHOSITE.getDefaultState(),
+                        MoonBlocks.MOON_COBBLESTONE.getDefaultState()),
+                new MoonSurfaceTransition.Settings(transitionBand(ICE_SPLIT, 112),
+                        transitionBand(HIGHLAND_SPLIT, 80),
+                        transitionBand(BASALT_SPLIT, 96),
+                        transitionBand(MOON_SILICATE_SPLIT, 72),
+                        transitionBand(MOON_REGOLITH_SPLIT, 80),
+                        16, 30, 7, 10.8,
+                        new MoonSurfaceTransition.Ramp(.15, .92), new MoonSurfaceTransition.Ramp(.05, .95),
+                        new MoonSurfaceTransition.Ramp(.75, .98)));
+    }
+
+    private static MoonSurfaceTransition.Band transitionBand(float threshold, int halfWidth) {
+        // Use the same quantized boundary as the native climate table.
+        return new MoonSurfaceTransition.Band(Climate.quantizeCoord(threshold) / (double) Climate.quantizeCoord(1),
+                halfWidth);
     }
 
     private static DensityFunction curve(DensityFunction coordinate, float... points) {
@@ -347,26 +347,21 @@ public final class MoonWorldgen {
 
     private static List<Pair<Climate.ParameterPoint, Holder<Biome>>> surfaceBiomes(HolderGetter<Biome> biomes) {
         List<Pair<Climate.ParameterPoint, Holder<Biome>>> result = new ArrayList<>();
-        result.add(Pair.of(MOON_SALT_SEA_PARAMETER, biomes.getOrThrow(WorldgenKeys.Biomes.MOON_SALT_SEA)));
-        Climate.Parameter coast = Climate.Parameter.span(MOON_COAST_CONTINENTALNESS, GEOLOGY_INLAND);
-        Climate.Parameter inland = Climate.Parameter.span(GEOLOGY_INLAND, 1);
         Climate.Parameter notIce = Climate.Parameter.span(-1, ICE_SPLIT);
         Climate.Parameter middle = Climate.Parameter.span(BASALT_SPLIT, HIGHLAND_SPLIT);
-        result.add(Pair.of(Climate.parameters(FULL_RANGE, FULL_RANGE, inland, FULL_RANGE, FULL_RANGE,
+        result.add(Pair.of(Climate.parameters(FULL_RANGE, FULL_RANGE, FULL_RANGE, FULL_RANGE, FULL_RANGE,
                 Climate.Parameter.span(ICE_SPLIT, 1), 0), biomes.getOrThrow(WorldgenKeys.Biomes.MOON_SHADOW_ICEFIELD)));
-        result.add(Pair.of(Climate.parameters(FULL_RANGE, FULL_RANGE, inland,
+        result.add(Pair.of(Climate.parameters(FULL_RANGE, FULL_RANGE, FULL_RANGE,
                 Climate.Parameter.span(HIGHLAND_SPLIT, 1), FULL_RANGE, notIce, 0),
                 biomes.getOrThrow(WorldgenKeys.Biomes.MOON_HIGHLANDS)));
-        result.add(Pair.of(Climate.parameters(FULL_RANGE, FULL_RANGE, inland,
+        result.add(Pair.of(Climate.parameters(FULL_RANGE, FULL_RANGE, FULL_RANGE,
                 Climate.Parameter.span(-1, BASALT_SPLIT), FULL_RANGE, notIce, 0),
                 biomes.getOrThrow(WorldgenKeys.Biomes.MOON_BASALT_PLATEAU)));
         for (var entry : List.of(Pair.of(MOON_WASTELAND_PARAMETER, WorldgenKeys.Biomes.MOON_WASTELAND),
                 Pair.of(MOON_SILICON_PLAINS_PARAMETER, WorldgenKeys.Biomes.MOON_SILICON_PLAINS),
                 Pair.of(MOONLIGHT_DESERT_PARAMETER, WorldgenKeys.Biomes.MOONLIGHT_DESERT))) {
             var p = entry.getFirst();
-            result.add(Pair.of(Climate.parameters(p.temperature(), p.humidity(), coast,
-                    FULL_RANGE, FULL_RANGE, FULL_RANGE, 0), biomes.getOrThrow(entry.getSecond())));
-            result.add(Pair.of(Climate.parameters(p.temperature(), p.humidity(), inland,
+            result.add(Pair.of(Climate.parameters(p.temperature(), p.humidity(), FULL_RANGE,
                     middle, FULL_RANGE, notIce, 0), biomes.getOrThrow(entry.getSecond())));
         }
         return result;
@@ -388,6 +383,16 @@ public final class MoonWorldgen {
                         MoonBlocks.MOON_BROKEN_ANORTHOSITE.getDefaultState(),
                         Blocks.SMOOTH_BASALT.defaultBlockState(), Blocks.BASALT.defaultBlockState(),
                         MoonBlocks.MOON_COBBLESTONE.getDefaultState()));
+    }
+
+    private static MoonSubsurfaceSea.Configuration subsurfaceSea() {
+        return new MoonSubsurfaceSea.Configuration(SUBSURFACE_SEAS,
+                new MoonSubsurfaceSea.Palette(MoonBlocks.MOON_STONE.getDefaultState(),
+                        Blocks.SMOOTH_BASALT.defaultBlockState(), MoonBlocks.MOON_ANORTHOSITE.getDefaultState(),
+                        MoonBlocks.MOON_COBBLESTONE.getDefaultState(), MoonBlocks.MOONLIGHT_CRYSTAL.getDefaultState(),
+                        CAMaterials.MoonEnrichedBrine.getFluid().defaultFluidState().createLegacyBlock(),
+                        GTMaterialBlocks.MATERIAL_BLOCKS.get(TagPrefix.block, GTMaterials.Salt).getDefaultState(),
+                        MoonBlocks.LAYERED_MOONLIGHT_CRYSTAL.getDefaultState(), 6, 28));
     }
 
     private static Climate.ParameterPoint createSurfaceParameter(Climate.Parameter temperature,
@@ -416,7 +421,7 @@ public final class MoonWorldgen {
                                         .clamp(-1, 1))))
                         .addPoint(-1.0F, -1.0F, 0.0F)
                         .addPoint(-0.65F, -0.75F, 1.6F)
-                        .addPoint(-0.25F, MOON_COAST_CONTINENTALNESS, 1.3F)
+                        .addPoint(-0.25F, -0.12F, 1.3F)
                         .addPoint(0.0F, 0.20F, 0.9F)
                         .addPoint(1.0F, 1.0F, 0.7F)
                         .build());
@@ -438,43 +443,18 @@ public final class MoonWorldgen {
 
         var moonContinentCoordinate = new DensityFunctions.Spline.Coordinate(
                 densityFunctions.getOrThrow(WorldgenKeys.Density.MOON_CONTINENTS));
-        // Heights are block offsets from the upper fluid block (Y=63), not density units.
-        // Monotone Hermite segments form the basin, continental rise, slope and shallow shelf.
-        // The coast retains both its zero offset and the existing landward slope of 32.
-        DensityFunction moonBathymetry = DensityFunctions.spline(
+        // Heights remain block offsets from the density gradient's Y=63 reference, independent of fluids.
+        // All former ocean coordinates now describe continuous dry land.
+        DensityFunction moonLandHeight = DensityFunctions.spline(
                 CubicSpline.<DensityFunctions.Spline.Point, DensityFunctions.Spline.Coordinate>builder(
                         moonContinentCoordinate)
-                        .addPoint(-1.0F, -71.0F, 0.0F)
-                        .addPoint(-0.70F, -65.0F, 24.0F)
-                        .addPoint(-0.50F, -55.0F, 60.0F)
-                        .addPoint(-0.42F, -45.0F, 160.0F)
-                        .addPoint(-0.30F, -13.0F, 100.0F)
-                        .addPoint(-0.20F, -5.0F, 55.0F)
-                        .addPoint(MOON_COAST_CONTINENTALNESS, 0.0F, 32.0F)
-                        .addPoint(1.0F, 32.0F * (1.0F - MOON_COAST_CONTINENTALNESS), 32.0F)
+                        .addPoint(-1.0F, 2.0F, 8.0F)
+                        .addPoint(-0.12F, 9.0F, 12.0F)
+                        .addPoint(0.0F, 12.0F, 20.0F)
+                        .addPoint(0.40F, 20.0F, 24.0F)
+                        .addPoint(1.0F, 36.0F, 28.0F)
                         .build());
-        // Fade seabed relief out before the shallow shelf, keeping the shared coastline intact.
-        DensityFunction moonDeepOcean = DensityFunctions.spline(
-                CubicSpline.<DensityFunctions.Spline.Point, DensityFunctions.Spline.Coordinate>builder(
-                        moonContinentCoordinate)
-                        .addPoint(-0.50F, 1.0F)
-                        .addPoint(-0.30F, 0.0F)
-                        .build());
-        DensityFunction moonSeabedHills = DensityFunctions.mul(DensityFunctions.constant(6),
-                DensityFunctions.noise(noises.getOrThrow(Noises.SURFACE_SECONDARY), 0.30, 0).clamp(-1, 1));
-        DensityFunction moonSeamounts = DensityFunctions.mul(DensityFunctions.constant(18),
-                DensityFunctions.mul(DensityFunctions.constant(2),
-                        DensityFunctions.add(DensityFunctions.constant(-0.35),
-                                DensityFunctions.noise(noises.getOrThrow(Noises.RIDGE), 0.80, 0)))
-                        .clamp(0, 1).square());
-        // Zero-slope endpoints preserve the coast's height and slope for all inland relief.
-        DensityFunction moonInland = DensityFunctions.spline(
-                CubicSpline.<DensityFunctions.Spline.Point, DensityFunctions.Spline.Coordinate>builder(
-                        moonContinentCoordinate)
-                        .addPoint(MOON_COAST_CONTINENTALNESS, 0.0F)
-                        .addPoint(0.10F, 1.0F)
-                        .build());
-        // Keep small ground undulations in height only, with enough coast fade to stay above sea level.
+        // Small undulations supplement each land biome's own relief.
         DensityFunction moonLandRelief = DensityFunctions.add(
                 DensityFunctions.mul(DensityFunctions.constant(2.56),
                         DensityFunctions.noise(noises.getOrThrow(Noises.SURFACE), 0.35, 0).clamp(-1, 1)),
@@ -512,11 +492,8 @@ public final class MoonWorldgen {
                                 DensityFunctions.noise(noises.getOrThrow(Noises.SURFACE), 0.20, 0).clamp(-1, 1)),
                         DensityFunctions.mul(DensityFunctions.constant(5), desertRidges)));
         DensityFunction moonHeight = DensityFunctions.lerp(
-                DensityFunctions.mul(moonInland, DensityFunctions.mul(desertRegolith, desertSilicate)),
-                DensityFunctions.add(moonBathymetry,
-                        DensityFunctions.add(DensityFunctions.mul(moonInland, moonLandRelief),
-                                DensityFunctions.mul(moonDeepOcean,
-                                        DensityFunctions.add(moonSeabedHills, moonSeamounts)))),
+                DensityFunctions.mul(desertRegolith, desertSilicate),
+                DensityFunctions.add(moonLandHeight, moonLandRelief),
                 desertHeight);
         // Geological coordinates only delimit the biome: keep a narrow, smooth edge, not a regional eligibility gate.
         DensityFunction wastelandRegolith = DensityFunctions.spline(
@@ -554,37 +531,22 @@ public final class MoonWorldgen {
                 DensityFunctions.mul(DensityFunctions.constant(-2), DensityFunctions.add(DensityFunctions.constant(.20),
                         DensityFunctions.noise(noises.getOrThrow(Noises.SURFACE_SECONDARY), 1, 0)))
                         .clamp(0, 1).square());
-        // Delay the stronger, partly negative relief until inland heights can contain the hollows.
-        // With the existing land noise bounded by 3.2 and this addition bounded below by -9,
-        // this fade keeps the surface above the waterline without flattening it to a height clamp.
-        DensityFunction wastelandInland = DensityFunctions.spline(
-                CubicSpline.<DensityFunctions.Spline.Point, DensityFunctions.Spline.Coordinate>builder(
-                        moonContinentCoordinate).addPoint(.05F, 0).addPoint(.35F, 1).build());
-        // Positive landforms need only the narrow shore transition. Negative hollows retain their deeper coast buffer.
-        DensityFunction scarpInland = DensityFunctions.spline(
-                CubicSpline.<DensityFunctions.Spline.Point, DensityFunctions.Spline.Coordinate>builder(
-                        moonContinentCoordinate).addPoint(MOON_COAST_CONTINENTALNESS, 0)
-                        .addPoint(MOON_COAST_CONTINENTALNESS + .025F, 1).build());
         DensityFunction wastelandRelief = DensityFunctions.mul(
                 DensityFunctions.mul(wastelandRegolith, wastelandSilicate),
                 DensityFunctions.add(
-                        DensityFunctions.mul(wastelandInland, DensityFunctions.add(wastelandRoll, dustHollows)),
-                        DensityFunctions.mul(scarpInland, DensityFunctions.mul(scarpProfile, scarpHeight))));
+                        DensityFunctions.add(wastelandRoll, dustHollows),
+                        DensityFunctions.mul(scarpProfile, scarpHeight)));
         // Geological masks use the same fields and intervals as the native multi-noise biome list.
         DensityFunction uplift = new DensityFunctions.HolderHolder(
                 densityFunctions.getOrThrow(WorldgenKeys.Density.MOON_UPLIFT));
         DensityFunction iceConditions = new DensityFunctions.HolderHolder(
                 densityFunctions.getOrThrow(WorldgenKeys.Density.MOON_ICE_CONDITIONS));
-        DensityFunction interior = curve(new DensityFunctions.HolderHolder(
-                densityFunctions.getOrThrow(WorldgenKeys.Density.MOON_CONTINENTS)),
-                GEOLOGY_INLAND, 0, GEOLOGY_INLAND + .12F, 1);
-        DensityFunction iceWeight = DensityFunctions.mul(interior,
-                curve(iceConditions, ICE_SPLIT, 0, ICE_SPLIT + .10F, 1));
+        DensityFunction iceWeight = curve(iceConditions, ICE_SPLIT, 0, ICE_SPLIT + .10F, 1);
         DensityFunction rockWeight = curve(iceConditions, ICE_SPLIT - .10F, 1, ICE_SPLIT, 0);
-        DensityFunction highlandWeight = DensityFunctions.mul(interior, DensityFunctions.mul(rockWeight,
-                curve(uplift, HIGHLAND_SPLIT, 0, HIGHLAND_SPLIT + .13F, 1)));
-        DensityFunction basaltWeight = DensityFunctions.mul(interior, DensityFunctions.mul(rockWeight,
-                curve(uplift, BASALT_SPLIT - .10F, 1, BASALT_SPLIT, 0)));
+        DensityFunction highlandWeight = DensityFunctions.mul(rockWeight,
+                curve(uplift, HIGHLAND_SPLIT, 0, HIGHLAND_SPLIT + .13F, 1));
+        DensityFunction basaltWeight = DensityFunctions.mul(rockWeight,
+                curve(uplift, BASALT_SPLIT - .10F, 1, BASALT_SPLIT, 0));
         // Native mountain construction: warp the regional field and modulate finer relief by ridge strength.
         DensityFunction ridgeField = DensityFunctions.shiftedNoise2d(moonShiftX, moonShiftZ, .24,
                 noises.getOrThrow(Noises.RIDGE)).abs();
@@ -669,7 +631,7 @@ public final class MoonWorldgen {
 
         entries.put(WorldgenKeys.NoiseSettings.MOON, new NoiseGeneratorSettings(NoiseSettings.create(-64, 384, 1, 2),
                 MoonBlocks.MOON_STONE.get().defaultBlockState(),
-                CAMaterials.Seawater.getFluid().defaultFluidState().createLegacyBlock(),
+                Blocks.AIR.defaultBlockState(),
                 new NoiseRouter(DensityFunctions.noise(noises.getOrThrow(Noises.AQUIFER_BARRIER),
                         0.5),
                         DensityFunctions.noise(
@@ -734,8 +696,7 @@ public final class MoonWorldgen {
                         new MoonBiomeSource(MultiNoiseBiomeSource.createFromList(new Climate.ParameterList<>(
                                 surfaceBiomes(biomes))),
                                 biomes.getOrThrow(WorldgenKeys.Biomes.MOON_CRATER),
-                                HolderSet.direct(biomes.getOrThrow(WorldgenKeys.Biomes.MOON_SALT_SEA),
-                                        biomes.getOrThrow(WorldgenKeys.Biomes.MOON_SHADOW_ICEFIELD),
+                                HolderSet.direct(biomes.getOrThrow(WorldgenKeys.Biomes.MOON_SHADOW_ICEFIELD),
                                         biomes.getOrThrow(WorldgenKeys.Biomes.MOON_BASALT_PLATEAU)),
                                 CRATERS,
                                 biomes.getOrThrow(WorldgenKeys.Biomes.MOON_CANYON), CANYONS,
@@ -746,7 +707,7 @@ public final class MoonWorldgen {
                                         MoonBlocks.MOON_COBBLESTONE.getDefaultState(),
                                         MoonBlocks.MOON_SAND.getDefaultState(), 7),
                                 HolderSet.direct(biomes.getOrThrow(WorldgenKeys.Biomes.MOON_SILICON_PLAINS)),
-                                SILICON_LANDSCAPE, geology(biomes)),
+                                SILICON_LANDSCAPE, geology(biomes), surfaceTransition(biomes)),
                         noiseSettings.getOrThrow(WorldgenKeys.NoiseSettings.MOON))));
         return entries;
     }
@@ -754,6 +715,15 @@ public final class MoonWorldgen {
     public static Map<ResourceKey<Structure>, Structure> structures(HolderGetter<Biome> biomes) {
         Map<ResourceKey<Structure>, Structure> entries = new LinkedHashMap<>();
 
+        entries.put(WorldgenKeys.Structures.MOON_SUBSURFACE_SEA, new MoonSubsurfaceSeaStructure(
+                new Structure.StructureSettings(HolderSet.direct(List.of(
+                        WorldgenKeys.Biomes.MOON_WASTELAND, WorldgenKeys.Biomes.MOON_SILICON_PLAINS,
+                        WorldgenKeys.Biomes.MOONLIGHT_DESERT, WorldgenKeys.Biomes.MOON_SHADOW_ICEFIELD,
+                        WorldgenKeys.Biomes.MOON_HIGHLANDS, WorldgenKeys.Biomes.MOON_BASALT_PLATEAU,
+                        WorldgenKeys.Biomes.MOON_CRATER, WorldgenKeys.Biomes.MOON_CANYON,
+                        WorldgenKeys.Biomes.MOON_LAVA_TUBES).stream().map(biomes::getOrThrow).toList()),
+                        Map.of(), GenerationStep.Decoration.RAW_GENERATION, TerrainAdjustment.NONE),
+                subsurfaceSea(), SEA_SEGMENT_CHUNKS));
         entries.put(WorldgenKeys.Structures.MOON_ABANDONED_OUTPOST, new MoonAbandonedOutpostStructure(
                 new Structure.StructureSettings(
                         biomes.getOrThrow(WorldgenKeys.BiomeTags.MOON_ABANDONED_OUTPOST_BIOMES),
@@ -766,6 +736,10 @@ public final class MoonWorldgen {
     public static Map<ResourceKey<StructureSet>, StructureSet> structureSets(HolderGetter<Structure> structures) {
         Map<ResourceKey<StructureSet>, StructureSet> entries = new LinkedHashMap<>();
 
+        // Placement schedules saved segments; the world-level lake layout controls actual density and shape.
+        entries.put(WorldgenKeys.StructureSets.MOON_SUBSURFACE_SEA_SET, new StructureSet(
+                List.of(StructureSet.entry(structures.getOrThrow(WorldgenKeys.Structures.MOON_SUBSURFACE_SEA))),
+                new RandomSpreadStructurePlacement(SEA_SEGMENT_CHUNKS, 0, RandomSpreadType.LINEAR, 98421793)));
         entries.put(WorldgenKeys.StructureSets.MOON_ABANDONED_OUTPOST_SET, new StructureSet(
                 List.of(StructureSet.entry(structures.getOrThrow(WorldgenKeys.Structures.MOON_ABANDONED_OUTPOST))),
                 new RandomSpreadStructurePlacement(40, 12, RandomSpreadType.LINEAR, 98421563)));

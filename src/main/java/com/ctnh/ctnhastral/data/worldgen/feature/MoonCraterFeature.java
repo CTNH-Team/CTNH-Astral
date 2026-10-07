@@ -72,11 +72,7 @@ public class MoonCraterFeature extends Feature<MoonCraterFeature.Configuration> 
                 int oldY = chunk.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x, z);
                 BlockState original = chunk.getBlockState(pos.set(x, oldY, z));
                 if (original.isAir() || !original.getFluidState().isEmpty()) continue;
-                double plane = site.planeY() + site.slopeX() * dx + site.slopeZ() * dz;
-                // Restore actual terrain before the crest: its uplift is relative to local ground.
-                double restoreTerrain = smoothstep((rho - 0.45) / 0.55);
-                double height = plane + shape.profile(rho) + restoreTerrain * (oldY - plane) +
-                        shape.roughness(site.seed(), x, z, rho);
+                double height = site.surfaceHeight(x, z, oldY);
                 int targetY = Mth.clamp(Mth.floor(height + 0.5), level.getMinBuildHeight() + 6,
                         level.getMaxBuildHeight() - 5);
                 int debrisHeight = debrisHeight(site, x, z, config.debrisCell());

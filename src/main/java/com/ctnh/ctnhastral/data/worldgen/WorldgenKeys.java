@@ -37,7 +37,6 @@ public final class WorldgenKeys {
         public static final ResourceKey<Biome> ACID_VALLEY = key(Registries.BIOME, "acid_valley");
         public static final ResourceKey<Biome> MOON_WASTELAND = key(Registries.BIOME, "moon_wasteland");
         public static final ResourceKey<Biome> MOON_SILICON_PLAINS = key(Registries.BIOME, "moon_silicon_plains");
-        public static final ResourceKey<Biome> MOON_SALT_SEA = key(Registries.BIOME, "moon_sea");
         public static final ResourceKey<Biome> MOONLIGHT_DESERT = key(Registries.BIOME, "moonlight_desert");
         public static final ResourceKey<Biome> MOON_CRATER = key(Registries.BIOME, "moon_crater");
         public static final ResourceKey<Biome> MOON_CANYON = key(Registries.BIOME, "moon_canyon");
@@ -259,6 +258,8 @@ public final class WorldgenKeys {
         public static final ResourceKey<Structure> ASTRAL_METEOR = key(Registries.STRUCTURE, "meteorite");
         public static final ResourceKey<Structure> MOON_ABANDONED_OUTPOST = key(Registries.STRUCTURE,
                 "moon_abandoned_outpost");
+        public static final ResourceKey<Structure> MOON_SUBSURFACE_SEA = key(Registries.STRUCTURE,
+                "moon_subsurface_sea");
         public static final ResourceKey<Structure> MARS_RESEARCH_GRAVEYARD = key(Registries.STRUCTURE,
                 "mars_research_graveyard");
         public static final ResourceKey<Structure> MARS_STARGATE_RUINS = key(Registries.STRUCTURE,
@@ -286,6 +287,8 @@ public final class WorldgenKeys {
         public static final ResourceKey<StructureSet> ASTRAL_METEOR_SET = key(Registries.STRUCTURE_SET, "meteorite");
         public static final ResourceKey<StructureSet> MOON_ABANDONED_OUTPOST_SET = key(Registries.STRUCTURE_SET,
                 "moon_abandoned_outpost");
+        public static final ResourceKey<StructureSet> MOON_SUBSURFACE_SEA_SET = key(Registries.STRUCTURE_SET,
+                "moon_subsurface_sea");
         public static final ResourceKey<StructureSet> MARS_RESEARCH_GRAVEYARD_SET = key(Registries.STRUCTURE_SET,
                 "mars_research_graveyard");
         public static final ResourceKey<StructureSet> MARS_STARGATE_RUINS_SET = key(Registries.STRUCTURE_SET,

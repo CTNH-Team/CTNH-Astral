@@ -7,40 +7,10 @@
       "base": {
         "biomes": [
           {
-            "biome": "ctnhastral:moon_sea",
-            "parameters": {
-              "continentalness": [
-                -1.0,
-                -0.12
-              ],
-              "depth": [
-                -1.0,
-                1.0
-              ],
-              "erosion": [
-                -1.0,
-                1.0
-              ],
-              "humidity": [
-                -1.0,
-                1.0
-              ],
-              "offset": 0.0,
-              "temperature": [
-                -1.0,
-                1.0
-              ],
-              "weirdness": [
-                -1.0,
-                1.0
-              ]
-            }
-          },
-          {
             "biome": "ctnhastral:moon_shadow_icefield",
             "parameters": {
               "continentalness": [
-                0.08,
+                -1.0,
                 1.0
               ],
               "depth": [
@@ -70,7 +40,7 @@
             "biome": "ctnhastral:moon_highlands",
             "parameters": {
               "continentalness": [
-                0.08,
+                -1.0,
                 1.0
               ],
               "depth": [
@@ -100,7 +70,7 @@
             "biome": "ctnhastral:moon_basalt_plateau",
             "parameters": {
               "continentalness": [
-                0.08,
+                -1.0,
                 1.0
               ],
               "depth": [
@@ -130,37 +100,7 @@
             "biome": "ctnhastral:moon_wasteland",
             "parameters": {
               "continentalness": [
-                -0.12,
-                0.08
-              ],
-              "depth": [
                 -1.0,
-                1.0
-              ],
-              "erosion": [
-                -1.0,
-                1.0
-              ],
-              "humidity": [
-                -1.0,
-                0.1
-              ],
-              "offset": 0.0,
-              "temperature": [
-                -1.0,
-                0.0
-              ],
-              "weirdness": [
-                -1.0,
-                1.0
-              ]
-            }
-          },
-          {
-            "biome": "ctnhastral:moon_wasteland",
-            "parameters": {
-              "continentalness": [
-                0.08,
                 1.0
               ],
               "depth": [
@@ -190,37 +130,7 @@
             "biome": "ctnhastral:moon_silicon_plains",
             "parameters": {
               "continentalness": [
-                -0.12,
-                0.08
-              ],
-              "depth": [
                 -1.0,
-                1.0
-              ],
-              "erosion": [
-                -1.0,
-                1.0
-              ],
-              "humidity": [
-                0.1,
-                1.0
-              ],
-              "offset": 0.0,
-              "temperature": [
-                -1.0,
-                1.0
-              ],
-              "weirdness": [
-                -1.0,
-                1.0
-              ]
-            }
-          },
-          {
-            "biome": "ctnhastral:moon_silicon_plains",
-            "parameters": {
-              "continentalness": [
-                0.08,
                 1.0
               ],
               "depth": [
@@ -250,37 +160,7 @@
             "biome": "ctnhastral:moonlight_desert",
             "parameters": {
               "continentalness": [
-                -0.12,
-                0.08
-              ],
-              "depth": [
                 -1.0,
-                1.0
-              ],
-              "erosion": [
-                -1.0,
-                1.0
-              ],
-              "humidity": [
-                -1.0,
-                0.1
-              ],
-              "offset": 0.0,
-              "temperature": [
-                0.0,
-                1.0
-              ],
-              "weirdness": [
-                -1.0,
-                1.0
-              ]
-            }
-          },
-          {
-            "biome": "ctnhastral:moonlight_desert",
-            "parameters": {
-              "continentalness": [
-                0.08,
                 1.0
               ],
               "depth": [
@@ -346,7 +226,6 @@
       },
       "crater": "ctnhastral:moon_crater",
       "excluded_biomes": [
-        "ctnhastral:moon_sea",
         "ctnhastral:moon_shadow_icefield",
         "ctnhastral:moon_basalt_plateau"
       ],
@@ -481,6 +360,74 @@
             "weight": 0.24
           }
         ]
+      },
+      "surface_transition": {
+        "biomes": [
+          "ctnhastral:moon_wasteland",
+          "ctnhastral:moon_silicon_plains",
+          "ctnhastral:moonlight_desert",
+          "ctnhastral:moon_shadow_icefield",
+          "ctnhastral:moon_highlands",
+          "ctnhastral:moon_basalt_plateau"
+        ],
+        "edge_materials": [
+          {
+            "Name": "ctnhastral:moon_cobblestone"
+          },
+          {
+            "Name": "ctnhastral:silicon_gravel"
+          },
+          {
+            "Name": "ctnhastral:moon_sand"
+          },
+          {
+            "Name": "ctnhastral:moon_dusty_ice"
+          },
+          {
+            "Name": "ctnhastral:moon_broken_anorthosite"
+          },
+          {
+            "Name": "ctnhastral:moon_cobblestone"
+          }
+        ],
+        "settings": {
+          "basalt": {
+            "half_width": 96.0,
+            "threshold": -0.3
+          },
+          "detail_scale": 7.0,
+          "edge_ramp": {
+            "end": 0.92,
+            "start": 0.15
+          },
+          "gradient_radius": 16,
+          "highlands": {
+            "half_width": 80.0,
+            "threshold": 0.3
+          },
+          "ice": {
+            "half_width": 112.0,
+            "threshold": 0.27
+          },
+          "large_ramp": {
+            "end": 0.98,
+            "start": 0.75
+          },
+          "maturity": {
+            "half_width": 80.0,
+            "threshold": 0.0
+          },
+          "patch_scale": 30.0,
+          "selector_contrast": 10.8,
+          "silicon": {
+            "half_width": 72.0,
+            "threshold": 0.1
+          },
+          "small_ramp": {
+            "end": 0.95,
+            "start": 0.05
+          }
+        }
       }
     },
     "settings": "ctnhastral:moon"

@@ -1,14 +1,11 @@
 package com.ctnh.ctnhastral.data.worldgen.feature;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.QuartPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -17,6 +14,8 @@ import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfigur
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
 
 import com.ctnh.ctnhastral.data.worldgen.biome.MoonBiomeSource;
+import com.ctnh.ctnhastral.data.worldgen.terrain.MoonSurfaceTransition;
+import com.ctnh.ctnhastral.data.worldgen.terrain.TerrainNoise;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -48,13 +47,12 @@ public class MoonWastelandRocksFeature extends Feature<MoonWastelandRocksFeature
         }
     }
 
-    public record Configuration(HolderSet<Biome> biomes, BlockState stone, BlockState rubble, BlockState sand,
+    public record Configuration(BlockState stone, BlockState rubble, BlockState sand,
                                 ResourceKey<NormalNoise.NoiseParameters> scarps,
                                 ResourceKey<NormalNoise.NoiseParameters> patches, Settings layout)
             implements FeatureConfiguration {
 
         public static final Codec<Configuration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Biome.LIST_CODEC.fieldOf("biomes").forGetter(Configuration::biomes),
                 BlockState.CODEC.fieldOf("stone").forGetter(Configuration::stone),
                 BlockState.CODEC.fieldOf("rubble").forGetter(Configuration::rubble),
                 BlockState.CODEC.fieldOf("sand").forGetter(Configuration::sand),
@@ -82,9 +80,10 @@ public class MoonWastelandRocksFeature extends Feature<MoonWastelandRocksFeature
         DoubleBinaryOperator ground = (x, z) -> heights.computeIfAbsent(ChunkPos.asLong(Mth.floor(x), Mth.floor(z)),
                 key -> context.chunkGenerator().getBaseHeight(Mth.floor(x), Mth.floor(z),
                         Heightmap.Types.OCEAN_FLOOR_WG, level, random) - 1);
-        BiPredicate<Integer, Integer> permitted = (x, z) -> config.biomes().contains(moon.getNoiseBiome(
-                QuartPos.fromBlock(x), 0, QuartPos.fromBlock(z), random.sampler())) &&
-                !moon.canyons().intersectsDisc(x, z, 0) && moon.craters().at(x, z).isEmpty();
+        BiPredicate<Integer, Integer> permitted = (x, z) -> {
+            double weight = moon.surface().sample(x, z).weight(MoonSurfaceTransition.Region.WASTELAND);
+            return weight > .03 && moon.smallFeatureAllowed(x, z);
+        };
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         boolean changed = false;
         for (int cx = Math.floorDiv(chunkPos.getMinBlockX() - layout.reach(), layout.cellSize()); cx <=
@@ -94,6 +93,10 @@ public class MoonWastelandRocksFeature extends Feature<MoonWastelandRocksFeature
                 for (Rock rock : Rock.inCell(level.getSeed(), layout, cx, cz,
                         (x, z) -> scarps.getValue(x, 0, z), (x, z) -> patches.getValue(x, 0, z), ground,
                         permitted, context.chunkGenerator().getSeaLevel())) {
+                    int rx = Mth.floor(rock.x()), rz = Mth.floor(rock.z());
+                    if (TerrainNoise.unit(level.getSeed() ^ Mth.getSeed(rx, 0, rz) ^ 0x524F434BL) >=
+                            moon.surface().probability(MoonSurfaceTransition.Region.WASTELAND, rx, rz, false))
+                        continue;
                     int radius = rock.radius();
                     for (int x = Math.max(chunkPos.getMinBlockX(), Mth.floor(rock.x()) - radius); x <=
                             Math.min(chunkPos.getMaxBlockX(), Mth.ceil(rock.x()) + radius); x++) {
@@ -103,8 +106,11 @@ public class MoonWastelandRocksFeature extends Feature<MoonWastelandRocksFeature
                             if (top == Integer.MIN_VALUE) continue;
                             int groundY = chunk.getHeight(Heightmap.Types.WORLD_SURFACE_WG, x, z);
                             BlockState surface = chunk.getBlockState(pos.set(x, groundY, z));
-                            if (!surface.is(config.stone().getBlock()) && !surface.is(config.rubble().getBlock()) &&
-                                    !surface.is(config.sand().getBlock()))
+                            boolean nativeSurface = surface.is(config.stone().getBlock()) ||
+                                    surface.is(config.rubble().getBlock()) ||
+                                    surface.is(config.sand().getBlock());
+                            if (!nativeSurface && (surface.isAir() || !surface.getFluidState().isEmpty() ||
+                                    Math.abs(groundY - ground.applyAsDouble(x, z)) > 2))
                                 continue;
                             // Only the owning chunk is written. Solid columns root every fragment in its substrate.
                             for (int y = groundY; y <= top; y++) {

@@ -85,6 +85,18 @@ public class MoonBlocks {
             .item(BlockItem::new)
             .build()
             .register();
+    public static final BlockEntry<RotatedPillarBlock> LAYERED_MOONLIGHT_CRYSTAL = REGISTRATE
+            .block("layered_moonlight_crystal", RotatedPillarBlock::new)
+            .cnlang("层状月辉晶体").lang("Layered Moonlight Crystal")
+            .initialProperties(() -> Blocks.AMETHYST_BLOCK)
+            .properties(p -> p.mapColor(MapColor.COLOR_LIGHT_BLUE).lightLevel(state -> 13)
+                    .isValidSpawn((state, level, pos, entity) -> false))
+            .blockstate((ctx, prov) -> prov.axisBlock(ctx.getEntry(),
+                    CTNHAstral.id("block/moon/layered_moonlight_crystal_side"),
+                    CTNHAstral.id("block/moon/layered_moonlight_crystal_end")))
+            .tag(BlockTags.MINEABLE_WITH_PICKAXE)
+            .loot(com.tterrag.registrate.providers.loot.RegistrateBlockLootTables::dropSelf)
+            .item(BlockItem::new).build().register();
     public static BlockEntry<Block> MOON_COBBLESTONE = createStoneLikeBlock("moon_cobblestone", "月岩圆石",
             CTNHAstral.id("block/stones/moon_cobblestone"));
     public static BlockEntry<Block> MOON_STONE = REGISTRATE.block("moon_stone", Block::new)

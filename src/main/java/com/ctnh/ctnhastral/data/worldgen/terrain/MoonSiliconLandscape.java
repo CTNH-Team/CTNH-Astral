@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.DoubleBinaryOperator;
+import java.util.function.IntBinaryOperator;
+import java.util.function.ToDoubleBiFunction;
 
 /** World-owned layout and voxel geometry; materials and placement belong to the configured feature. */
 public final class MoonSiliconLandscape {
@@ -78,17 +80,24 @@ public final class MoonSiliconLandscape {
     private final Settings settings;
     private final DoubleBinaryOperator ground;
     private final BiPredicate<Integer, Integer> permitted;
+    // Negative excludes all silicon geometry; 0 keeps substrate, 1 uses native cover, 2 uses edge gravel.
+    private final IntBinaryOperator cover;
+    private final ToDoubleBiFunction<Integer, Integer> detailDensity;
     private final int seaLevel, maxY;
     private final Cache<Long, Integer> heights = CacheBuilder.newBuilder().maximumSize(16384).build();
     private final Cache<Long, Optional<Site>> sites = CacheBuilder.newBuilder().maximumSize(1024).build();
     private final Cache<Long, Optional<Patch>> patches = CacheBuilder.newBuilder().maximumSize(2048).build();
 
     public MoonSiliconLandscape(long worldSeed, Settings settings, DoubleBinaryOperator ground,
-                                BiPredicate<Integer, Integer> permitted, int seaLevel, int maxY) {
+                                BiPredicate<Integer, Integer> permitted,
+                                IntBinaryOperator cover, ToDoubleBiFunction<Integer, Integer> detailDensity,
+                                int seaLevel, int maxY) {
         this.seed = worldSeed ^ settings.salt();
         this.settings = settings;
         this.ground = ground;
         this.permitted = permitted;
+        this.cover = cover;
+        this.detailDensity = detailDensity;
         this.seaLevel = seaLevel;
         this.maxY = maxY;
     }
@@ -178,7 +187,8 @@ public final class MoonSiliconLandscape {
                     if (unit(patchSeed) > settings.detailChance()) return Optional.empty();
                     int x = Mth.floor((cellX + .2 + .6 * unit(patchSeed + 1)) * settings.detailCellSize());
                     int z = Mth.floor((cellZ + .2 + .6 * unit(patchSeed + 2)) * settings.detailCellSize());
-                    if (!permitted(x, z)) return Optional.empty();
+                    if (ground(x, z) < seaLevel + 2 || unit(patchSeed + 8001) >= detailDensity.applyAsDouble(x, z))
+                        return Optional.empty();
                     return Optional.of(new Patch(x, z, ground(x, z), patchSeed));
                 }).filter(p -> p.x + 80 >= minX && p.x - 80 <= maxX && p.z + 80 >= minZ && p.z - 80 <= maxZ)
                         .ifPresent(result::add);
@@ -206,9 +216,13 @@ public final class MoonSiliconLandscape {
 
     public Column column(int x, int z, List<Site> nearbySites, List<Patch> nearbyPatches) {
         int terrain = ground(x, z);
-        if (!permitted(x, z)) return new Column(x, z, terrain, terrain, new byte[0]);
+        int coverage = cover.applyAsInt(x, z);
+        if (coverage < 0) return new Column(x, z, terrain, terrain, new byte[0]);
         List<Site> localSites = nearbySites.stream().filter(s -> Math.hypot(x - s.x, z - s.z) <= s.reach()).toList();
         List<Patch> localPatches = nearbyPatches.stream().filter(p -> Math.hypot(x - p.x, z - p.z) < 76).toList();
+        boolean coverGround = coverage > 0 && terrain >= seaLevel + 2;
+        if (!coverGround && localSites.isEmpty() && localPatches.isEmpty())
+            return new Column(x, z, terrain, terrain, new byte[0]);
         int maximum = terrain + 12;
         for (Site site : localSites) maximum = Math.max(maximum, site.base + site.height);
         int minimum = terrain - 10;
@@ -216,7 +230,7 @@ public final class MoonSiliconLandscape {
         byte[] materials = new byte[maximum - minimum + 1];
         double crust = noise(seed + 20, x, z, 92);
         double edge = plateEdge(x, z);
-        int surface = terrain + (crust > .58 && edge > 3.5 ? 1 : 0);
+        int surface = terrain + (coverGround && crust > .58 && edge > 3.5 ? 1 : 0);
         double fault = 100;
         for (Patch patch : localPatches) {
             double cut = patch.cut(x, z);
@@ -224,8 +238,9 @@ public final class MoonSiliconLandscape {
             fault = Math.min(fault, patch.distance(x, z));
         }
         byte cover = crust > .43 && edge > 1.3 ? CRUST : fault < 8 ? GRAVEL : MATRIX;
+        if (coverage == 2) cover = GRAVEL;
         for (int y = terrain - 8; y <= Math.max(terrain, surface); y++) {
-            byte material = y > surface ? AIR : y >= surface - 1 ? cover : KEEP;
+            byte material = y > surface ? AIR : y >= surface - 1 && (coverGround || fault < 8) ? cover : KEEP;
             if (fault < 6 && y <= surface && y >= terrain - 6 && y <= terrain - 3) material = CRYSTAL;
             materials[y - minimum] = material;
         }

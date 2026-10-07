@@ -1,7 +1,6 @@
 {
   "type": "ctnhastral:moon_wasteland_rocks",
   "config": {
-    "biomes": "ctnhastral:moon_wasteland",
     "layout": {
       "cell_size": 24,
       "chance": 0.85,

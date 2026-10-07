@@ -1,7 +1,6 @@
 {
   "type": "ctnhastral:moonlight_desert",
   "config": {
-    "biomes": "ctnhastral:moonlight_desert",
     "crystal": {
       "Name": "ctnhastral:moonlight_crystal"
     },

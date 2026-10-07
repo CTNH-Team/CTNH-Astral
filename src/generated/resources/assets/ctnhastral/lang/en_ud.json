@@ -28,6 +28,7 @@
   "block.ctnhastral.iridescent_silicon_crystal": "ןɐʇsʎɹƆ uoɔıןıS ʇuǝɔsǝpıɹI",
   "block.ctnhastral.krypton_crystal_ore": "ǝɹO ןɐʇsʎɹƆ uoʇdʎɹʞ",
   "block.ctnhastral.large_silicon_crystal_bud": "pnᗺ ןɐʇsʎɹƆ uoɔıןıS ǝbɹɐꞀ",
+  "block.ctnhastral.layered_moonlight_crystal": "ןɐʇsʎɹƆ ʇɥbıןuooW pǝɹǝʎɐꞀ",
   "block.ctnhastral.luminous_moon_sand": "puɐS uooW snouıɯnꞀ",
   "block.ctnhastral.mars_base_platform": "ɯɹoɟʇɐןԀ ǝsɐᗺ sɹɐW",
   "block.ctnhastral.mars_stone": "ǝuoʇS sɹɐW",
@@ -113,6 +114,7 @@
   "material.ctnhastral.glacio_stone": "ǝuoʇS oıɔɐן⅁",
   "material.ctnhastral.mars_stone": "ǝuoʇS sɹɐW",
   "material.ctnhastral.mercury_stone": "ǝuoʇS ʎɹnɔɹǝW",
+  "material.ctnhastral.moon_enriched_brine": "ǝuıɹᗺ pǝɥɔıɹuƎ uooW",
   "material.ctnhastral.moon_stone": "ǝuoʇS uooW",
   "material.ctnhastral.seawater": "ɹǝʇɐʍɐǝS",
   "material.ctnhastral.starlight": "ʇɥbıןɹɐʇS",
@@ -120,5 +122,6 @@
   "material.ctnhastral.venus_stone": "ǝuoʇS snuǝΛ",
   "message.ctnhastral.invalid_destination": "pǝɹıdxǝ dɐɯ ǝɥʇ ɹo pıןɐʌuı sı uoıʇɐuıʇsǝp ǝɥ⟘",
   "message.ctnhastral.rocket.launch": "ɥɔunɐן oʇ %1$s ssǝɹԀ",
-  "message.ctnhastral.rocket_tier_low": "ǝןqɐןıɐʌɐ %s 'pǝɹınbǝɹ %s :ʍoן ooʇ ɹǝıʇ ʇǝʞɔoᴚ"
+  "message.ctnhastral.rocket_tier_low": "ǝןqɐןıɐʌɐ %s 'pǝɹınbǝɹ %s :ʍoן ooʇ ɹǝıʇ ʇǝʞɔoᴚ",
+  "structure.ctnhastral.moon_subsurface_sea": "ɐǝS ʇןɐS ǝɔɐɟɹnsqnS"
 }

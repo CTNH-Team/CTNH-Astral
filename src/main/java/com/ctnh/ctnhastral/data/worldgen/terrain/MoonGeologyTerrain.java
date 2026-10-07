@@ -57,18 +57,22 @@ public final class MoonGeologyTerrain {
     private final Configuration config;
     private final DoubleBinaryOperator ground;
     private final IntBinaryOperator regions;
+    private final IntBinaryOperator surfaceRegions;
     private final MoonIcefield ice;
     private final MoonHighlands highlands;
     private final MoonLavaTubes tubes;
+    private final Cache<Long, Boolean> surfaceSites = CacheBuilder.newBuilder().maximumSize(16384).build();
     private final Cache<Long, List<MoonLavaTubes.Span>> tubeColumns = CacheBuilder.newBuilder().maximumSize(8192)
             .build();
 
     public MoonGeologyTerrain(long seed, Configuration config, DoubleBinaryOperator ground,
-                              IntBinaryOperator regions, BiPredicate<Integer, Integer> unobstructed) {
+                              IntBinaryOperator regions, IntBinaryOperator surfaceRegions,
+                              BiPredicate<Integer, Integer> unobstructed) {
         materials = new TerrainNoise(seed ^ 0x47454F4C4F47594CL);
         this.config = config;
         this.ground = ground;
         this.regions = regions;
+        this.surfaceRegions = surfaceRegions;
         ice = new MoonIcefield(seed, config.ice(), ground,
                 (x, z) -> regions.applyAsInt(x, z) == 1 && unobstructed.test(x, z));
         highlands = new MoonHighlands(seed, config.highlands(), ground,
@@ -90,12 +94,50 @@ public final class MoonGeologyTerrain {
     }
 
     public boolean isTube(int x, int y, int z) {
-        for (var span : tubeColumns.asMap().computeIfAbsent(ChunkPos.asLong(x, z), key -> {
+        for (var span : tubeColumn(x, z)) if (span.contains(y)) return true;
+        return false;
+    }
+
+    private List<MoonLavaTubes.Span> tubeColumn(int x, int z) {
+        return tubeColumns.asMap().computeIfAbsent(ChunkPos.asLong(x, z), key -> {
             List<MoonLavaTubes.Span> result = new ArrayList<>();
             for (var site : tubes.sitesIn(x, z, x, z)) result.addAll(site.sample(x, z, ground.applyAsDouble(x, z)));
             return List.copyOf(result);
-        })) if (span.contains(y)) return true;
-        return false;
+        });
+    }
+
+    public int tubeFloor(int x, int z) {
+        return tubeColumn(x, z).stream().mapToInt(MoonLavaTubes.Span::floor).min().orElse(Integer.MAX_VALUE);
+    }
+
+    /** Lowest exposed ground, excluding the overhanging crowns and ice roofs above it. */
+    public double surfaceHeight(int x, int z) {
+        double original = ground.applyAsDouble(x, z), surface = original;
+        if (regions.applyAsInt(x, z) == 1) {
+            for (var site : ice.sitesIn(x, z, x, z)) {
+                var column = site.sample(x, z, original);
+                if (column != null) surface = Math.min(surface, column.floor());
+            }
+        } else if (regions.applyAsInt(x, z) == 2) {
+            for (var site : highlands.sitesIn(x, z, x, z))
+                surface = Math.min(surface, site.groundY(x, z, original));
+        }
+        return surface;
+    }
+
+    public boolean hasSurfaceSite(int x, int z) {
+        return surfaceSites.asMap().computeIfAbsent(ChunkPos.asLong(x, z), key -> {
+            int region = regions.applyAsInt(x, z);
+            if (region == 0) return false;
+            double y = ground.applyAsDouble(x, z);
+            if (region == 1) {
+                for (var site : ice.sitesIn(x, z, x, z)) if (site.sample(x, z, y) != null) return true;
+            } else if (region == 2) {
+                for (var site : highlands.sitesIn(x, z, x, z))
+                    if (site.column(x, z) != null || site.groundY(x, z, y) != (int) y) return true;
+            } else return !tubeColumn(x, z).isEmpty();
+            return false;
+        });
     }
 
     public void apply(ChunkAccess chunk) {
@@ -108,15 +150,17 @@ public final class MoonGeologyTerrain {
         for (int x = cp.getMinBlockX(); x <= cp.getMaxBlockX(); x++) {
             for (int z = cp.getMinBlockZ(); z <= cp.getMaxBlockZ(); z++) {
                 int region = regions.applyAsInt(x, z);
-                if (region == 0) continue;
+                boolean iceCover = surfaceRegions.applyAsInt(x, z) == 1;
+                if (region == 0 && !iceCover) continue;
                 int surface = chunk.getHeight(Heightmap.Types.OCEAN_FLOOR_WG, x, z);
                 if (!chunk.getBlockState(pos.set(x, surface, z)).getFluidState().isEmpty()) continue;
-                if (region == 1) {
+                if (region == 1 || iceCover) {
                     MoonIcefield.Column column = null;
                     for (var site : iceSites) {
                         column = site.sample(x, z, surface);
                         if (column != null) break;
                     }
+                    if (column == null && !iceCover) continue;
                     int floor = column == null ? surface : column.floor();
                     boolean route = column != null && column.route();
                     double cover = materials.body(x / 80.0, 0, z / 80.0);
@@ -131,7 +175,8 @@ public final class MoonGeologyTerrain {
                         for (int y = Math.max(floor + 1, column.roofBottom()); y <= column.roofTop(); y++)
                             chunk.setBlockState(pos.set(x, y, z), iceMaterial(p, x, y, z), false);
                     }
-                } else if (region == 2) {
+                }
+                if (region == 2) {
                     for (var crown : crowns) {
                         int target = crown.groundY(x, z, surface);
                         if (target != surface) {
@@ -149,7 +194,7 @@ public final class MoonGeologyTerrain {
                                     false);
                         }
                     }
-                } else {
+                } else if (region == 3) {
                     List<MoonLavaTubes.Span> spans = new ArrayList<>();
                     for (var site : networks) spans.addAll(site.sample(x, z, surface));
                     if (spans.isEmpty()) continue;

@@ -44,6 +44,7 @@ import com.ctnh.ctnhastral.data.worldgen.structure.MarsResearchGraveyardStructur
 import com.ctnh.ctnhastral.data.worldgen.structure.MarsStargateRuinsStructure;
 import com.ctnh.ctnhastral.data.worldgen.structure.MarsStargateRuinsStructurePiece;
 import com.ctnh.ctnhastral.data.worldgen.structure.MoonAbandonedOutpostStructure;
+import com.ctnh.ctnhastral.data.worldgen.structure.MoonSubsurfaceSeaStructure;
 import com.ctnh.ctnhastral.data.worldgen.terrain.LayeredFluidPicker;
 import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
@@ -66,6 +67,10 @@ public final class CAWorldgen {
             .create(Registries.STRUCTURE_TYPE, "minecraft");
     private static final DeferredRegister<StructurePieceType> PIECE_TYPES = DeferredRegister
             .create(Registries.STRUCTURE_PIECE, "minecraft");
+    private static final DeferredRegister<StructureType<?>> ASTRAL_STRUCTURE_TYPES = DeferredRegister
+            .create(Registries.STRUCTURE_TYPE, CTNHAstral.MODID);
+    private static final DeferredRegister<StructurePieceType> ASTRAL_PIECE_TYPES = DeferredRegister
+            .create(Registries.STRUCTURE_PIECE, CTNHAstral.MODID);
     private static final Map<ResourceKey<NoiseGeneratorSettings>, Integer> LAVA_LEVELS = Map.of(
             WorldgenKeys.NoiseSettings.MOON, MoonWorldgen.LAVA_LEVEL,
             WorldgenKeys.NoiseSettings.MARS, MarsWorldgen.LAVA_LEVEL,
@@ -89,10 +94,14 @@ public final class CAWorldgen {
         PIECE_TYPES.register("ctnhastral_meteor", () -> AstralMeteorStructurePiece.TYPE);
         PIECE_TYPES.register("ctnhastral_mars_research_graveyard", () -> MarsResearchGraveyardStructurePiece.TYPE);
         PIECE_TYPES.register("ctnhastral_mars_stargate_ruins", () -> MarsStargateRuinsStructurePiece.TYPE);
+        ASTRAL_STRUCTURE_TYPES.register("moon_subsurface_sea", () -> MoonSubsurfaceSeaStructure.TYPE);
+        ASTRAL_PIECE_TYPES.register("moon_subsurface_sea", () -> MoonSubsurfaceSeaStructure.Piece.TYPE);
         FEATURES.register(eventBus);
         BIOME_SOURCES.register(eventBus);
         STRUCTURE_TYPES.register(eventBus);
         PIECE_TYPES.register(eventBus);
+        ASTRAL_STRUCTURE_TYPES.register(eventBus);
+        ASTRAL_PIECE_TYPES.register(eventBus);
     }
 
     public static void commonSetup() {
