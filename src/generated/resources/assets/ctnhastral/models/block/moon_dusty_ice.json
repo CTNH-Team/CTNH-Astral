@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "ctnhastral:block/moon/geology/moon_dusty_ice"
+  }
+}

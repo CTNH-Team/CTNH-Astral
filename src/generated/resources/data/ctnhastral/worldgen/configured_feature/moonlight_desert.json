@@ -1,0 +1,32 @@
+{
+  "type": "ctnhastral:moonlight_desert",
+  "config": {
+    "crystal": {
+      "Name": "ctnhastral:moonlight_crystal"
+    },
+    "glow_sand": {
+      "Name": "ctnhastral:luminous_moon_sand"
+    },
+    "layout": {
+      "cell_size": 128,
+      "chance": 0.65,
+      "companion_max_height": 34,
+      "companion_min_height": 24,
+      "giant_chance": 0.55,
+      "giant_height": 34,
+      "large_chance": 0.35,
+      "large_height": 28,
+      "max_height": 40,
+      "min_aspect_ratio": 4,
+      "min_height": 20,
+      "salt": 5570758461786507080,
+      "short_companion_chance": 0.15
+    },
+    "sand": {
+      "Name": "ctnhastral:moonlight_sand"
+    },
+    "stone": {
+      "Name": "ctnhastral:moon_stone"
+    }
+  }
+}

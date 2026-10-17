@@ -5,6 +5,17 @@ import com.tterrag.registrate.providers.RegistrateLangProvider;
 public class EnglishLangHandler {
 
     public static void init(RegistrateLangProvider provider) {
+        provider.add("biome.ctnhastral.moon_crater", "Lunar Crater");
+        provider.add("biome.ctnhastral.moon_canyon", "Moonscar Canyon");
+        provider.add("biome.ctnhastral.moon_shadow_icefield", "Shadowed Icefield");
+        provider.add("biome.ctnhastral.moon_highlands", "Lunar Highlands");
+        provider.add("biome.ctnhastral.moon_basalt_plateau", "Basalt Plateau");
+        provider.add("biome.ctnhastral.moon_lava_tubes", "Lunar Lava Tubes");
+        provider.add("structure.ctnhastral.moon_subsurface_sea", "Subsurface Salt Sea");
+        provider.add("biome.ctnhastral.moonlight_desert", "Moonlight Desert");
+        provider.add("gas.ctnhastral.oxygen", "Oxygen");
+        provider.add("gas.ctnhastral.nitrogen", "Nitrogen");
+        provider.add("gas.ctnhastral.carbon_dioxide", "Carbon Dioxide");
         provider.add("enchantment.ctnhastral.vacuum_seal.desc",
                 "Protects you from vacuum damage. Note: All equipped items must have this enchantment to take effect");
         provider.add("celestial_body.ctnhastral.sol", "Sol");
@@ -30,5 +41,14 @@ public class EnglishLangHandler {
         provider.add("gui.ctnhastral.celestial_map.tier", "Required rocket tier: %s");
         provider.add("message.ctnhastral.invalid_destination", "The destination is invalid or the map expired");
         provider.add("message.ctnhastral.rocket_tier_low", "Rocket tier too low: %s required, %s available");
+        provider.add("gtceu.medical_condition.hypoxia_mild", "Mild Hypoxia");
+        provider.add("gtceu.medical_condition.hypoxia_severe", "Severe Hypoxia");
+        provider.add("gtceu.medical_condition.hypothermia", "Hypothermia");
+        provider.add("gtceu.medical_condition.hyperthermia", "Hyperthermia");
+        provider.add("death.attack.gtceu.medical_condition/hypoxia_mild", "%1$s suffocated from hypoxia");
+        provider.add("death.attack.gtceu.medical_condition/hypoxia_severe",
+                "%1$s lost consciousness in severe hypoxia");
+        provider.add("death.attack.gtceu.medical_condition/hypothermia", "%1$s froze to death");
+        provider.add("death.attack.gtceu.medical_condition/hyperthermia", "%1$s died of heat stroke");
     }
 }

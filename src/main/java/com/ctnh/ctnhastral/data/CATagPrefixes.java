@@ -37,19 +37,19 @@ public class CATagPrefixes {
     public static void init() {
         oreMoonStone = register("moon_stone", "月岩%s矿石", "Moon Stone %s Ore",
                 MoonBlocks.MOON_STONE::getDefaultState, () -> CAMaterials.Moonstone,
-                MapColor.COLOR_LIGHT_GRAY, "block/stones/moon_stone");
+                MapColor.COLOR_LIGHT_GRAY, "block/moon_stone");
         oreVenusStone = register("venus_stone", "锃金岩%s矿石", "Venus Stone %s Ore",
                 Blocks.STONE::defaultBlockState, () -> CAMaterials.Venusstone,
-                MapColor.TERRACOTTA_ORANGE, "block/mars/stone/sulfuric_crust");
+                MapColor.TERRACOTTA_ORANGE, "block/sulfuric_crust");
         oreMarsStone = register("mars_stone", "深红岩%s矿石", "Mars Stone %s Ore",
                 MarsBlocks.MARS_STONE::getDefaultState, () -> CAMaterials.Marsstone,
-                MapColor.COLOR_RED, "block/mars/stone/mars_stone");
+                MapColor.COLOR_RED, "block/mars_stone");
         oreMercuryStone = register("mercury_stone", "旱海岩%s矿石", "Mercury Stone %s Ore",
                 Blocks.STONE::defaultBlockState, () -> CAMaterials.Mercurystone,
-                MapColor.TERRACOTTA_PURPLE, "block/stones/astral_stone");
+                MapColor.TERRACOTTA_PURPLE, "block/astral_stone");
         oreGlacioStone = register("glacio_stone", "坚冰岩%s矿石", "Glacio Stone %s Ore",
                 Blocks.STONE::defaultBlockState, () -> CAMaterials.Glaciostone,
-                MapColor.ICE, "block/mars/stone/dry_ice");
+                MapColor.ICE, "block/dry_ice");
         oreMoonStone
                 .addSecondaryMaterial(new MaterialStack(CAMaterials.Moonstone, TagPrefix.dust.materialAmount()));
         oreVenusStone
@@ -67,12 +67,12 @@ public class CATagPrefixes {
     private static TagPrefix register(String name, String cnName, String enName,
                                       Supplier<BlockState> baseBlock,
                                       Supplier<com.gregtechceu.gtceu.api.data.chemical.material.Material> material,
-                                      MapColor mapColor, String texturePath) {
+                                      MapColor mapColor, String baseModelPath) {
         return REGISTRATE.oreTagPrefix(name, BlockTags.MINEABLE_WITH_PICKAXE)
                 .cnlang(cnName)
                 .lang(enName)
                 .registerOre(baseBlock, material,
                         () -> BlockBehaviour.Properties.copy(Blocks.STONE).mapColor(mapColor),
-                        CTNHAstral.id(texturePath), false, false, true);
+                        CTNHAstral.id(baseModelPath), false, false, true);
     }
 }

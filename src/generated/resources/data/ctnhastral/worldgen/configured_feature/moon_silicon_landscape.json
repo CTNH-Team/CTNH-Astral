@@ -1,0 +1,55 @@
+{
+  "type": "ctnhastral:moon_silicon_landscape",
+  "config": {
+    "bud_chance": 0.075,
+    "buds": [
+      {
+        "Name": "ctnhastral:small_silicon_crystal_bud",
+        "Properties": {
+          "facing": "up",
+          "waterlogged": "false"
+        }
+      },
+      {
+        "Name": "ctnhastral:medium_silicon_crystal_bud",
+        "Properties": {
+          "facing": "up",
+          "waterlogged": "false"
+        }
+      },
+      {
+        "Name": "ctnhastral:large_silicon_crystal_bud",
+        "Properties": {
+          "facing": "up",
+          "waterlogged": "false"
+        }
+      },
+      {
+        "Name": "ctnhastral:silicon_crystal",
+        "Properties": {
+          "facing": "up",
+          "waterlogged": "false"
+        }
+      }
+    ],
+    "crust": {
+      "Name": "ctnhastral:silicon_crust"
+    },
+    "crystal": {
+      "Name": "ctnhastral:iridescent_silicon_crystal"
+    },
+    "gravel": {
+      "Name": "ctnhastral:silicon_gravel"
+    },
+    "matrix": {
+      "Name": "ctnhastral:silicon_breccia"
+    },
+    "mother": {
+      "Name": "ctnhastral:budding_silicon_crystal"
+    },
+    "mother_chance": 0.06,
+    "stone": {
+      "Name": "ctnhastral:moon_stone"
+    }
+  }
+}

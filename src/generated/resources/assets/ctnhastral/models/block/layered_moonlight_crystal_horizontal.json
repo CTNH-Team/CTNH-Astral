@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_horizontal",
+  "textures": {
+    "end": "ctnhastral:block/moon/layered_moonlight_crystal_end",
+    "side": "ctnhastral:block/moon/layered_moonlight_crystal_side"
+  }
+}

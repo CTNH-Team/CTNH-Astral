@@ -5,8 +5,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.dimension.LevelStem;
 
 import com.ctnh.ctnhastral.CTNHAstral;
+import com.ctnh.ctnhastral.data.environment.AstralEnvironments;
+import com.ctnh.ctnhastral.data.environment.SolarSystemEnvironments;
+import com.ctnh.ctnhastral.data.environment.VanillaEnvironments;
+import com.ctnh.ctnhastral.data.worldgen.WorldgenKeys;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -18,6 +23,10 @@ import java.util.Map;
  * 天体注册表（代码定义，客户端/服务端同源）。
  * 参考 Galacticraft 1.21.1 的 {@code GCCelestialBodies}：恒星 + 行星 + 轨道，
  * 每个天体带有位置、显示、轨道环、维度与传送器配置。
+ *
+ * <p>
+ * 环境只引用 data/environment 的完整定义；大气、温度、腐蚀、辐射和自然温度参数
+ * 均由该数据层持有，天体注册不再补充或推导环境数值。
  */
 public final class CACelestialBodies {
 
@@ -41,10 +50,7 @@ public final class CACelestialBodies {
             .ring(new CelestialRingDisplay(0xFFFFAA00, 2.0f))
             .tier(0)
             .gravity(0)
-            .oxygen(false)
-            .dayTemperature(5500)
-            .nightTemperature(5500)
-            .dayLength(24000)
+            .environment(SolarSystemEnvironments.SOL)
             .solarPower(0)
             .build());
 
@@ -60,10 +66,7 @@ public final class CACelestialBodies {
                     0xFF4E9FE8))
             .tier(0)
             .gravity(1.0f)
-            .oxygen(true)
-            .dayTemperature(15)
-            .nightTemperature(-10)
-            .dayLength(24000)
+            .environment(VanillaEnvironments.OVERWORLD)
             .solarPower(100)
             .build());
 
@@ -72,17 +75,14 @@ public final class CACelestialBodies {
             .name(Component.translatable("celestial_body.ctnhastral.astral_planet"))
             .description(Component.translatable("celestial_body.ctnhastral.astral_planet.desc"))
             .parent(SOL_ID)
-            .world(dimension(ASTRAL_PLANET_ID))
+            .world(dimension(WorldgenKeys.Dimensions.ASTRAL_PLANET))
             .position(new OrbitalCelestialPosition(1.0, 3.0, 0.0, true))
             .display(new CelestialDisplay(CTNHAstral.id("textures/block/stones/astral_stone.png"), 16, 16, 1.0f,
                     0xFFB26BFF))
             .teleporter(OrbitCelestialTeleporter.INSTANCE)
             .tier(6)
             .gravity(7.134f)
-            .oxygen(false)
-            .dayTemperature(-80)
-            .nightTemperature(-100)
-            .dayLength(24000)
+            .environment(AstralEnvironments.PLANET)
             .solarPower(64)
             .build());
 
@@ -91,17 +91,14 @@ public final class CACelestialBodies {
             .name(Component.translatable("celestial_body.ctnhastral.astral_orbit"))
             .description(Component.translatable("celestial_body.ctnhastral.astral_orbit.desc"))
             .parent(ASTRAL_PLANET_ID)
-            .world(dimension(ASTRAL_ORBIT_ID))
+            .world(dimension(WorldgenKeys.Dimensions.ASTRAL_ORBIT))
             .position(new OrbitalCelestialPosition(2.0, 0.4, 0.5, false))
             .display(new CelestialDisplay(celestialTexture("space_station"), 16, 16, 1.0f,
                     0xFFB8C7D9))
             .teleporter(OrbitCelestialTeleporter.INSTANCE)
             .tier(6)
             .gravity(0)
-            .oxygen(false)
-            .dayTemperature(-270)
-            .nightTemperature(-270)
-            .dayLength(24000)
+            .environment(AstralEnvironments.ORBIT)
             .solarPower(64)
             .build());
 
@@ -109,16 +106,13 @@ public final class CACelestialBodies {
             .name(Component.translatable("celestial_body.ctnhastral.moon"))
             .description(Component.translatable("celestial_body.ctnhastral.moon.desc"))
             .parent(SOL_ID)
-            .world(dimension(MOON_ID))
+            .world(dimension(WorldgenKeys.Dimensions.MOON))
             .position(new OrbitalCelestialPosition(0.8, 1.2, 1.0, true))
             .display(new CelestialDisplay(celestialTexture("moon"), 8, 8, 1.0f,
                     0xFFB6C2D1))
             .tier(1)
             .gravity(1.622f)
-            .oxygen(false)
-            .dayTemperature(-173)
-            .nightTemperature(-173)
-            .dayLength(24000)
+            .environment(SolarSystemEnvironments.MOON)
             .solarPower(60)
             .build());
 
@@ -126,17 +120,14 @@ public final class CACelestialBodies {
             .name(Component.translatable("celestial_body.ctnhastral.mars"))
             .description(Component.translatable("celestial_body.ctnhastral.mars.desc"))
             .parent(SOL_ID)
-            .world(dimension(MARS_ID))
+            .world(dimension(WorldgenKeys.Dimensions.MARS))
             .position(new OrbitalCelestialPosition(1.5, 2.0, 2.0, true))
             .display(new CelestialDisplay(celestialTexture("mars"), 16, 16,
                     1.0f,
                     0xFFC86452))
             .tier(2)
             .gravity(3.721f)
-            .oxygen(false)
-            .dayTemperature(-63)
-            .nightTemperature(-120)
-            .dayLength(24000)
+            .environment(SolarSystemEnvironments.MARS)
             .solarPower(50)
             .build());
 
@@ -144,17 +135,14 @@ public final class CACelestialBodies {
             .name(Component.translatable("celestial_body.ctnhastral.venus"))
             .description(Component.translatable("celestial_body.ctnhastral.venus.desc"))
             .parent(SOL_ID)
-            .world(dimension(VENUS_ID))
+            .world(dimension(WorldgenKeys.Dimensions.VENUS))
             .position(new OrbitalCelestialPosition(1.1, 1.6, 3.0, true))
             .display(new CelestialDisplay(celestialTexture("venus"), 16, 16,
                     1.0f,
                     0xFFE7A85B))
             .tier(3)
             .gravity(8.87f)
-            .oxygen(false)
-            .dayTemperature(464)
-            .nightTemperature(440)
-            .dayLength(24000)
+            .environment(SolarSystemEnvironments.VENUS)
             .solarPower(55)
             .build());
 
@@ -179,12 +167,6 @@ public final class CACelestialBodies {
         return dimension != null && !Level.OVERWORLD.equals(dimension) && BY_DIMENSION.containsKey(dimension);
     }
 
-    /** 该维度是否有天然可呼吸大气（非天体维度按可呼吸处理）。 */
-    public static boolean isBreathable(ResourceKey<Level> dimension) {
-        CelestialBody body = get(dimension);
-        return body == null || body.oxygen();
-    }
-
     private static CelestialBody register(CelestialBody body) {
         BODIES.put(body.id(), body);
         if (body.world() != null) {
@@ -193,8 +175,8 @@ public final class CACelestialBodies {
         return body;
     }
 
-    private static ResourceKey<Level> dimension(ResourceLocation id) {
-        return ResourceKey.create(Registries.DIMENSION, id);
+    private static ResourceKey<Level> dimension(ResourceKey<LevelStem> definition) {
+        return ResourceKey.create(Registries.DIMENSION, definition.location());
     }
 
     private static ResourceLocation celestialTexture(String name) {

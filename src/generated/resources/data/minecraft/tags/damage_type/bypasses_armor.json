@@ -1,0 +1,8 @@
+{
+  "values": [
+    "gtceu:medical_condition/hypoxia_mild",
+    "gtceu:medical_condition/hypoxia_severe",
+    "gtceu:medical_condition/hypothermia",
+    "gtceu:medical_condition/hyperthermia"
+  ]
+}

@@ -3,129 +3,491 @@
   "generator": {
     "type": "minecraft:noise",
     "biome_source": {
-      "type": "minecraft:multi_noise",
-      "biomes": [
-        {
-          "biome": "ctnhastral:moon_wasteland",
-          "parameters": {
-            "continentalness": [
-              -0.12,
-              0.3
-            ],
-            "depth": [
-              -1.0,
-              1.0
-            ],
-            "erosion": [
-              -1.0,
-              1.0
-            ],
-            "humidity": [
-              -1.0,
-              1.0
-            ],
-            "offset": 0.0,
-            "temperature": [
-              -1.0,
-              0.0
-            ],
-            "weirdness": [
-              -1.0,
-              1.0
-            ]
+      "type": "ctnhastral:moon",
+      "base": {
+        "biomes": [
+          {
+            "biome": "ctnhastral:moon_shadow_icefield",
+            "parameters": {
+              "continentalness": [
+                -1.0,
+                1.0
+              ],
+              "depth": [
+                -1.0,
+                1.0
+              ],
+              "erosion": [
+                -1.0,
+                1.0
+              ],
+              "humidity": [
+                -1.0,
+                1.0
+              ],
+              "offset": 0.0,
+              "temperature": [
+                -1.0,
+                1.0
+              ],
+              "weirdness": [
+                0.27,
+                1.0
+              ]
+            }
+          },
+          {
+            "biome": "ctnhastral:moon_highlands",
+            "parameters": {
+              "continentalness": [
+                -1.0,
+                1.0
+              ],
+              "depth": [
+                -1.0,
+                1.0
+              ],
+              "erosion": [
+                0.3,
+                1.0
+              ],
+              "humidity": [
+                -1.0,
+                1.0
+              ],
+              "offset": 0.0,
+              "temperature": [
+                -1.0,
+                1.0
+              ],
+              "weirdness": [
+                -1.0,
+                0.27
+              ]
+            }
+          },
+          {
+            "biome": "ctnhastral:moon_basalt_plateau",
+            "parameters": {
+              "continentalness": [
+                -1.0,
+                1.0
+              ],
+              "depth": [
+                -1.0,
+                1.0
+              ],
+              "erosion": [
+                -1.0,
+                -0.3
+              ],
+              "humidity": [
+                -1.0,
+                1.0
+              ],
+              "offset": 0.0,
+              "temperature": [
+                -1.0,
+                1.0
+              ],
+              "weirdness": [
+                -1.0,
+                0.27
+              ]
+            }
+          },
+          {
+            "biome": "ctnhastral:moon_wasteland",
+            "parameters": {
+              "continentalness": [
+                -1.0,
+                1.0
+              ],
+              "depth": [
+                -1.0,
+                1.0
+              ],
+              "erosion": [
+                -0.3,
+                0.3
+              ],
+              "humidity": [
+                -1.0,
+                0.1
+              ],
+              "offset": 0.0,
+              "temperature": [
+                -1.0,
+                0.0
+              ],
+              "weirdness": [
+                -1.0,
+                0.27
+              ]
+            }
+          },
+          {
+            "biome": "ctnhastral:moon_silicon_plains",
+            "parameters": {
+              "continentalness": [
+                -1.0,
+                1.0
+              ],
+              "depth": [
+                -1.0,
+                1.0
+              ],
+              "erosion": [
+                -0.3,
+                0.3
+              ],
+              "humidity": [
+                0.1,
+                1.0
+              ],
+              "offset": 0.0,
+              "temperature": [
+                -1.0,
+                1.0
+              ],
+              "weirdness": [
+                -1.0,
+                0.27
+              ]
+            }
+          },
+          {
+            "biome": "ctnhastral:moonlight_desert",
+            "parameters": {
+              "continentalness": [
+                -1.0,
+                1.0
+              ],
+              "depth": [
+                -1.0,
+                1.0
+              ],
+              "erosion": [
+                -0.3,
+                0.3
+              ],
+              "humidity": [
+                -1.0,
+                0.1
+              ],
+              "offset": 0.0,
+              "temperature": [
+                0.0,
+                1.0
+              ],
+              "weirdness": [
+                -1.0,
+                0.27
+              ]
+            }
+          }
+        ]
+      },
+      "canyon": "ctnhastral:moon_canyon",
+      "canyon_layout": {
+        "cell_size": 1536,
+        "coast_buffer": 64,
+        "deep_chance": 0.15,
+        "deep_depth": 90,
+        "floor_clearance": 24,
+        "max_depth": 70,
+        "max_length": 1400,
+        "max_width": 100,
+        "min_depth": 40,
+        "min_length": 700,
+        "min_width": 40,
+        "probability": 0.9,
+        "salt": 5570758461887171660,
+        "secondary_biome_weight": 0.35
+      },
+      "canyon_preferred_biomes": [
+        "ctnhastral:moon_wasteland",
+        "ctnhastral:moon_silicon_plains"
+      ],
+      "canyon_terrain": {
+        "dark_stone": {
+          "Name": "minecraft:smooth_basalt"
+        },
+        "layer_thickness": 7,
+        "rubble": {
+          "Name": "ctnhastral:moon_cobblestone"
+        },
+        "sediment": {
+          "Name": "ctnhastral:moon_sand"
+        },
+        "stone": {
+          "Name": "ctnhastral:moon_stone"
+        }
+      },
+      "crater": "ctnhastral:moon_crater",
+      "excluded_biomes": [
+        "ctnhastral:moon_shadow_icefield",
+        "ctnhastral:moon_basalt_plateau"
+      ],
+      "geology": {
+        "basalt_biome": "ctnhastral:moon_basalt_plateau",
+        "canyon_clearance": 16,
+        "highland_biome": "ctnhastral:moon_highlands",
+        "highlands": {
+          "cell_size": 1536,
+          "chance": 1.0,
+          "max_clearance": 28,
+          "max_length": 160,
+          "max_pillar": 64,
+          "max_width": 112,
+          "max_y": 248,
+          "min_clearance": 22,
+          "min_length": 96,
+          "min_pillar": 44,
+          "min_width": 64,
+          "salt": 5570758461636104023
+        },
+        "ice": {
+          "cell_size": 512,
+          "chance": 0.9,
+          "ice_thickness": 18,
+          "max_height": 44,
+          "max_length": 260,
+          "min_length": 120,
+          "salt": 5570758461735781708
+        },
+        "ice_biome": "ctnhastral:moon_shadow_icefield",
+        "materials": {
+          "basalt": {
+            "detail_scale": 30.0,
+            "detail_weight": 0.22,
+            "scale_x": 260.0,
+            "scale_y": 13.0,
+            "scale_z": 160.0,
+            "warp_scale": 280.0,
+            "warp_strength": 64.0
+          },
+          "blue_threshold": 0.16,
+          "broken_stone_threshold": 0.25,
+          "curvature_response": 0.1,
+          "dark_basalt_threshold": 0.22,
+          "dust_threshold": -0.12,
+          "highlands": {
+            "detail_scale": 20.0,
+            "detail_weight": 0.25,
+            "scale_x": 110.0,
+            "scale_y": 11.0,
+            "scale_z": 150.0,
+            "warp_scale": 160.0,
+            "warp_strength": 38.0
+          },
+          "ice_cover": {
+            "detail_scale": 18.0,
+            "detail_weight": 0.24,
+            "scale_x": 112.0,
+            "scale_y": 1.0,
+            "scale_z": 160.0,
+            "warp_scale": 300.0,
+            "warp_strength": 72.0
+          },
+          "ice_layers": {
+            "detail_scale": 32.0,
+            "detail_weight": 0.24,
+            "scale_x": 180.0,
+            "scale_y": 18.0,
+            "scale_z": 240.0,
+            "warp_scale": 300.0,
+            "warp_strength": 72.0
+          },
+          "layer_warp": 6.0,
+          "regional_scale": 520.0,
+          "regional_strength": 0.36,
+          "salt": 5135598139252103500,
+          "slope_radius": 12,
+          "slope_response": 0.55
+        },
+        "palette": {
+          "basalt": {
+            "Name": "minecraft:smooth_basalt"
+          },
+          "blue_ice": {
+            "Name": "minecraft:blue_ice"
+          },
+          "broken_stone": {
+            "Name": "ctnhastral:moon_broken_anorthosite"
+          },
+          "dark_basalt": {
+            "Name": "minecraft:basalt",
+            "Properties": {
+              "axis": "y"
+            }
+          },
+          "dust_ice": {
+            "Name": "ctnhastral:moon_dusty_ice"
+          },
+          "ice": {
+            "Name": "ctnhastral:moon_dense_ice"
+          },
+          "sediment": {
+            "Name": "ctnhastral:moon_cobblestone"
+          },
+          "stone": {
+            "Name": "ctnhastral:moon_anorthosite"
           }
         },
-        {
-          "biome": "ctnhastral:moon_silicon_plains",
-          "parameters": {
-            "continentalness": [
-              -0.12,
-              0.3
-            ],
-            "depth": [
-              -1.0,
-              1.0
-            ],
-            "erosion": [
-              -1.0,
-              1.0
-            ],
-            "humidity": [
-              -1.0,
-              1.0
-            ],
-            "offset": 0.0,
-            "temperature": [
-              0.0,
-              1.0
-            ],
-            "weirdness": [
-              -1.0,
-              1.0
-            ]
-          }
+        "tube_biome": "ctnhastral:moon_lava_tubes",
+        "tubes": {
+          "cell_size": 1536,
+          "chance": 1.0,
+          "depth": 60,
+          "max_length": 840,
+          "max_width": 32,
+          "min_length": 480,
+          "min_width": 22,
+          "min_y": -40,
+          "roof_thickness": 14,
+          "salt": 5570758461921509957
+        }
+      },
+      "layout": {
+        "apron_gap": 16,
+        "cell_size": 224,
+        "max_relief": 8,
+        "max_slope": 0.12,
+        "min_separation": 192,
+        "salt": 5500388562362913345,
+        "shape": {
+          "depth_base": 12.0,
+          "depth_exponent": 1.3,
+          "filled_chance": 0.15,
+          "max_diameter": 192.0,
+          "min_diameter": 64.0,
+          "min_rim": 5.0
+        }
+      },
+      "silicon_biomes": "ctnhastral:moon_silicon_plains",
+      "silicon_landscape": {
+        "canyon_clearance": 8,
+        "cell_size": 768,
+        "chance": 0.96,
+        "crust_edge": {
+          "crack_shoulder": 4.5,
+          "fragment_scale": 4.0,
+          "gradient_floor": 0.0025,
+          "gradient_step": 4.0,
+          "gravel_peak": 0.82,
+          "gravel_scale": 2.5,
+          "inner_width": 10.0,
+          "outer_width": 6.0
         },
-        {
-          "biome": "ctnhastral:moon_sea",
-          "parameters": {
-            "continentalness": [
-              -1.0,
-              -0.12
-            ],
-            "depth": [
-              -1.0,
-              1.0
-            ],
-            "erosion": [
-              -1.0,
-              1.0
-            ],
-            "humidity": [
-              -1.0,
-              1.0
-            ],
-            "offset": 0.0,
-            "temperature": [
-              0.0,
-              1.0
-            ],
-            "weirdness": [
-              -1.0,
-              1.0
-            ]
+        "crust_scale": 24,
+        "detail_cell_size": 144,
+        "detail_chance": 0.88,
+        "max_relief": 18,
+        "salt": 6001411855993491020,
+        "sizes": [
+          {
+            "kind": "fan",
+            "max_height": 70,
+            "max_span": 180,
+            "min_height": 40,
+            "min_span": 100,
+            "weight": 0.32
+          },
+          {
+            "kind": "arch",
+            "max_height": 85,
+            "max_span": 150,
+            "min_height": 60,
+            "min_span": 90,
+            "weight": 0.24
+          },
+          {
+            "kind": "dome",
+            "max_height": 65,
+            "max_span": 230,
+            "min_height": 45,
+            "min_span": 150,
+            "weight": 0.2
+          },
+          {
+            "kind": "fallen",
+            "max_height": 50,
+            "max_span": 220,
+            "min_height": 30,
+            "min_span": 140,
+            "weight": 0.24
           }
-        },
-        {
-          "biome": "ctnhastral:moonlight_desert",
-          "parameters": {
-            "continentalness": [
-              0.3,
-              1.0
-            ],
-            "depth": [
-              -1.0,
-              1.0
-            ],
-            "erosion": [
-              -1.0,
-              1.0
-            ],
-            "humidity": [
-              -1.0,
-              1.0
-            ],
-            "offset": 0.0,
-            "temperature": [
-              0.0,
-              1.0
-            ],
-            "weirdness": [
-              -1.0,
-              1.0
-            ]
+        ]
+      },
+      "surface_transition": {
+        "biomes": [
+          "ctnhastral:moon_wasteland",
+          "ctnhastral:moon_silicon_plains",
+          "ctnhastral:moonlight_desert",
+          "ctnhastral:moon_shadow_icefield",
+          "ctnhastral:moon_highlands",
+          "ctnhastral:moon_basalt_plateau"
+        ],
+        "edge_materials": [
+          {
+            "Name": "ctnhastral:moon_cobblestone"
+          },
+          {
+            "Name": "ctnhastral:silicon_gravel"
+          },
+          {
+            "Name": "ctnhastral:moon_sand"
+          },
+          {
+            "Name": "ctnhastral:moon_dusty_ice"
+          },
+          {
+            "Name": "ctnhastral:moon_broken_anorthosite"
+          },
+          {
+            "Name": "ctnhastral:moon_cobblestone"
+          }
+        ],
+        "settings": {
+          "basalt": {
+            "half_width": 96.0,
+            "threshold": -0.3
+          },
+          "detail_scale": 7.0,
+          "edge_ramp": {
+            "end": 0.92,
+            "start": 0.15
+          },
+          "gradient_radius": 16,
+          "highlands": {
+            "half_width": 80.0,
+            "threshold": 0.3
+          },
+          "ice": {
+            "half_width": 112.0,
+            "threshold": 0.27
+          },
+          "large_ramp": {
+            "end": 0.98,
+            "start": 0.75
+          },
+          "maturity": {
+            "half_width": 80.0,
+            "threshold": 0.0
+          },
+          "patch_scale": 30.0,
+          "selector_contrast": 10.8,
+          "silicon": {
+            "half_width": 72.0,
+            "threshold": 0.1
+          },
+          "small_ramp": {
+            "end": 0.95,
+            "start": 0.05
           }
         }
-      ]
+      }
     },
     "settings": "ctnhastral:moon"
   }

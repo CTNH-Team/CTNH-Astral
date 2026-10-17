@@ -1,4 +1,31 @@
 {
   "type": "ctnhastral:mars_dead_volcano",
-  "config": {}
+  "config": {
+    "fluid": {
+      "Name": "minecraft:lava",
+      "Properties": {
+        "level": "0"
+      }
+    },
+    "height": {
+      "type": "minecraft:uniform",
+      "value": {
+        "max_inclusive": 6,
+        "min_inclusive": 3
+      }
+    },
+    "radius": {
+      "type": "minecraft:uniform",
+      "value": {
+        "max_inclusive": 9,
+        "min_inclusive": 5
+      }
+    },
+    "rock": {
+      "Name": "ctnhastral:black_basalt"
+    },
+    "vent": {
+      "Name": "ctnhastral:obsidian_channel"
+    }
+  }
 }

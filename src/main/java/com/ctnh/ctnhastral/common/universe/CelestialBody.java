@@ -5,6 +5,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
+import com.ctnh.ctnhastral.common.environment.Environment;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -30,10 +31,7 @@ public final class CelestialBody {
     private final CelestialTeleporter teleporter;
     private final int tier;
     private final float gravity;
-    private final boolean oxygen;
-    private final int dayTemperature;
-    private final int nightTemperature;
-    private final long dayLength;
+    private final Environment.Definition environment;
     private final float solarPower;
 
     private CelestialBody(Builder builder) {
@@ -49,10 +47,7 @@ public final class CelestialBody {
         this.teleporter = builder.teleporter == null ? DirectCelestialTeleporter.INSTANCE : builder.teleporter;
         this.tier = builder.tier;
         this.gravity = builder.gravity;
-        this.oxygen = builder.oxygen;
-        this.dayTemperature = builder.dayTemperature;
-        this.nightTemperature = builder.nightTemperature;
-        this.dayLength = builder.dayLength;
+        this.environment = Objects.requireNonNull(builder.environment, "environment for " + builder.id);
         this.solarPower = builder.solarPower;
     }
 
@@ -115,20 +110,9 @@ public final class CelestialBody {
         return gravity;
     }
 
-    public boolean oxygen() {
-        return oxygen;
-    }
-
-    public int dayTemperature() {
-        return dayTemperature;
-    }
-
-    public int nightTemperature() {
-        return nightTemperature;
-    }
-
-    public long dayLength() {
-        return dayLength;
+    /** 引用数据层的完整环境定义，不在天体中复制基准或昼夜温度参数。 */
+    public Environment.Definition environment() {
+        return environment;
     }
 
     public float solarPower() {
@@ -170,10 +154,7 @@ public final class CelestialBody {
         private CelestialTeleporter teleporter;
         private int tier;
         private float gravity;
-        private boolean oxygen;
-        private int dayTemperature;
-        private int nightTemperature;
-        private long dayLength;
+        private Environment.Definition environment;
         private float solarPower;
 
         private Builder(ResourceLocation id, CelestialBodyType type) {
@@ -231,23 +212,8 @@ public final class CelestialBody {
             return this;
         }
 
-        public Builder oxygen(boolean oxygen) {
-            this.oxygen = oxygen;
-            return this;
-        }
-
-        public Builder dayTemperature(int dayTemperature) {
-            this.dayTemperature = dayTemperature;
-            return this;
-        }
-
-        public Builder nightTemperature(int nightTemperature) {
-            this.nightTemperature = nightTemperature;
-            return this;
-        }
-
-        public Builder dayLength(long dayLength) {
-            this.dayLength = dayLength;
+        public Builder environment(Environment.Definition environment) {
+            this.environment = environment;
             return this;
         }
 
