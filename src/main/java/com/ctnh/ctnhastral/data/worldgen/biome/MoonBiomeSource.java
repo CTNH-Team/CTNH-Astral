@@ -5,17 +5,22 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.QuartPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.biome.Climate;
 import net.minecraft.world.level.biome.MultiNoiseBiomeSource;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.levelgen.Aquifer;
 import net.minecraft.world.level.levelgen.DensityFunction;
+import net.minecraft.world.level.levelgen.DensityFunctions;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator;
+import net.minecraft.world.level.levelgen.NoiseChunk;
+import net.minecraft.world.level.levelgen.NoiseGeneratorSettings;
 import net.minecraft.world.level.levelgen.RandomState;
+import net.minecraft.world.level.levelgen.blending.Blender;
 
 import com.ctnh.ctnhastral.data.worldgen.feature.MoonCraterLayout;
 import com.ctnh.ctnhastral.data.worldgen.terrain.MoonCanyonLayout;
@@ -29,11 +34,13 @@ import com.google.common.cache.CacheBuilder;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.DoubleBinaryOperator;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /** The climate map supplies the background; accepted canyon and crater sites supply local biomes. */
@@ -76,7 +83,8 @@ public final class MoonBiomeSource extends BiomeSource {
     private volatile MoonSiliconLandscape silicon;
     // Generation queries every vertical quart cell; local overlays only depend on horizontal coordinates.
     private final Cache<Long, Optional<Holder<Biome>>> overlays = CacheBuilder.newBuilder().maximumSize(8192).build();
-    private final Cache<Long, Double> groundHeights = CacheBuilder.newBuilder().maximumSize(16384).build();
+    private final Cache<Long, int[]> groundHeights = CacheBuilder.newBuilder().maximumSize(16384).build();
+    private Supplier<Aquifer.FluidPicker> terrainFluids;
     private DoubleBinaryOperator ground;
     private long seed;
     private int craterMinY;
@@ -102,17 +110,28 @@ public final class MoonBiomeSource extends BiomeSource {
         this.surfaceConfig = surfaceConfig;
     }
 
+    /** Bind the generator's actual picker lazily; datagen holders may still be unbound. */
+    public void bindTerrainFluids(Supplier<Aquifer.FluidPicker> fluids) {
+        terrainFluids = fluids;
+    }
+
     // ChunkGenerator#createState binds the seed before structure, biome or /locate queries run.
     public void initialize(NoiseBasedChunkGenerator generator, RandomState randomState, long seed) {
-        var noise = generator.generatorSettings().value().noiseSettings();
-        var height = LevelHeightAccessor.create(noise.minY(), noise.height());
+        var settings = generator.generatorSettings().value();
+        var noise = settings.noiseSettings();
+        int width = noise.getCellWidth();
+        Aquifer.FluidPicker fluids = terrainFluids.get();
         groundHeights.invalidateAll();
         this.seed = seed;
         craterMinY = noise.minY() + 6;
         seas.clear();
-        ground = (x, z) -> groundHeights.asMap().computeIfAbsent(
-                ChunkPos.asLong(Mth.floor(x), Mth.floor(z)), key -> generator.getBaseHeight(Mth.floor(x), Mth.floor(z),
-                        Heightmap.Types.OCEAN_FLOOR_WG, height, randomState) - 1.0);
+        ground = (x, z) -> {
+            int bx = Mth.floor(x), bz = Mth.floor(z);
+            int cellX = Math.floorDiv(bx, width), cellZ = Math.floorDiv(bz, width);
+            int[] heights = groundHeights.asMap().computeIfAbsent(ChunkPos.asLong(cellX, cellZ),
+                    key -> new HeightCell(randomState, cellX * width, cellZ * width, settings, fluids).sample());
+            return heights[Math.floorMod(bx, width) * width + Math.floorMod(bz, width)] - 1.0;
+        };
         canyons = new MoonCanyonLayout(seed, canyonLayout, ground, (x, z) -> {
             Holder<Biome> biome = base.getNoiseBiome(QuartPos.fromBlock(Mth.floor(x)), 0,
                     QuartPos.fromBlock(Mth.floor(z)), randomState.sampler());
@@ -155,6 +174,58 @@ public final class MoonBiomeSource extends BiomeSource {
 
     private static DoubleBinaryOperator horizontal(DensityFunction field) {
         return (x, z) -> field.compute(new DensityFunction.SinglePointContext((int) x, 0, (int) z));
+    }
+
+    /** The same native column evaluation as getBaseHeight, shared by every column in one noise cell. */
+    private static final class HeightCell extends NoiseChunk {
+
+        private final int x, z;
+        private final NoiseGeneratorSettings settings;
+
+        private HeightCell(RandomState random, int x, int z, NoiseGeneratorSettings settings,
+                           Aquifer.FluidPicker fluids) {
+            super(1, random, x, z, settings.noiseSettings(), DensityFunctions.BeardifierMarker.INSTANCE,
+                    settings, fluids, Blender.empty());
+            this.x = x;
+            this.z = z;
+            this.settings = settings;
+        }
+
+        private int[] sample() {
+            var noise = settings.noiseSettings();
+            int width = noise.getCellWidth(), height = noise.getCellHeight();
+            int minCellY = Mth.floorDiv(noise.minY(), height);
+            int[] heights = new int[width * width];
+            Arrays.fill(heights, noise.minY());
+            boolean[] found = new boolean[heights.length];
+            int remaining = heights.length;
+            initializeForFirstCellX();
+            advanceCellX(0);
+            for (int cellY = Mth.floorDiv(noise.height(), height) - 1; cellY >= 0 && remaining > 0; cellY--) {
+                selectCellYZ(cellY, 0);
+                for (int dy = height - 1; dy >= 0 && remaining > 0; dy--) {
+                    int y = (minCellY + cellY) * height + dy;
+                    updateForY(y, dy / (double) height);
+                    for (int dx = 0; dx < width; dx++) {
+                        updateForX(x + dx, dx / (double) width);
+                        for (int dz = 0; dz < width; dz++) {
+                            int index = dx * width + dz;
+                            if (found[index]) continue;
+                            updateForZ(z + dz, dz / (double) width);
+                            BlockState state = getInterpolatedState();
+                            if (Heightmap.Types.OCEAN_FLOOR_WG.isOpaque()
+                                    .test(state == null ? settings.defaultBlock() : state)) {
+                                heights[index] = y + 1;
+                                found[index] = true;
+                                remaining--;
+                            }
+                        }
+                    }
+                }
+            }
+            stopInterpolation();
+            return heights;
+        }
     }
 
     public BiomeManager surfaceBiomes(BiomeManager original) {

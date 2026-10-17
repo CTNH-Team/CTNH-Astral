@@ -257,6 +257,55 @@
           "salt": 5570758461735781708
         },
         "ice_biome": "ctnhastral:moon_shadow_icefield",
+        "materials": {
+          "basalt": {
+            "detail_scale": 30.0,
+            "detail_weight": 0.22,
+            "scale_x": 260.0,
+            "scale_y": 13.0,
+            "scale_z": 160.0,
+            "warp_scale": 280.0,
+            "warp_strength": 64.0
+          },
+          "blue_threshold": 0.16,
+          "broken_stone_threshold": 0.25,
+          "curvature_response": 0.1,
+          "dark_basalt_threshold": 0.22,
+          "dust_threshold": -0.12,
+          "highlands": {
+            "detail_scale": 20.0,
+            "detail_weight": 0.25,
+            "scale_x": 110.0,
+            "scale_y": 11.0,
+            "scale_z": 150.0,
+            "warp_scale": 160.0,
+            "warp_strength": 38.0
+          },
+          "ice_cover": {
+            "detail_scale": 18.0,
+            "detail_weight": 0.24,
+            "scale_x": 112.0,
+            "scale_y": 1.0,
+            "scale_z": 160.0,
+            "warp_scale": 300.0,
+            "warp_strength": 72.0
+          },
+          "ice_layers": {
+            "detail_scale": 32.0,
+            "detail_weight": 0.24,
+            "scale_x": 180.0,
+            "scale_y": 18.0,
+            "scale_z": 240.0,
+            "warp_scale": 300.0,
+            "warp_strength": 72.0
+          },
+          "layer_warp": 6.0,
+          "regional_scale": 520.0,
+          "regional_strength": 0.36,
+          "salt": 5135598139252103500,
+          "slope_radius": 12,
+          "slope_response": 0.55
+        },
         "palette": {
           "basalt": {
             "Name": "minecraft:smooth_basalt"
@@ -321,6 +370,16 @@
         "canyon_clearance": 8,
         "cell_size": 768,
         "chance": 0.96,
+        "crust_edge": {
+          "crack_shoulder": 4.5,
+          "fragment_scale": 4.0,
+          "gradient_floor": 0.0025,
+          "gradient_step": 4.0,
+          "gravel_peak": 0.82,
+          "gravel_scale": 2.5,
+          "inner_width": 10.0,
+          "outer_width": 6.0
+        },
         "crust_scale": 24,
         "detail_cell_size": 144,
         "detail_chance": 0.88,

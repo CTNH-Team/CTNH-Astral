@@ -318,6 +318,9 @@ public final class MoonSubsurfaceSea {
     private final int neighborReach, queryReach;
     private final Cache<Long, Optional<Site>> sites = CacheBuilder.newBuilder().maximumSize(512).build();
     private final Cache<Long, Optional<Column>> columns = CacheBuilder.newBuilder().maximumSize(8192).build();
+    private final Cache<Segment, Optional<BoundingBox>> segments = CacheBuilder.newBuilder().maximumSize(2048).build();
+
+    private record Segment(int x, int z, int size) {}
 
     public MoonSubsurfaceSea(long seed, Settings settings, DoubleBinaryOperator ground,
                              DoubleBinaryOperator ceiling, BiPredicate<Integer, Integer> passageAllowed) {
@@ -365,6 +368,12 @@ public final class MoonSubsurfaceSea {
 
     /** Native starts cover bounded segments; the full lake geometry remains independent of those boundaries. */
     public Optional<BoundingBox> segmentBounds(int minX, int minZ, int size) {
+        return segments.asMap().computeIfAbsent(new Segment(minX, minZ, size),
+                key -> createSegmentBounds(key.x(), key.z(), key.size()))
+                .map(box -> new BoundingBox(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ()));
+    }
+
+    private Optional<BoundingBox> createSegmentBounds(int minX, int minZ, int size) {
         int maxX = minX + size - 1, maxZ = minZ + size - 1;
         List<Site> nearby = sitesIn(minX, minZ, maxX, maxZ);
         if (nearby.isEmpty()) return Optional.empty();

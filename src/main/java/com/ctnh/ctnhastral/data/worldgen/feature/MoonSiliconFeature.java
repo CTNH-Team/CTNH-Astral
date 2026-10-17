@@ -2,6 +2,7 @@ package com.ctnh.ctnhastral.data.worldgen.feature;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -11,11 +12,15 @@ import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
 import com.ctnh.ctnhastral.data.worldgen.biome.MoonBiomeSource;
+import com.ctnh.ctnhastral.data.worldgen.structure.MoonSubsurfaceSeaStructure;
 import com.ctnh.ctnhastral.data.worldgen.terrain.MoonSiliconLandscape;
+import com.ctnh.ctnhastral.data.worldgen.terrain.MoonSubsurfaceSea;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Materializes one chunk of the world's silicon landscape; never writes to a neighboring chunk. */
 public final class MoonSiliconFeature extends Feature<MoonSiliconFeature.Configuration> {
@@ -60,22 +65,45 @@ public final class MoonSiliconFeature extends Feature<MoonSiliconFeature.Configu
         int startX = chunk.getMinBlockX(), startZ = chunk.getMinBlockZ();
         var sites = landscape.sitesInArea(startX - 1, startZ - 1, startX + 16, startZ + 16);
         var patches = landscape.patchesInArea(startX - 1, startZ - 1, startX + 16, startZ + 16);
+        var level = context.level();
+        var structures = level.getLevel().structureManager();
+        if (level instanceof WorldGenRegion region) structures = structures.forWorldGenRegion(region);
+        var manager = structures;
+        Map<ChunkPos, List<MoonSubsurfaceSeaStructure.Piece>> pieces = new HashMap<>();
         // The halo evaluates geometry, not adjacent decorated chunks. Bud support is query-order independent.
         MoonSiliconLandscape.Column[][] columns = new MoonSiliconLandscape.Column[18][18];
+        MoonSubsurfaceSea.Column[][] cavities = new MoonSubsurfaceSea.Column[18][18];
         for (int x = 0; x < 18; x++) {
             for (int z = 0; z < 18; z++) {
-                columns[x][z] = landscape.column(startX + x - 1, startZ + z - 1, sites, patches);
+                int bx = startX + x - 1, bz = startZ + z - 1;
+                var column = landscape.column(bx, bz, sites, patches);
+                columns[x][z] = column;
+                var nearby = pieces.computeIfAbsent(new ChunkPos(Math.floorDiv(bx, 16), Math.floorDiv(bz, 16)),
+                        key -> manager
+                                .startsForStructure(key, structure -> structure instanceof MoonSubsurfaceSeaStructure)
+                                .stream().flatMap(start -> start.getPieces().stream())
+                                .filter(MoonSubsurfaceSeaStructure.Piece.class::isInstance)
+                                .map(MoonSubsurfaceSeaStructure.Piece.class::cast).toList());
+                for (var piece : nearby) {
+                    var cavity = piece.column(moon, bx, bz);
+                    if (cavity == null) continue;
+                    cavities[x][z] = cavity;
+                    for (int y = column.minY(); y <= column.maxY(); y++) {
+                        if (cavity.state(y) != 0) column.materials()[y - column.minY()] = MoonSiliconLandscape.AIR;
+                    }
+                    break;
+                }
             }
         }
         BlockState[] palette = { null, Blocks.AIR.defaultBlockState(), config.stone(), config.crystal(),
                 config.crust(), config.gravel(), config.matrix() };
-        var level = context.level();
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         boolean changed = false;
         for (int x = 1; x <= 16; x++) {
             for (int z = 1; z <= 16; z++) {
                 var column = columns[x][z];
                 for (int y = column.minY(); y <= column.maxY(); y++) {
+                    if (cavities[x][z] != null && cavities[x][z].state(y) != 0) continue;
                     byte material = column.material(y);
                     if (material == MoonSiliconLandscape.KEEP) continue;
                     BlockState state = palette[material];
@@ -97,6 +125,7 @@ public final class MoonSiliconFeature extends Feature<MoonSiliconFeature.Configu
                 var column = columns[x][z];
                 if (column.materials().length == 0) continue;
                 for (int y = column.minY(); y <= column.maxY(); y++) {
+                    if (cavities[x][z] != null && cavities[x][z].state(y) != 0) continue;
                     if (column.solid(y)) continue;
                     long seed = MoonSiliconLandscape.hash(level.getSeed() ^ ((long) y * 0x9E3779B97F4A7C15L),
                             column.x(), column.z());

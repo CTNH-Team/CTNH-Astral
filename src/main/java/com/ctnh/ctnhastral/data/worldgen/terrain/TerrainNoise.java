@@ -3,8 +3,41 @@ package com.ctnh.ctnhastral.data.worldgen.terrain;
 import net.minecraft.world.level.levelgen.XoroshiroRandomSource;
 import net.minecraft.world.level.levelgen.synth.PerlinNoise;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 /** Shared seeded terrain noise; each site owns its octave fields, with no mutable sampling state. */
 public final class TerrainNoise {
+
+    /** A dimension-supplied spectrum; coordinate warping changes outlines without independent pixel noise. */
+    public record Field(double scaleX, double scaleY, double scaleZ, double warpScale, double warpStrength,
+                        double detailScale, double detailWeight) {
+
+        public static final Codec<Field> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.doubleRange(1, 2048).fieldOf("scale_x").forGetter(Field::scaleX),
+                Codec.doubleRange(1, 256).fieldOf("scale_y").forGetter(Field::scaleY),
+                Codec.doubleRange(1, 2048).fieldOf("scale_z").forGetter(Field::scaleZ),
+                Codec.doubleRange(1, 2048).fieldOf("warp_scale").forGetter(Field::warpScale),
+                Codec.doubleRange(0, 256).fieldOf("warp_strength").forGetter(Field::warpStrength),
+                Codec.doubleRange(1, 256).fieldOf("detail_scale").forGetter(Field::detailScale),
+                Codec.doubleRange(0, 1).fieldOf("detail_weight").forGetter(Field::detailWeight)).apply(i, Field::new));
+
+        public Column column(TerrainNoise noise, double x, double z) {
+            double dx = warpStrength * noise.shift(x / warpScale, z / warpScale);
+            double dz = warpStrength * noise.shift(x / warpScale + 17, z / warpScale - 31);
+            return new Column(noise, this, x + dx, z + dz);
+        }
+    }
+
+    /** Bind horizontal coordinates once; volumetric layers reuse them through a whole block column. */
+    public record Column(TerrainNoise noise, Field field, double x, double z) {
+
+        public double value(double y) {
+            return noise.body(x / field.scaleX(), y / field.scaleY(), z / field.scaleZ()) +
+                    field.detailWeight() *
+                            noise.detail(x / field.detailScale(), y / field.scaleY(), z / field.detailScale());
+        }
+    }
 
     private final long seed;
     private final PerlinNoise shift;

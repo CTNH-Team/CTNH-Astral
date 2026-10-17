@@ -14,7 +14,10 @@ import com.google.common.cache.CacheBuilder;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.DoubleBinaryOperator;
 
@@ -164,13 +167,17 @@ public final class MoonSurfaceTransition {
     /** Only the surface pass sees these holders; saved biome cells and environment queries are unchanged. */
     public BiomeManager biomes(BiomeManager original, List<Holder<Biome>> biomes,
                                BiPredicate<Integer, Integer> preserved) {
+        // SurfaceSystem revisits a column for each height; only the original biome can vary vertically.
+        Map<Long, Optional<Holder<Biome>>> replacements = new HashMap<>();
         return new BiomeManager(original::getNoiseBiomeAtQuart, 0) {
 
             @Override
             public Holder<Biome> getBiome(BlockPos pos) {
-                if (preserved.test(pos.getX(), pos.getZ())) return original.getBiome(pos);
-                var sample = sample(pos.getX(), pos.getZ());
-                return sample.core() ? original.getBiome(pos) : biomes.get(sample.selected().ordinal());
+                return replacements.computeIfAbsent(ChunkPos.asLong(pos.getX(), pos.getZ()), key -> {
+                    if (preserved.test(pos.getX(), pos.getZ())) return Optional.empty();
+                    var sample = sample(pos.getX(), pos.getZ());
+                    return sample.core() ? Optional.empty() : Optional.of(biomes.get(sample.selected().ordinal()));
+                }).orElseGet(() -> original.getBiome(pos));
             }
         };
     }

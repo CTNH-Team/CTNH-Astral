@@ -79,6 +79,14 @@ public final class MoonSubsurfaceSeaStructure extends Structure {
                     .getOrThrow(false, LOGGER::error);
         }
 
+        /** Decorations preserve only cavities covered by an actual saved native segment. */
+        public MoonSubsurfaceSea.Column column(MoonBiomeSource moon, int x, int z) {
+            if (x < boundingBox.minX() || x > boundingBox.maxX() ||
+                    z < boundingBox.minZ() || z > boundingBox.maxZ())
+                return null;
+            return moon.seas(configuration.layout()).column(x, z);
+        }
+
         @Override
         protected void addAdditionalSaveData(StructurePieceSerializationContext context, CompoundTag tag) {
             tag.put("sea", MoonSubsurfaceSea.Configuration.CODEC.encodeStart(NbtOps.INSTANCE, configuration)

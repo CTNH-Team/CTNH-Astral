@@ -52,8 +52,24 @@ public final class MoonSiliconLandscape {
         }
     }
 
+    public record CrustEdge(double innerWidth, double outerWidth, double gradientStep, double gradientFloor,
+                            double crackShoulder, double fragmentScale, double gravelScale, double gravelPeak) {
+
+        public static final Codec<CrustEdge> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.doubleRange(.1, 64).fieldOf("inner_width").forGetter(CrustEdge::innerWidth),
+                Codec.doubleRange(.1, 64).fieldOf("outer_width").forGetter(CrustEdge::outerWidth),
+                Codec.doubleRange(.25, 16).fieldOf("gradient_step").forGetter(CrustEdge::gradientStep),
+                Codec.doubleRange(.0001, .1).fieldOf("gradient_floor").forGetter(CrustEdge::gradientFloor),
+                Codec.doubleRange(1.31, 16).fieldOf("crack_shoulder").forGetter(CrustEdge::crackShoulder),
+                Codec.doubleRange(1, 16).fieldOf("fragment_scale").forGetter(CrustEdge::fragmentScale),
+                Codec.doubleRange(1, 16).fieldOf("gravel_scale").forGetter(CrustEdge::gravelScale),
+                Codec.doubleRange(0, 1).fieldOf("gravel_peak").forGetter(CrustEdge::gravelPeak))
+                .apply(instance, CrustEdge::new));
+    }
+
     public record Settings(int cellSize, double chance, int detailCellSize, double detailChance,
-                           int crustScale, int maxRelief, int canyonClearance, List<Size> sizes, long salt) {
+                           int crustScale, CrustEdge crustEdge, int maxRelief, int canyonClearance,
+                           List<Size> sizes, long salt) {
 
         public static final Codec<Settings> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.intRange(640, 2048).fieldOf("cell_size").forGetter(Settings::cellSize),
@@ -61,6 +77,7 @@ public final class MoonSiliconLandscape {
                 Codec.intRange(128, 256).fieldOf("detail_cell_size").forGetter(Settings::detailCellSize),
                 Codec.doubleRange(0, 1).fieldOf("detail_chance").forGetter(Settings::detailChance),
                 Codec.intRange(12, 48).fieldOf("crust_scale").forGetter(Settings::crustScale),
+                CrustEdge.CODEC.fieldOf("crust_edge").forGetter(Settings::crustEdge),
                 Codec.intRange(4, 24).fieldOf("max_relief").forGetter(Settings::maxRelief),
                 Codec.intRange(0, 256).fieldOf("canyon_clearance").forGetter(Settings::canyonClearance),
                 Size.CODEC.listOf().fieldOf("sizes").forGetter(Settings::sizes),
@@ -239,8 +256,9 @@ public final class MoonSiliconLandscape {
         }
         byte cover = crust > .43 && edge > 1.3 ? CRUST : fault < 8 ? GRAVEL : MATRIX;
         if (coverage == 2) cover = GRAVEL;
+        byte surfaceCover = coverage == 1 ? edgeCover(x, z, crust, edge, fault, cover) : cover;
         for (int y = terrain - 8; y <= Math.max(terrain, surface); y++) {
-            byte material = y > surface ? AIR : y >= surface - 1 && (coverGround || fault < 8) ? cover : KEEP;
+            byte material = y > surface ? AIR : y >= surface - 1 && (coverGround || fault < 8) ? surfaceCover : KEEP;
             if (fault < 6 && y <= surface && y >= terrain - 6 && y <= terrain - 3) material = CRYSTAL;
             materials[y - minimum] = material;
         }
@@ -265,6 +283,31 @@ public final class MoonSiliconLandscape {
             }
         }
         return new Column(x, z, terrain, minimum, materials);
+    }
+
+    private byte edgeCover(int x, int z, double crust, double edge, double fault, byte original) {
+        var rules = settings.crustEdge();
+        // Keep the original fissure axis and all material around exposed fault ribs.
+        if (edge <= 1.3 || fault < 8) return original;
+        double dx = (noise(seed + 20, x + rules.gradientStep(), z, 92) -
+                noise(seed + 20, x - rules.gradientStep(), z, 92)) / (2 * rules.gradientStep());
+        double dz = (noise(seed + 20, x, z + rules.gradientStep(), 92) -
+                noise(seed + 20, x, z - rules.gradientStep(), 92)) / (2 * rules.gradientStep());
+        double distance = (crust - .43) / Math.max(rules.gradientFloor(), Math.hypot(dx, dz));
+        if (distance >= rules.innerWidth() && edge >= rules.crackShoulder()) return original;
+        if (distance <= -rules.outerWidth()) return original;
+        double shell = smoothEdge((distance + rules.outerWidth()) / (rules.innerWidth() + rules.outerWidth()));
+        double shoulder = smoothEdge((edge - 1.3) / (rules.crackShoulder() - 1.3));
+        double intact = shell * shoulder;
+        // Continuous fields form small joined fragments rather than independent speckled blocks.
+        if (noise(seed + 33, x, z, rules.fragmentScale()) < intact) return CRUST;
+        double gravel = rules.gravelPeak() * 4 * intact * (1 - intact);
+        return noise(seed + 34, x, z, rules.gravelScale()) < gravel ? GRAVEL : MATRIX;
+    }
+
+    private static double smoothEdge(double value) {
+        value = Math.max(0, Math.min(1, value));
+        return value * value * (3 - 2 * value);
     }
 
     private double plateEdge(int x, int z) {

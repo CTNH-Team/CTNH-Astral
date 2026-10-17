@@ -63,6 +63,7 @@ import com.ctnh.ctnhastral.data.worldgen.terrain.MoonLavaTubes;
 import com.ctnh.ctnhastral.data.worldgen.terrain.MoonSiliconLandscape;
 import com.ctnh.ctnhastral.data.worldgen.terrain.MoonSubsurfaceSea;
 import com.ctnh.ctnhastral.data.worldgen.terrain.MoonSurfaceTransition;
+import com.ctnh.ctnhastral.data.worldgen.terrain.TerrainNoise;
 import com.ctnh.ctnhastral.registry.sound.CAMusics;
 import com.ctnh.ctnhastral.registry.worldgen.MoonBlocks;
 import com.mojang.datafixers.util.Pair;
@@ -86,7 +87,9 @@ public final class MoonWorldgen {
             new MoonCraterShape.Settings(64, 192, 0.15, 5, 12, 1.3));
 
     private static final MoonSiliconLandscape.Settings SILICON_LANDSCAPE = new MoonSiliconLandscape.Settings(
-            768, .96, 144, .88, 24, 18, 8, List.of(
+            768, .96, 144, .88, 24,
+            new MoonSiliconLandscape.CrustEdge(10, 6, 4, .0025, 4.5, 4, 2.5, .82),
+            18, 8, List.of(
                     new MoonSiliconLandscape.Size(MoonSiliconLandscape.Kind.FAN, 100, 180, 40, 70, .32),
                     new MoonSiliconLandscape.Size(MoonSiliconLandscape.Kind.ARCH, 90, 150, 60, 85, .24),
                     new MoonSiliconLandscape.Size(MoonSiliconLandscape.Kind.DOME, 150, 230, 45, 65, .20),
@@ -376,6 +379,12 @@ public final class MoonWorldgen {
                 new MoonIcefield.Settings(512, .90, 120, 260, 44, 18, 0x4D4F4F4E4943454CL),
                 new MoonHighlands.Settings(1536, 1, 96, 160, 64, 112, 44, 64, 22, 28, 248, 0x4D4F4F4E43524F57L),
                 new MoonLavaTubes.Settings(1536, 1, 480, 840, 22, 32, 60, 14, -40, 0x4D4F4F4E54554245L),
+                new MoonGeologyTerrain.MaterialSettings(
+                        new TerrainNoise.Field(112, 1, 160, 300, 72, 18, .24),
+                        new TerrainNoise.Field(180, 18, 240, 300, 72, 32, .24),
+                        new TerrainNoise.Field(110, 11, 150, 160, 38, 20, .25),
+                        new TerrainNoise.Field(260, 13, 160, 280, 64, 30, .22),
+                        -.12, .16, .25, .22, 520, .36, .55, .10, 6, 12, 0x47454F4C4F47594CL),
                 16,
                 new MoonGeologyTerrain.Palette(MoonBlocks.MOON_DENSE_ICE.getDefaultState(),
                         Blocks.BLUE_ICE.defaultBlockState(), MoonBlocks.MOON_DUSTY_ICE.getDefaultState(),
@@ -547,6 +556,12 @@ public final class MoonWorldgen {
                 curve(uplift, HIGHLAND_SPLIT, 0, HIGHLAND_SPLIT + .13F, 1));
         DensityFunction basaltWeight = DensityFunctions.mul(rockWeight,
                 curve(uplift, BASALT_SPLIT - .10F, 1, BASALT_SPLIT, 0));
+        // Local fields have a separate spectrum; regional biome coordinates remain unchanged.
+        DensityFunction localShiftX = DensityFunctions.mul(DensityFunctions.constant(12),
+                DensityFunctions.shiftA(noises.getOrThrow(WorldgenKeys.Noise.MOON_LOCAL_WARP)));
+        DensityFunction localShiftZ = DensityFunctions.mul(DensityFunctions.constant(12),
+                DensityFunctions.shiftB(noises.getOrThrow(WorldgenKeys.Noise.MOON_LOCAL_WARP)));
+        var localVariation = noises.getOrThrow(WorldgenKeys.Noise.MOON_LOCAL_VARIATION);
         // Native mountain construction: warp the regional field and modulate finer relief by ridge strength.
         DensityFunction ridgeField = DensityFunctions.shiftedNoise2d(moonShiftX, moonShiftZ, .24,
                 noises.getOrThrow(Noises.RIDGE)).abs();
@@ -574,13 +589,37 @@ public final class MoonWorldgen {
                         DensityFunctions.mul(DensityFunctions.constant(4.5),
                                 DensityFunctions.noise(noises.getOrThrow(Noises.SURFACE), .60, 0).clamp(-1, 1))));
         DensityFunction iceHeight = DensityFunctions.add(DensityFunctions.constant(14),
-                DensityFunctions.add(DensityFunctions.mul(DensityFunctions.constant(3),
-                        DensityFunctions.noise(noises.getOrThrow(Noises.SURFACE), .22, 0).clamp(-1, 1)),
-                        curve(DensityFunctions.noise(noises.getOrThrow(Noises.RIDGE), .45, 0).abs(),
-                                0, 8, .12F, 3, .25F, 0, 1, 0)));
+                DensityFunctions.add(DensityFunctions.mul(DensityFunctions.constant(6),
+                        DensityFunctions.shiftedNoise2d(localShiftX, localShiftZ, .18, localVariation)),
+                        DensityFunctions.mul(
+                                curve(DensityFunctions.shiftedNoise2d(localShiftX, localShiftZ, .08, localVariation),
+                                        -1, .35F, -.25F, .70F, .25F, 1.20F, 1, 1.65F),
+                                curve(DensityFunctions.shiftedNoise2d(localShiftX, localShiftZ, .45,
+                                        noises.getOrThrow(Noises.RIDGE)).abs(),
+                                        0, 8, .12F, 3, .25F, 0, 1, 0))));
         moonHeight = DensityFunctions.lerp(iceWeight, moonHeight, iceHeight);
         moonHeight = DensityFunctions.lerp(highlandWeight, moonHeight, highlandHeight);
         moonHeight = DensityFunctions.lerp(basaltWeight, moonHeight, basaltHeight);
+        DensityFunction localAmplitude = curve(DensityFunctions.shiftedNoise2d(localShiftX, localShiftZ, .125,
+                localVariation), -1, .50F, -.25F, .80F, .25F, 1.25F, 1, 1.65F);
+        DensityFunction localRelief = DensityFunctions.mul(localAmplitude,
+                DensityFunctions.add(
+                        DensityFunctions.mul(DensityFunctions.constant(6),
+                                DensityFunctions.shiftedNoise2d(localShiftX, localShiftZ, .20, localVariation)),
+                        DensityFunctions.add(
+                                DensityFunctions.mul(DensityFunctions.constant(2.8),
+                                        DensityFunctions.shiftedNoise2d(localShiftX, localShiftZ, .75, localVariation)),
+                                DensityFunctions.mul(DensityFunctions.constant(.8),
+                                        DensityFunctions.shiftedNoise2d(localShiftX, localShiftZ, 2,
+                                                localVariation)))));
+        DensityFunction localResponse = DensityFunctions.mul(
+                DensityFunctions.lerp(iceWeight, DensityFunctions.constant(1), DensityFunctions.constant(.70)),
+                DensityFunctions.mul(
+                        DensityFunctions.lerp(highlandWeight, DensityFunctions.constant(1),
+                                DensityFunctions.constant(1.10)),
+                        DensityFunctions.lerp(basaltWeight, DensityFunctions.constant(1),
+                                DensityFunctions.constant(.80))));
+        moonHeight = DensityFunctions.add(moonHeight, DensityFunctions.mul(localResponse, localRelief));
         // Record the actual remaining contribution, including smooth geological boundary transitions.
         DensityFunction backgroundWeight = DensityFunctions.mul(
                 DensityFunctions.lerp(iceWeight, DensityFunctions.constant(1), DensityFunctions.zero()),
@@ -622,6 +661,9 @@ public final class MoonWorldgen {
         entries.put(WorldgenKeys.Noise.MOON_WASTELAND_PATCHES, new NormalNoise.NoiseParameters(-7, 1.0, .40));
         entries.put(WorldgenKeys.Noise.MOON_UPLIFT, new NormalNoise.NoiseParameters(-12, 1.0, .45, .15));
         entries.put(WorldgenKeys.Noise.MOON_ICE_CONDITIONS, new NormalNoise.NoiseParameters(-12, 1.0, .45, .15));
+        entries.put(WorldgenKeys.Noise.MOON_LOCAL_WARP, new NormalNoise.NoiseParameters(-7, 1.0, .50, .25));
+        entries.put(WorldgenKeys.Noise.MOON_LOCAL_VARIATION,
+                new NormalNoise.NoiseParameters(-6, 1.0, .55, .35, .18, .08));
         return entries;
     }
 

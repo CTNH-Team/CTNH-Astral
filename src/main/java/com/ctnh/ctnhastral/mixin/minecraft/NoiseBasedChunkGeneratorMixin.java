@@ -60,5 +60,6 @@ public abstract class NoiseBasedChunkGeneratorMixin {
                                             CallbackInfo ci) {
         Supplier<Aquifer.FluidPicker> picker = CAWorldgen.fluidPicker(settings);
         if (picker != null) globalFluidPicker = picker;
+        if (biomes instanceof MoonBiomeSource moon) moon.bindTerrainFluids(globalFluidPicker);
     }
 }

@@ -107,6 +107,10 @@ public final class WorldgenKeys {
         public static final ResourceKey<NormalNoise.NoiseParameters> MOON_UPLIFT = key(Registries.NOISE, "moon_uplift");
         public static final ResourceKey<NormalNoise.NoiseParameters> MOON_ICE_CONDITIONS = key(Registries.NOISE,
                 "moon_ice_conditions");
+        public static final ResourceKey<NormalNoise.NoiseParameters> MOON_LOCAL_WARP = key(Registries.NOISE,
+                "moon_local_warp");
+        public static final ResourceKey<NormalNoise.NoiseParameters> MOON_LOCAL_VARIATION = key(Registries.NOISE,
+                "moon_local_variation");
     }
 
     public static final class Density {
