@@ -11,6 +11,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import com.ctnh.ctnhastral.registry.CARocketEntityTypes;
 import com.mo_guang.ctpp.dynamicPart.rotation.IContraptionMultiblock;
@@ -194,11 +196,20 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
 
     @Override
     protected void tickContraption() {
-        Vec3 motion = getDeltaMovement();
-        if (!motion.equals(Vec3.ZERO)) {
-            move(MoverType.SELF, motion);
+        if (!level().isClientSide) {
+            Vec3 motion = getDeltaMovement();
+            if (!motion.equals(Vec3.ZERO)) {
+                move(MoverType.SELF, motion);
+            }
         }
         super.tickContraption();
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void lerpTo(double x, double y, double z, float yRot, float xRot, int lerpSteps, boolean teleport) {
+        super.setPos(x, y, z);
+        setRot(yRot, xRot);
     }
 
     @Override
