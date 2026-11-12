@@ -6,6 +6,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
@@ -16,7 +17,11 @@ import com.mo_guang.ctpp.dynamicPart.rotation.IContraptionMultiblock;
 import com.mo_guang.ctpp.dynamicPart.rotation.SimpleRotatingContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.contraptions.actors.seat.SeatBlock;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+
+import java.util.List;
+import java.util.UUID;
 
 public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
 
@@ -38,6 +43,8 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
     private static final String TAG_LAUNCHING = "RocketLaunching";
     private static final String TAG_LAUNCH_TICKS = "RocketLaunchTicks";
     private static final String TAG_COUNTDOWN_TICKS = "RocketCountdownTicks";
+    private static final String TAG_TRANSFER_PASSENGER = "RocketTransferPassenger";
+    private static final String TAG_TRANSFER_SEAT = "RocketTransferSeat";
     private static final String TAG_LANDING = "RocketLanding";
     private static final String TAG_LANDING_PAD = "RocketLandingPad";
     private static final String TAG_THRUST = "RocketThrust";
@@ -50,6 +57,8 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
     private boolean seatsRegistered;
     private boolean landing;
     private BlockPos landingPad;
+    private UUID transferPassenger;
+    private BlockPos transferSeat;
 
     public RocketContraptionEntity(EntityType<?> type, Level level) {
         super(type, level);
@@ -96,6 +105,37 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
 
         registerSeats(getContraption());
         seatsRegistered = true;
+    }
+
+    /**
+     * Carries the rider's seat across a dimension change.
+     *
+     * <p>
+     * Dismounting clears the contraption's seat mapping, and the destination entity is rebuilt from
+     * the old one's NBT after that, so the mapping would be lost: the rider stays a passenger while
+     * {@code positionRider} cannot find their seat, leaving them behind in mid air. Remembering the
+     * pair here makes it travel with the NBT and reach the spawn packet.
+     * </p>
+     */
+    public void rememberTransferSeat(UUID passengerId, @Nullable BlockPos localSeat) {
+        this.transferPassenger = localSeat == null ? null : passengerId;
+        this.transferSeat = localSeat;
+    }
+
+    /** Mounts a passenger onto the seat at {@code localSeat}, or the first seat when it is unknown. */
+    public boolean mountAtSeat(Entity passenger, @Nullable BlockPos localSeat) {
+        Contraption contraption = getContraption();
+        if (contraption == null) return false;
+        ensureSeatsRegistered();
+        List<BlockPos> seats = contraption.getSeats();
+        if (seats.isEmpty()) return false;
+
+        int index = localSeat == null ? 0 : seats.indexOf(localSeat);
+        if (index < 0) {
+            index = 0;
+        }
+        addSittingPassenger(passenger, index);
+        return contraption.getSeatOf(passenger.getUUID()) != null;
     }
 
     private static void registerSeats(Contraption contraption) {
@@ -244,6 +284,10 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
         tag.putInt(TAG_THRUST, rocketThrust);
         tag.putLong(TAG_FUEL_CAPACITY, rocketFuelCapacity);
         tag.putLong(TAG_REMAINING_FUEL, rocketRemainingFuel);
+        if (transferPassenger != null && transferSeat != null) {
+            tag.putUUID(TAG_TRANSFER_PASSENGER, transferPassenger);
+            tag.putLong(TAG_TRANSFER_SEAT, transferSeat.asLong());
+        }
     }
 
     @Override
@@ -271,6 +315,19 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
             getPersistentData().remove(LEGACY_CONTROLLER_DATA);
             setRunning(true);
         }
+        transferPassenger = tag.hasUUID(TAG_TRANSFER_PASSENGER) ? tag.getUUID(TAG_TRANSFER_PASSENGER) : null;
+        transferSeat = tag.contains(TAG_TRANSFER_SEAT, Tag.TAG_LONG) ? BlockPos.of(tag.getLong(TAG_TRANSFER_SEAT)) :
+                null;
+        applyTransferSeat();
+    }
+
+    private void applyTransferSeat() {
+        Contraption contraption = getContraption();
+        if (contraption == null || transferPassenger == null || transferSeat == null) return;
+        ensureSeatsRegistered();
+        List<BlockPos> seats = contraption.getSeats();
+        int index = seats.indexOf(transferSeat);
+        contraption.getSeatMapping().put(transferPassenger, index < 0 ? 0 : index);
     }
 
     private void setLanding(boolean landing) {

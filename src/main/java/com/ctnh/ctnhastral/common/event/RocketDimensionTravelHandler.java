@@ -20,6 +20,7 @@ import com.ctnh.ctnhastral.common.universe.CelestialEntityTeleporter;
 import com.ctnh.ctnhastral.common.universe.CelestialTeleportTargets;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.contraptions.Contraption;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,9 +50,11 @@ public final class RocketDimensionTravelHandler {
 
         rocket.ensureContraptionReadyForSave();
         CompoundTag snapshot = rocket.getContraption().writeNBT(false);
+        BlockPos seat = rocket.getContraption().getSeatOf(player.getUUID());
+        rocket.rememberTransferSeat(player.getUUID(), seat);
         player.stopRiding();
         PENDING_TRANSFERS.put(player.getUUID(),
-                new PendingTransfer(rocket, snapshot, RocketState.capture(rocket)));
+                new PendingTransfer(rocket, snapshot, RocketState.capture(rocket), seat));
     }
 
     @SubscribeEvent
@@ -77,7 +80,7 @@ public final class RocketDimensionTravelHandler {
         rocket.setRunning(true);
         rocket.setContraptionMotion(Vec3.ZERO);
         rocket.beginLanding(landingPad);
-        if (!player.startRiding(rocket, true)) {
+        if (!rocket.mountAtSeat(player, pending.seat())) {
             rocket.ejectPassengers();
         }
     }
@@ -115,7 +118,8 @@ public final class RocketDimensionTravelHandler {
         return new BlockPos(center.getX(), y, center.getZ());
     }
 
-    private record PendingTransfer(RocketContraptionEntity rocket, CompoundTag snapshot, RocketState state) {}
+    private record PendingTransfer(RocketContraptionEntity rocket, CompoundTag snapshot, RocketState state,
+                                   @Nullable BlockPos seat) {}
 
     private record RocketState(int thrust, long fuelCapacity, long remainingFuel,
                                boolean assembled, boolean launching, int launchTicks, int countdownTicks) {
