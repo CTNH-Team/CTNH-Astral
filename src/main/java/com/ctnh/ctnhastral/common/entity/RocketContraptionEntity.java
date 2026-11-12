@@ -6,6 +6,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
@@ -61,6 +62,13 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
     private BlockPos landingPad;
     private UUID transferPassenger;
     private BlockPos transferSeat;
+    private double landingVelocity;
+    private double lerpTargetX;
+    private double lerpTargetY;
+    private double lerpTargetZ;
+    private float lerpTargetYRot;
+    private float lerpTargetXRot;
+    private int lerpSteps;
 
     public RocketContraptionEntity(EntityType<?> type, Level level) {
         super(type, level);
@@ -155,6 +163,9 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
         }
         ensureSeatsRegistered();
         super.tick();
+        if (level().isClientSide) {
+            tickLerpMovement();
+        }
     }
 
     private void tickLanding() {
@@ -170,8 +181,10 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
             return;
         }
 
-        Vec3 motion = getDeltaMovement();
-        setContraptionMotion(new Vec3(0, Math.max(-LANDING_MAX_SPEED, motion.y - LANDING_ACCELERATION), 0));
+        landingVelocity = Math.min(LANDING_MAX_SPEED, landingVelocity + LANDING_ACCELERATION);
+        double nextY = Math.max(targetY, getY() - landingVelocity);
+        super.setPos(getX(), nextY, getZ());
+        setContraptionMotion(Vec3.ZERO);
     }
 
     @Override
@@ -208,8 +221,29 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void lerpTo(double x, double y, double z, float yRot, float xRot, int lerpSteps, boolean teleport) {
-        super.setPos(x, y, z);
-        setRot(yRot, xRot);
+        if (teleport || lerpSteps <= 0) {
+            this.lerpSteps = 0;
+            setPos(x, y, z);
+            setRot(yRot, xRot);
+            return;
+        }
+        this.lerpTargetX = x;
+        this.lerpTargetY = y;
+        this.lerpTargetZ = z;
+        this.lerpTargetYRot = yRot;
+        this.lerpTargetXRot = xRot;
+        this.lerpSteps = lerpSteps;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private void tickLerpMovement() {
+        if (lerpSteps <= 0) return;
+        double t = 1.0D / (double) lerpSteps;
+        setPos(Mth.lerp(t, getX(), lerpTargetX), Mth.lerp(t, getY(), lerpTargetY),
+                Mth.lerp(t, getZ(), lerpTargetZ));
+        setRot((float) Mth.lerp(t, getYRot(), lerpTargetYRot),
+                (float) Mth.lerp(t, getXRot(), lerpTargetXRot));
+        --lerpSteps;
     }
 
     @Override
@@ -269,6 +303,7 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
 
     public void beginLanding(BlockPos landingPad) {
         this.landingPad = landingPad;
+        this.landingVelocity = 0.0D;
         setLanding(true);
         setContraptionMotion(Vec3.ZERO);
     }
