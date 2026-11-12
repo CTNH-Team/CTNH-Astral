@@ -1,7 +1,7 @@
 package com.ctnh.ctnhastral.common.universe;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 
 /**
  * 天体传送器。参考 Galacticraft 1.21.1 的 {@code CelestialTeleporter}：
@@ -9,5 +9,6 @@ import net.minecraft.server.level.ServerPlayer;
  */
 public interface CelestialTeleporter {
 
-    void teleport(ServerPlayer player, ServerLevel level, CelestialBody body, CelestialBody fromBody);
+    /** 由 {@code origin} 的水平坐标进入该天体维度时的落点。 */
+    BlockPos landingPosition(ServerLevel level, BlockPos origin);
 }

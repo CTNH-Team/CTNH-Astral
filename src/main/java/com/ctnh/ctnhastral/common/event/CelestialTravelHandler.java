@@ -16,6 +16,7 @@ import com.ctnh.ctnhastral.common.entity.RocketContraptionEntity;
 import com.ctnh.ctnhastral.common.machine.multiblock.RocketAssemblyPlatformMachine;
 import com.ctnh.ctnhastral.common.universe.CACelestialBodies;
 import com.ctnh.ctnhastral.common.universe.CelestialBody;
+import com.ctnh.ctnhastral.common.universe.CelestialEntityTeleporter;
 
 import java.util.Map;
 import java.util.Set;
@@ -81,9 +82,11 @@ public final class CelestialTravelHandler {
             return;
         }
         rocket.setContraptionMotion(Vec3.ZERO);
-        // 触发 EntityTravelToDimensionEvent / PlayerChangedDimensionEvent，
+        // 必须带上天体传送器：原版 PortalForcer 对天体维度返回 null 落点，
+        // 维度切换会在移出原维度之后中止，玩家被留在没有地形的空维里。
+        // 同时触发 EntityTravelToDimensionEvent / PlayerChangedDimensionEvent，
         // RocketDimensionTravelHandler 会携带火箭与落地平台完成转移。
-        if (player.changeDimension(destination) == null) {
+        if (player.changeDimension(destination, CelestialEntityTeleporter.of(target)) == null) {
             IN_FLIGHT.remove(player.getUUID());
         }
     }
