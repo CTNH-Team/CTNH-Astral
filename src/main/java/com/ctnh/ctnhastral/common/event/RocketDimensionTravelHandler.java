@@ -16,11 +16,13 @@ import net.minecraftforge.fml.common.Mod;
 import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.common.entity.RocketContraptionEntity;
 import com.ctnh.ctnhastral.common.machine.multiblock.RocketAssemblyPlatformMachine;
-import com.ctnh.ctnhastral.common.universe.CACelestialBodies;
-import com.ctnh.ctnhastral.common.universe.CelestialBody;
+import com.ctnh.ctnhastral.common.universe.CelestialEntityTeleporter;
+import com.ctnh.ctnhastral.common.universe.CelestialTeleportTargets;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.contraptions.Contraption;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -48,10 +50,11 @@ public final class RocketDimensionTravelHandler {
 
         rocket.ensureContraptionReadyForSave();
         CompoundTag snapshot = rocket.getContraption().writeNBT(false);
+        BlockPos seat = rocket.getContraption().getSeatOf(player.getUUID());
+        rocket.rememberTransferSeat(player.getUUID(), seat);
         player.stopRiding();
-        CelestialBody sourceBody = CACelestialBodies.get(player.serverLevel().dimension());
-        PENDING_TRANSFERS.put(player.getUUID(), new PendingTransfer(rocket, snapshot, RocketState.capture(rocket),
-                sourceBody == null ? null : sourceBody.id()));
+        PENDING_TRANSFERS.put(player.getUUID(),
+                new PendingTransfer(rocket, snapshot, RocketState.capture(rocket), seat));
     }
 
     @SubscribeEvent
@@ -61,13 +64,6 @@ public final class RocketDimensionTravelHandler {
         if (pending == null) return;
 
         ServerLevel destination = player.serverLevel();
-        CelestialBody destinationBody = CACelestialBodies.get(destination.dimension());
-        CelestialBody sourceBody = pending.sourceBodyId() == null ? null :
-                CACelestialBodies.get(pending.sourceBodyId());
-        if (destinationBody != null) {
-            destinationBody.teleporter().teleport(player, destination, destinationBody, sourceBody);
-        }
-
         BlockPos landingCenter = player.blockPosition();
         BlockPos landingPad = createLandingPlatform(destination, landingCenter);
         RocketContraptionEntity rocket = moveRocket(pending, destination, landingPad);
@@ -79,19 +75,19 @@ public final class RocketDimensionTravelHandler {
                 destination.getMaxBuildHeight() - 4);
         rocket.setPos(landingCenter.getX(), startY, landingCenter.getZ());
         player.teleportTo(destination, landingCenter.getX() + 0.5D, startY, landingCenter.getZ() + 0.5D,
-                player.getYRot(), player.getXRot());
+                Collections.emptySet(), player.getYRot(), player.getXRot());
         rocket.setPersistenceAnchor(rocket.blockPosition());
         rocket.setRunning(true);
         rocket.setContraptionMotion(Vec3.ZERO);
         rocket.beginLanding(landingPad);
-        if (!player.startRiding(rocket, true)) {
+        if (!rocket.mountAtSeat(player, pending.seat())) {
             rocket.ejectPassengers();
         }
     }
 
     private static RocketContraptionEntity moveRocket(PendingTransfer pending, ServerLevel destination,
                                                       BlockPos landingPad) {
-        Entity moved = pending.rocket().changeDimension(destination);
+        Entity moved = pending.rocket().changeDimension(destination, CelestialEntityTeleporter.forLevel(destination));
         if (moved instanceof RocketContraptionEntity rocket) {
             return rocket;
         }
@@ -109,6 +105,11 @@ public final class RocketDimensionTravelHandler {
     private static BlockPos createLandingPlatform(ServerLevel level, BlockPos center) {
         int y = Math.max(level.getMinBuildHeight(), center.getY() - 1);
         BlockState casing = AllBlocks.ANDESITE_CASING.get().defaultBlockState();
+        for (int dx = -LANDING_PLATFORM_RADIUS; dx <= LANDING_PLATFORM_RADIUS; dx += LANDING_PLATFORM_RADIUS) {
+            for (int dz = -LANDING_PLATFORM_RADIUS; dz <= LANDING_PLATFORM_RADIUS; dz += LANDING_PLATFORM_RADIUS) {
+                CelestialTeleportTargets.loadChunk(level, center.getX() + dx, center.getZ() + dz);
+            }
+        }
         for (int x = -LANDING_PLATFORM_RADIUS; x <= LANDING_PLATFORM_RADIUS; x++) {
             for (int z = -LANDING_PLATFORM_RADIUS; z <= LANDING_PLATFORM_RADIUS; z++) {
                 level.setBlock(new BlockPos(center.getX() + x, y, center.getZ() + z), casing, Block.UPDATE_ALL);
@@ -118,7 +119,7 @@ public final class RocketDimensionTravelHandler {
     }
 
     private record PendingTransfer(RocketContraptionEntity rocket, CompoundTag snapshot, RocketState state,
-                                   net.minecraft.resources.ResourceLocation sourceBodyId) {}
+                                   @Nullable BlockPos seat) {}
 
     private record RocketState(int thrust, long fuelCapacity, long remainingFuel,
                                boolean assembled, boolean launching, int launchTicks, int countdownTicks) {

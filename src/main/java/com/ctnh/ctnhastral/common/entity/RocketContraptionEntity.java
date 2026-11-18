@@ -6,17 +6,25 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import com.ctnh.ctnhastral.registry.CARocketEntityTypes;
 import com.mo_guang.ctpp.dynamicPart.rotation.IContraptionMultiblock;
 import com.mo_guang.ctpp.dynamicPart.rotation.SimpleRotatingContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.contraptions.actors.seat.SeatBlock;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+
+import java.util.List;
+import java.util.UUID;
 
 public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
 
@@ -38,6 +46,8 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
     private static final String TAG_LAUNCHING = "RocketLaunching";
     private static final String TAG_LAUNCH_TICKS = "RocketLaunchTicks";
     private static final String TAG_COUNTDOWN_TICKS = "RocketCountdownTicks";
+    private static final String TAG_TRANSFER_PASSENGER = "RocketTransferPassenger";
+    private static final String TAG_TRANSFER_SEAT = "RocketTransferSeat";
     private static final String TAG_LANDING = "RocketLanding";
     private static final String TAG_LANDING_PAD = "RocketLandingPad";
     private static final String TAG_THRUST = "RocketThrust";
@@ -50,6 +60,15 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
     private boolean seatsRegistered;
     private boolean landing;
     private BlockPos landingPad;
+    private UUID transferPassenger;
+    private BlockPos transferSeat;
+    private double landingVelocity;
+    private double lerpTargetX;
+    private double lerpTargetY;
+    private double lerpTargetZ;
+    private float lerpTargetYRot;
+    private float lerpTargetXRot;
+    private int lerpSteps;
 
     public RocketContraptionEntity(EntityType<?> type, Level level) {
         super(type, level);
@@ -98,6 +117,37 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
         seatsRegistered = true;
     }
 
+    /**
+     * Carries the rider's seat across a dimension change.
+     *
+     * <p>
+     * Dismounting clears the contraption's seat mapping, and the destination entity is rebuilt from
+     * the old one's NBT after that, so the mapping would be lost: the rider stays a passenger while
+     * {@code positionRider} cannot find their seat, leaving them behind in mid air. Remembering the
+     * pair here makes it travel with the NBT and reach the spawn packet.
+     * </p>
+     */
+    public void rememberTransferSeat(UUID passengerId, @Nullable BlockPos localSeat) {
+        this.transferPassenger = localSeat == null ? null : passengerId;
+        this.transferSeat = localSeat;
+    }
+
+    /** Mounts a passenger onto the seat at {@code localSeat}, or the first seat when it is unknown. */
+    public boolean mountAtSeat(Entity passenger, @Nullable BlockPos localSeat) {
+        Contraption contraption = getContraption();
+        if (contraption == null) return false;
+        ensureSeatsRegistered();
+        List<BlockPos> seats = contraption.getSeats();
+        if (seats.isEmpty()) return false;
+
+        int index = localSeat == null ? 0 : seats.indexOf(localSeat);
+        if (index < 0) {
+            index = 0;
+        }
+        addSittingPassenger(passenger, index);
+        return contraption.getSeatOf(passenger.getUUID()) != null;
+    }
+
     private static void registerSeats(Contraption contraption) {
         contraption.getBlocks().forEach((localPos, blockInfo) -> {
             if (blockInfo.state().getBlock() instanceof SeatBlock && !contraption.getSeats().contains(localPos)) {
@@ -113,6 +163,9 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
         }
         ensureSeatsRegistered();
         super.tick();
+        if (level().isClientSide) {
+            tickLerpMovement();
+        }
     }
 
     private void tickLanding() {
@@ -128,8 +181,10 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
             return;
         }
 
-        Vec3 motion = getDeltaMovement();
-        setContraptionMotion(new Vec3(0, Math.max(-LANDING_MAX_SPEED, motion.y - LANDING_ACCELERATION), 0));
+        landingVelocity = Math.min(LANDING_MAX_SPEED, landingVelocity + LANDING_ACCELERATION);
+        double nextY = Math.max(targetY, getY() - landingVelocity);
+        super.setPos(getX(), nextY, getZ());
+        setContraptionMotion(Vec3.ZERO);
     }
 
     @Override
@@ -154,11 +209,41 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
 
     @Override
     protected void tickContraption() {
-        Vec3 motion = getDeltaMovement();
-        if (!motion.equals(Vec3.ZERO)) {
-            move(MoverType.SELF, motion);
+        if (!level().isClientSide) {
+            Vec3 motion = getDeltaMovement();
+            if (!motion.equals(Vec3.ZERO)) {
+                move(MoverType.SELF, motion);
+            }
         }
         super.tickContraption();
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void lerpTo(double x, double y, double z, float yRot, float xRot, int lerpSteps, boolean teleport) {
+        if (teleport || lerpSteps <= 0) {
+            this.lerpSteps = 0;
+            setPos(x, y, z);
+            setRot(yRot, xRot);
+            return;
+        }
+        this.lerpTargetX = x;
+        this.lerpTargetY = y;
+        this.lerpTargetZ = z;
+        this.lerpTargetYRot = yRot;
+        this.lerpTargetXRot = xRot;
+        this.lerpSteps = lerpSteps;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private void tickLerpMovement() {
+        if (lerpSteps <= 0) return;
+        double t = 1.0D / (double) lerpSteps;
+        setPos(Mth.lerp(t, getX(), lerpTargetX), Mth.lerp(t, getY(), lerpTargetY),
+                Mth.lerp(t, getZ(), lerpTargetZ));
+        setRot((float) Mth.lerp(t, getYRot(), lerpTargetYRot),
+                (float) Mth.lerp(t, getXRot(), lerpTargetXRot));
+        --lerpSteps;
     }
 
     @Override
@@ -218,6 +303,7 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
 
     public void beginLanding(BlockPos landingPad) {
         this.landingPad = landingPad;
+        this.landingVelocity = 0.0D;
         setLanding(true);
         setContraptionMotion(Vec3.ZERO);
     }
@@ -244,6 +330,10 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
         tag.putInt(TAG_THRUST, rocketThrust);
         tag.putLong(TAG_FUEL_CAPACITY, rocketFuelCapacity);
         tag.putLong(TAG_REMAINING_FUEL, rocketRemainingFuel);
+        if (transferPassenger != null && transferSeat != null) {
+            tag.putUUID(TAG_TRANSFER_PASSENGER, transferPassenger);
+            tag.putLong(TAG_TRANSFER_SEAT, transferSeat.asLong());
+        }
     }
 
     @Override
@@ -271,6 +361,19 @@ public class RocketContraptionEntity extends SimpleRotatingContraptionEntity {
             getPersistentData().remove(LEGACY_CONTROLLER_DATA);
             setRunning(true);
         }
+        transferPassenger = tag.hasUUID(TAG_TRANSFER_PASSENGER) ? tag.getUUID(TAG_TRANSFER_PASSENGER) : null;
+        transferSeat = tag.contains(TAG_TRANSFER_SEAT, Tag.TAG_LONG) ? BlockPos.of(tag.getLong(TAG_TRANSFER_SEAT)) :
+                null;
+        applyTransferSeat();
+    }
+
+    private void applyTransferSeat() {
+        Contraption contraption = getContraption();
+        if (contraption == null || transferPassenger == null || transferSeat == null) return;
+        ensureSeatsRegistered();
+        List<BlockPos> seats = contraption.getSeats();
+        int index = seats.indexOf(transferSeat);
+        contraption.getSeatMapping().put(transferPassenger, index < 0 ? 0 : index);
     }
 
     private void setLanding(boolean landing) {
