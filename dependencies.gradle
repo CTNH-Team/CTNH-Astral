@@ -7,8 +7,6 @@ dependencies {
     // modImplementation(ctnh.avaritia)
     modImplementation(ctnh.resourcefullib)
     modImplementation(ctnh.resourcefulconfig)
-    modImplementation(ctnh.botarium)
-    modImplementation(ctnh.adastra)
 
     modImplementation(ctnh.terrablender)
 

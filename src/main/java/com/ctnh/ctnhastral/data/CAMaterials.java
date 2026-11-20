@@ -8,7 +8,8 @@ import com.gregtechceu.gtceu.api.fluids.FluidBuilder;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
 
 import com.ctnh.ctnhastral.CTNHAstral;
-import earth.terrarium.adastra.common.registry.ModBlocks;
+import com.ctnh.ctnhastral.registry.worldgen.MarsBlocks;
+import com.ctnh.ctnhastral.registry.worldgen.MoonBlocks;
 
 import static com.ctnh.ctnhastral.CTNHAstral.REGISTRATE;
 import static com.gregtechceu.gtceu.api.data.chemical.material.info.MaterialFlags.*;
@@ -18,7 +19,6 @@ import static com.gregtechceu.gtceu.api.data.chemical.material.properties.BlastP
 
 public class CAMaterials {
 
-    // Ad Astra
     public static Material Moonstone;
     public static Material Marsstone;
     public static Material Venusstone;
@@ -29,11 +29,11 @@ public class CAMaterials {
     public static Material Starlight;
     public static Material Starmetal;
     public static Material Seawater;
+    public static Material MoonEnrichedBrine;
 
     public static Material Acid;
 
     public static void init() {
-        // Ad Astra
         Moonstone = REGISTRATE.material(CTNHAstral.id("moon_stone"))
                 .cnlang("月石")
                 .dust()
@@ -101,6 +101,14 @@ public class CAMaterials {
                 .flags(DISABLE_DECOMPOSITION)
                 .buildAndRegister()
                 .setFormula("Cl?Br?I?[H2O]", false);
+        MoonEnrichedBrine = REGISTRATE.material(CTNHAstral.id("moon_enriched_brine"))
+                .lang("Moon Enriched Brine")
+                .cnlang("月海富集卤水")
+                .formula("(NaCl)16(MgCl2)2(CaCl2)(LiCl)6+Br?+I?+H2O")
+                .liquid(new FluidBuilder().temperature(288).block().textures(true, true))
+                .color(0x2D5274)
+                .flags(DISABLE_DECOMPOSITION)
+                .buildAndRegister();
         Acid = REGISTRATE.material(CTNHAstral.id("acid"))
                 .cnlang("酸液")
                 .liquid(new FluidBuilder().textures(true, true).block())
@@ -108,11 +116,9 @@ public class CAMaterials {
     }
 
     public static void tagPrefixIgnore() {
-        TagPrefix.block.setIgnoredBlock(Moonstone, ModBlocks.MOON_STONE);
-        TagPrefix.block.setIgnoredBlock(Marsstone, ModBlocks.MARS_STONE);
-        TagPrefix.block.setIgnoredBlock(Venusstone, ModBlocks.VENUS_STONE);
-        TagPrefix.block.setIgnoredBlock(Mercurystone, ModBlocks.MERCURY_STONE);
-        TagPrefix.block.setIgnoredBlock(Glaciostone, ModBlocks.GLACIO_STONE);
+        // Natural host rock, like GT's Stone; not a storage block containing nine dusts.
+        TagPrefix.rock.setIgnoredBlock(Moonstone, MoonBlocks.MOON_STONE.get());
+        TagPrefix.block.setIgnoredBlock(Marsstone, MarsBlocks.MARS_STONE.get());
     }
 
     public static class MaterialIcons {

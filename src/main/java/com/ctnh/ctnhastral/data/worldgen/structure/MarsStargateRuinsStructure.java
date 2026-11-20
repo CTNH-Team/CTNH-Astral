@@ -14,7 +14,7 @@ public class MarsStargateRuinsStructure extends Structure {
 
     public static final Codec<MarsStargateRuinsStructure> CODEC = simpleCodec(MarsStargateRuinsStructure::new);
 
-    public static StructureType<MarsStargateRuinsStructure> TYPE;
+    public static final StructureType<MarsStargateRuinsStructure> TYPE = () -> CODEC;
 
     public MarsStargateRuinsStructure(StructureSettings settings) {
         super(settings);
@@ -33,11 +33,6 @@ public class MarsStargateRuinsStructure extends Structure {
         int centerY = context.chunkGenerator().getBaseHeight(centerX, centerZ, Heightmap.Types.WORLD_SURFACE_WG,
                 context.heightAccessor(), context.randomState());
         piecesBuilder.addPiece(new MarsStargateRuinsStructurePiece(new BlockPos(centerX, centerY, centerZ)));
-    }
-
-    public static void init() {
-        MarsStargateRuinsStructurePiece.register();
-        TYPE = StructureType.register("ctnh_mars_stargate_ruins", CODEC);
     }
 
     @Override

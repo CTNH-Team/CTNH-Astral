@@ -9,7 +9,7 @@
           "Name": "create:ochrum"
         },
         "target": {
-          "block": "ad_astra:venus_stone",
+          "block": "minecraft:stone",
           "predicate_type": "minecraft:block_match"
         }
       }

@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "ctnhastral:block/layered_moonlight_crystal_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "ctnhastral:block/layered_moonlight_crystal"
+    },
+    "axis=z": {
+      "model": "ctnhastral:block/layered_moonlight_crystal_horizontal",
+      "x": 90
+    }
+  }
+}

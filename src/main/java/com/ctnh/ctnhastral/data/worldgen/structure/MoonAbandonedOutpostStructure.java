@@ -12,7 +12,7 @@ public class MoonAbandonedOutpostStructure extends Structure {
 
     public static final Codec<MoonAbandonedOutpostStructure> CODEC = simpleCodec(MoonAbandonedOutpostStructure::new);
 
-    public static StructureType<MoonAbandonedOutpostStructure> TYPE;
+    public static final StructureType<MoonAbandonedOutpostStructure> TYPE = () -> CODEC;
 
     public MoonAbandonedOutpostStructure(StructureSettings settings) {
         super(settings);
@@ -23,11 +23,6 @@ public class MoonAbandonedOutpostStructure extends Structure {
         // Framework-only placeholder: once the moon outpost templates and loot tables exist,
         // replace this with real piece generation.
         return onTopOfChunkCenter(generationContext, Heightmap.Types.WORLD_SURFACE_WG, piecesBuilder -> {});
-    }
-
-    public static void init() {
-        MoonAbandonedOutpostStructure.TYPE = StructureType.register("ctnh_moon_abandoned_outpost",
-                MoonAbandonedOutpostStructure.CODEC);
     }
 
     @Override

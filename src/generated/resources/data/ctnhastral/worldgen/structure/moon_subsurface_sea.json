@@ -1,0 +1,129 @@
+{
+  "type": "ctnhastral:moon_subsurface_sea",
+  "biomes": [
+    "ctnhastral:moon_wasteland",
+    "ctnhastral:moon_silicon_plains",
+    "ctnhastral:moonlight_desert",
+    "ctnhastral:moon_shadow_icefield",
+    "ctnhastral:moon_highlands",
+    "ctnhastral:moon_basalt_plateau",
+    "ctnhastral:moon_crater",
+    "ctnhastral:moon_canyon",
+    "ctnhastral:moon_lava_tubes"
+  ],
+  "sea": {
+    "layout": {
+      "access": {
+        "bend_spacing": 72,
+        "branch_angle": 0.95,
+        "height": 7,
+        "max_bend": 46.0,
+        "max_branch_depth": 3,
+        "max_branch_rise": 8,
+        "max_branch_run": 96,
+        "max_branches": 12,
+        "max_run": 320,
+        "max_slope": 0.5,
+        "max_width": 9,
+        "min_bend": 22.0,
+        "min_branch_run": 48,
+        "min_branches": 6,
+        "min_run": 120,
+        "min_width": 5
+      },
+      "cave_clearance": 8,
+      "cell_size": 1024,
+      "chance": 0.65,
+      "hall_clearance": 6,
+      "max_water_y": -8,
+      "max_y": 32,
+      "min_water_y": -18,
+      "min_y": -46,
+      "noise": {
+        "body_scale": 54.0,
+        "fine_scale": 32.0,
+        "relief_scale": 100.0,
+        "vertical_scale": 21.0,
+        "warp_amplitude": 18.0,
+        "warp_scale": 180.0
+      },
+      "rock_gap": 48,
+      "roof_thickness": 32,
+      "salt": 5570758461903683916,
+      "shape": {
+        "hall_jitter": 40.0,
+        "loop_chance": 0.35,
+        "max_depth": 40,
+        "max_halls": 4,
+        "max_long_radius": 175,
+        "max_roof_rise": 30,
+        "max_short_radius": 115,
+        "max_span": 740,
+        "min_depth": 28,
+        "min_halls": 2,
+        "min_long_radius": 110,
+        "min_roof_rise": 18,
+        "min_short_radius": 70,
+        "min_span": 440,
+        "shore_rise": 14,
+        "waterway": {
+          "depth": 7,
+          "max_bend": 40.0,
+          "max_width": 32.0,
+          "min_width": 18.0,
+          "roof_rise": 10
+        }
+      },
+      "shore": {
+        "crystal_half_width": 1.15,
+        "max_crystal_bands": 3,
+        "max_crystal_blocks": 32,
+        "min_crystal_bands": 1,
+        "min_crystal_blocks": 12,
+        "old_water_rise": 7,
+        "salt": 21463949900924228,
+        "terrace_width": 2.0,
+        "trace_height": 1.2,
+        "trace_threshold": 0.4
+      },
+      "water_clearance": 3
+    },
+    "palette": {
+      "crystal": {
+        "Name": "ctnhastral:moonlight_crystal"
+      },
+      "dark_stone": {
+        "Name": "minecraft:smooth_basalt"
+      },
+      "layer_thickness": 6,
+      "layered_crystal": {
+        "Name": "ctnhastral:layered_moonlight_crystal",
+        "Properties": {
+          "axis": "y"
+        }
+      },
+      "light_spacing": 28,
+      "liquid": {
+        "Name": "ctnhastral:moon_enriched_brine",
+        "Properties": {
+          "level": "0"
+        }
+      },
+      "pale_stone": {
+        "Name": "ctnhastral:moon_anorthosite"
+      },
+      "rubble": {
+        "Name": "ctnhastral:moon_cobblestone"
+      },
+      "salt_trace": {
+        "Name": "gtceu:salt_block"
+      },
+      "stone": {
+        "Name": "ctnhastral:moon_stone"
+      }
+    }
+  },
+  "segment_chunks": 8,
+  "spawn_overrides": {},
+  "step": "raw_generation"
+}

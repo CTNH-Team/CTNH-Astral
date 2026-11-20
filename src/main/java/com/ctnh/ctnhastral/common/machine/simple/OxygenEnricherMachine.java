@@ -18,28 +18,29 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 
-import com.ctnh.ctnhastral.common.oxygen.OxygenAreaSource;
+import com.ctnh.ctnhastral.common.environment.Atmosphere;
+import com.ctnh.ctnhastral.common.environment.Environment;
+import com.ctnh.ctnhastral.common.environment.EnvironmentEmission;
+import com.ctnh.ctnhastral.common.environment.PlanetEnvironmentService;
+import com.ctnh.ctnhastral.registry.CAEnvironments;
 import com.ctnhlang.CN;
 import com.ctnhlang.EN;
-import earth.terrarium.adastra.api.systems.OxygenApi;
-import earth.terrarium.adastra.api.systems.TemperatureApi;
-import earth.terrarium.adastra.common.utils.floodfill.FloodFill3D;
 import tech.vixhentx.mcmod.ctnhlib.langprovider.Lang;
 
+import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
-public class OxygenEnricherMachine extends SimpleTieredMachine implements OxygenAreaSource {
+public class OxygenEnricherMachine extends SimpleTieredMachine {
 
     @CN("氧气供应不足")
     @EN("Insufficient oxygen supply")
     public static Lang ctnhMachineOxygenEnricherNoInput;
 
     private static final Component NO_OXYGEN_INPUT = ctnhMachineOxygenEnricherNoInput.translate();
-    private static final short HABITABLE_TEMPERATURE = 22;
 
-    private final Set<BlockPos> distributedBlocks = new HashSet<>();
     private TickableSubscription oxygenDistributionSubscription;
 
     public OxygenEnricherMachine(IMachineBlockEntity holder, int tier, Object... args) {
@@ -57,19 +58,23 @@ public class OxygenEnricherMachine extends SimpleTieredMachine implements Oxygen
         return new OxygenEnricherRecipeLogic(this);
     }
 
-    @Override
-    public BlockPos getOxygenSourcePos() {
-        return getPos();
-    }
-
-    @Override
-    public int getOxygenRange() {
-        return 12 + getTier() * 4;
-    }
-
-    @Override
-    public boolean isOxygenSourceActive(ServerLevel level) {
-        return isActive() && isWorkingEnabled();
+    /**
+     * 供氧设备的应用策略：增量增加总压、氧分压并产生 +8K 废热。
+     * 房间内均匀生效，否则球形衰减；不替换原有大气，不自动控温、除腐蚀或屏蔽辐射。
+     */
+    private EnvironmentEmission getEmission(ServerLevel level) {
+        if (!isActive() || !isWorkingEnabled()) {
+            return null;
+        }
+        int range = 12 + getTier() * 4;
+        int blockLimit = Math.min(8192, Math.max(256, range * range * 4));
+        Set<BlockPos> sealed = computeSealedVolume(level, getPos(), blockLimit, range);
+        Environment.Delta delta = Environment.Delta.of(CAEnvironments.TEMPERATURE, 8.0F)
+                .with(CAEnvironments.ATMOSPHERE, new Atmosphere.Delta(0.21F, Map.of(CAEnvironments.OXYGEN, 0.21F)));
+        if (!sealed.isEmpty()) {
+            return EnvironmentEmission.ofUniform(getPos(), sealed, delta);
+        }
+        return new EnvironmentEmission(getPos(), new EnvironmentEmission.Sphere(range), delta);
     }
 
     @Override
@@ -84,7 +89,7 @@ public class OxygenEnricherMachine extends SimpleTieredMachine implements Oxygen
     @Override
     public void onUnload() {
         if (!isRemote()) {
-            clearDistributedBlocks();
+            ceaseEmission();
             unsubscribe(oxygenDistributionSubscription);
             oxygenDistributionSubscription = null;
         }
@@ -94,79 +99,81 @@ public class OxygenEnricherMachine extends SimpleTieredMachine implements Oxygen
     @Override
     public void onMachineRemoved() {
         if (!isRemote()) {
-            clearDistributedBlocks();
+            ceaseEmission();
         }
         super.onMachineRemoved();
     }
 
-    private void tickOxygenDistribution() {
-        if (!(getLevel() instanceof ServerLevel serverLevel) || getOffsetTimer() % 20 != 0) {
-            return;
-        }
-        if (!getRecipeLogic().isWorking() || !isWorkingEnabled()) {
-            clearDistributedBlocks();
-            return;
-        }
-        updateDistributedBlocks(serverLevel, collectDistributedBlocks(serverLevel));
-    }
-
-    private Set<BlockPos> collectDistributedBlocks(ServerLevel level) {
+    /**
+     * 密封体积计算：向六个方向播种，对可通行空间做 FloodFill，体上限内未触界视为
+     * 密封（内聚于唯一消费方；未来第二个消费方出现时再提取工具类）。
+     */
+    private static Set<BlockPos> computeSealedVolume(ServerLevel level, BlockPos source, int blockLimit, int range) {
         Set<BlockPos> best = Collections.emptySet();
         for (Direction direction : Direction.values()) {
-            BlockPos seed = getPos().relative(direction);
-            if (!isPassableSpace(level, seed)) {
+            BlockPos seed = source.relative(direction);
+            if (!level.hasChunkAt(seed) || !isPassableSpace(level, seed)) {
                 continue;
             }
-            Set<BlockPos> distributed = new HashSet<>(
-                    FloodFill3D.run(level, seed, getOxygenBlockLimit(), FloodFill3D.TEST_FULL_SEAL, true));
-            distributed.removeIf(pos -> !getPos().closerThan(pos, getOxygenRange() + 1));
-            if (distributed.size() > best.size()) {
-                best = distributed;
+            Set<BlockPos> visited = new HashSet<>();
+            ArrayDeque<BlockPos> queue = new ArrayDeque<>();
+            visited.add(seed);
+            queue.add(seed);
+            boolean sealed = true;
+            while (!queue.isEmpty() && visited.size() < blockLimit) {
+                BlockPos current = queue.removeFirst();
+                for (Direction nextDirection : Direction.values()) {
+                    BlockPos next = current.relative(nextDirection);
+                    if (!source.closerThan(next, range + 1) || !level.hasChunkAt(next) ||
+                            level.isOutsideBuildHeight(next)) {
+                        sealed = false;
+                        continue;
+                    }
+                    if (visited.contains(next) || !isPassableSpace(level, next)) {
+                        continue;
+                    }
+                    if (visited.size() >= blockLimit) {
+                        sealed = false;
+                        break;
+                    }
+                    visited.add(next);
+                    queue.addLast(next);
+                }
+            }
+            if (!queue.isEmpty()) {
+                sealed = false;
+            }
+            if (sealed && visited.size() > best.size()) {
+                best = visited;
             }
         }
         return best;
     }
 
-    private int getOxygenBlockLimit() {
-        int range = getOxygenRange();
-        return Math.min(8192, Math.max(256, range * range * 4));
-    }
-
-    private boolean isPassableSpace(ServerLevel level, BlockPos pos) {
+    private static boolean isPassableSpace(ServerLevel level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
-        return state.isAir() || state.canBeReplaced() || state.getCollisionShape(level, pos).isEmpty();
+        return state.getCollisionShape(level, pos).isEmpty();
     }
 
-    private void updateDistributedBlocks(ServerLevel level, Set<BlockPos> nextBlocks) {
-        if (distributedBlocks.equals(nextBlocks)) {
+    /** 应用层节拍：每 20t 续期 40t，停机撤销；异常缺席最多留下两个推送周期的场。 */
+    private void tickOxygenDistribution() {
+        if (getOffsetTimer() % 20 != 0) {
             return;
         }
-
-        Set<BlockPos> removed = new HashSet<>(distributedBlocks);
-        removed.removeAll(nextBlocks);
-        if (!removed.isEmpty()) {
-            OxygenApi.API.removeOxygen(level, removed);
-            TemperatureApi.API.removeTemperature(level, removed);
+        if (getLevel() instanceof ServerLevel level) {
+            EnvironmentEmission emission = getEmission(level);
+            if (emission == null) {
+                PlanetEnvironmentService.cease(level, getPos());
+            } else {
+                PlanetEnvironmentService.emit(level, emission, 40L);
+            }
         }
-
-        Set<BlockPos> added = new HashSet<>(nextBlocks);
-        added.removeAll(distributedBlocks);
-        if (!added.isEmpty()) {
-            OxygenApi.API.setOxygen(level, added, true);
-            TemperatureApi.API.setTemperature(level, added, HABITABLE_TEMPERATURE);
-        }
-
-        distributedBlocks.clear();
-        distributedBlocks.addAll(nextBlocks);
     }
 
-    private void clearDistributedBlocks() {
-        if (distributedBlocks.isEmpty() || getLevel() == null) {
-            return;
+    private void ceaseEmission() {
+        if (getLevel() instanceof ServerLevel level) {
+            PlanetEnvironmentService.cease(level, getPos());
         }
-        OxygenApi.API.removeOxygen(getLevel(), distributedBlocks);
-        TemperatureApi.API.removeTemperature(getLevel(), distributedBlocks);
-        distributedBlocks.clear();
     }
 
     private static final class OxygenEnricherRecipeLogic extends RecipeLogic {

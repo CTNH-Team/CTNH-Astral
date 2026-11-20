@@ -16,9 +16,13 @@ import net.minecraftforge.fml.common.Mod;
 import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.common.entity.RocketContraptionEntity;
 import com.ctnh.ctnhastral.common.machine.multiblock.RocketAssemblyPlatformMachine;
+import com.ctnh.ctnhastral.common.universe.CelestialEntityTeleporter;
+import com.ctnh.ctnhastral.common.universe.CelestialTeleportTargets;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.contraptions.Contraption;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -46,8 +50,11 @@ public final class RocketDimensionTravelHandler {
 
         rocket.ensureContraptionReadyForSave();
         CompoundTag snapshot = rocket.getContraption().writeNBT(false);
+        BlockPos seat = rocket.getContraption().getSeatOf(player.getUUID());
+        rocket.rememberTransferSeat(player.getUUID(), seat);
         player.stopRiding();
-        PENDING_TRANSFERS.put(player.getUUID(), new PendingTransfer(rocket, snapshot, RocketState.capture(rocket)));
+        PENDING_TRANSFERS.put(player.getUUID(),
+                new PendingTransfer(rocket, snapshot, RocketState.capture(rocket), seat));
     }
 
     @SubscribeEvent
@@ -67,18 +74,20 @@ public final class RocketDimensionTravelHandler {
         int startY = Math.min(landingPad.getY() + 1 + LANDING_START_HEIGHT,
                 destination.getMaxBuildHeight() - 4);
         rocket.setPos(landingCenter.getX(), startY, landingCenter.getZ());
+        player.teleportTo(destination, landingCenter.getX() + 0.5D, startY, landingCenter.getZ() + 0.5D,
+                Collections.emptySet(), player.getYRot(), player.getXRot());
         rocket.setPersistenceAnchor(rocket.blockPosition());
         rocket.setRunning(true);
         rocket.setContraptionMotion(Vec3.ZERO);
         rocket.beginLanding(landingPad);
-        if (!player.startRiding(rocket, true)) {
+        if (!rocket.mountAtSeat(player, pending.seat())) {
             rocket.ejectPassengers();
         }
     }
 
     private static RocketContraptionEntity moveRocket(PendingTransfer pending, ServerLevel destination,
                                                       BlockPos landingPad) {
-        Entity moved = pending.rocket().changeDimension(destination);
+        Entity moved = pending.rocket().changeDimension(destination, CelestialEntityTeleporter.forLevel(destination));
         if (moved instanceof RocketContraptionEntity rocket) {
             return rocket;
         }
@@ -96,6 +105,11 @@ public final class RocketDimensionTravelHandler {
     private static BlockPos createLandingPlatform(ServerLevel level, BlockPos center) {
         int y = Math.max(level.getMinBuildHeight(), center.getY() - 1);
         BlockState casing = AllBlocks.ANDESITE_CASING.get().defaultBlockState();
+        for (int dx = -LANDING_PLATFORM_RADIUS; dx <= LANDING_PLATFORM_RADIUS; dx += LANDING_PLATFORM_RADIUS) {
+            for (int dz = -LANDING_PLATFORM_RADIUS; dz <= LANDING_PLATFORM_RADIUS; dz += LANDING_PLATFORM_RADIUS) {
+                CelestialTeleportTargets.loadChunk(level, center.getX() + dx, center.getZ() + dz);
+            }
+        }
         for (int x = -LANDING_PLATFORM_RADIUS; x <= LANDING_PLATFORM_RADIUS; x++) {
             for (int z = -LANDING_PLATFORM_RADIUS; z <= LANDING_PLATFORM_RADIUS; z++) {
                 level.setBlock(new BlockPos(center.getX() + x, y, center.getZ() + z), casing, Block.UPDATE_ALL);
@@ -104,7 +118,8 @@ public final class RocketDimensionTravelHandler {
         return new BlockPos(center.getX(), y, center.getZ());
     }
 
-    private record PendingTransfer(RocketContraptionEntity rocket, CompoundTag snapshot, RocketState state) {}
+    private record PendingTransfer(RocketContraptionEntity rocket, CompoundTag snapshot, RocketState state,
+                                   @Nullable BlockPos seat) {}
 
     private record RocketState(int thrust, long fuelCapacity, long remainingFuel,
                                boolean assembled, boolean launching, int launchTicks, int countdownTicks) {

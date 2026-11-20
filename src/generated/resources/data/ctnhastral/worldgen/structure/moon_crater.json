@@ -1,6 +1,0 @@
-{
-  "type": "minecraft:ctnh_moon_crater",
-  "biomes": "#ctnhastral:moon_crater",
-  "spawn_overrides": {},
-  "step": "top_layer_modification"
-}

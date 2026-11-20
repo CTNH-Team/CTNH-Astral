@@ -1,31 +1,46 @@
 package com.ctnh.ctnhastral.data.worldgen.feature;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
-import com.ctnh.ctnhastral.registry.worldgen.MarsBlocks;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-public class MarsDeadVolcanoFeature extends Feature<NoneFeatureConfiguration> {
+public class MarsDeadVolcanoFeature extends Feature<MarsDeadVolcanoFeature.Configuration> {
+
+    public static final MarsDeadVolcanoFeature INSTANCE = new MarsDeadVolcanoFeature();
+
+    public record Configuration(IntProvider radius, IntProvider height, BlockState rock,
+                                BlockState vent, BlockState fluid)
+            implements FeatureConfiguration {
+
+        public static final Codec<Configuration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                IntProvider.CODEC.fieldOf("radius").forGetter(Configuration::radius),
+                IntProvider.CODEC.fieldOf("height").forGetter(Configuration::height),
+                BlockState.CODEC.fieldOf("rock").forGetter(Configuration::rock),
+                BlockState.CODEC.fieldOf("vent").forGetter(Configuration::vent),
+                BlockState.CODEC.fieldOf("fluid").forGetter(Configuration::fluid)).apply(instance, Configuration::new));
+    }
 
     public MarsDeadVolcanoFeature() {
-        super(NoneFeatureConfiguration.CODEC);
+        super(Configuration.CODEC);
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
+    public boolean place(FeaturePlaceContext<Configuration> context) {
         WorldGenLevel level = context.level();
         BlockPos surface = level.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE_WG,
                 context.origin());
-        int radius = 5 + context.random().nextInt(5);
-        int height = 3 + context.random().nextInt(4);
-        BlockState basalt = MarsBlocks.BLACK_BASALT.getDefaultState();
-        BlockState obsidian = MarsBlocks.OBSIDIAN_CHANNEL.getDefaultState();
-        BlockState lava = Blocks.LAVA.defaultBlockState();
+        int radius = context.config().radius().sample(context.random());
+        int height = context.config().height().sample(context.random());
+        BlockState basalt = context.config().rock();
+        BlockState obsidian = context.config().vent();
+        BlockState lava = context.config().fluid();
 
         for (int y = 0; y <= height; y++) {
             float layerRadius = radius - y * 0.9F;
@@ -51,7 +66,7 @@ public class MarsDeadVolcanoFeature extends Feature<NoneFeatureConfiguration> {
             }
         }
 
-        int veinCount = 3 + context.random().nextInt(4);
+        int veinCount = context.config().height().sample(context.random());
         for (int vein = 0; vein < veinCount; vein++) {
             double angle = context.random().nextDouble() * Math.PI * 2.0D;
             for (int step = 1; step <= radius * 2; step++) {

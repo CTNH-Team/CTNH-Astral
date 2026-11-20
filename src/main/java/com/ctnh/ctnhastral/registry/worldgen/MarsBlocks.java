@@ -21,7 +21,7 @@ import com.ctnh.ctnhastral.common.block.AstralFlowerBlock;
 import com.ctnh.ctnhastral.common.block.AstralGrassBlock;
 import com.ctnh.ctnhastral.common.block.AstralTallGrassBlock;
 import com.ctnh.ctnhastral.common.block.MarsSaplingBlock;
-import com.ctnh.ctnhastral.data.worldgen.feature.CAConfiguredFeatures;
+import com.ctnh.ctnhastral.data.worldgen.WorldgenKeys;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,6 +42,8 @@ public class MarsBlocks {
 
     public static void init() {}
 
+    public static final BlockEntry<Block> MARS_STONE = createStoneLikeBlock("mars_stone", "火星岩",
+            CTNHAstral.id(MARS_STONE_TEXTURE_ROOT + "black_basalt"));
     public static final BlockEntry<Block> HEMATITE_SOIL = createStoneLikeBlock("hematite_soil", "赤铁土",
             CTNHAstral.id(MARS_DIRT_TEXTURE_ROOT + "hematite_soil"));
     public static final BlockEntry<FallingBlock> HEMATITE_SAND = createSandLikeBlock("hematite_sand", "赤铁沙",
@@ -108,7 +110,7 @@ public class MarsBlocks {
                 @Override
                 protected ResourceKey<ConfiguredFeature<?, ?>> getConfiguredFeature(@NotNull RandomSource random,
                                                                                     boolean largeHive) {
-                    return CAConfiguredFeatures.MARTIAN_OAK_TREE;
+                    return WorldgenKeys.ConfiguredFeatures.MARTIAN_OAK_TREE;
                 }
             }, properties))
             .cnlang("火星橡树苗")

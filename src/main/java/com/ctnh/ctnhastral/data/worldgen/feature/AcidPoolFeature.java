@@ -8,12 +8,11 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
-import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.levelgen.feature.LakeFeature;
 
-import com.ctnh.ctnhastral.data.CAMaterials;
+public class AcidPoolFeature extends Feature<LakeFeature.Configuration> {
 
-public class AcidPoolFeature extends Feature<NoneFeatureConfiguration> {
+    public static final AcidPoolFeature INSTANCE = new AcidPoolFeature();
 
     private static final int[][] CARDINALS = new int[][] {
             { 1, 0 },
@@ -23,11 +22,11 @@ public class AcidPoolFeature extends Feature<NoneFeatureConfiguration> {
     };
 
     public AcidPoolFeature() {
-        super(NoneFeatureConfiguration.CODEC);
+        super(LakeFeature.Configuration.CODEC);
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
+    public boolean place(FeaturePlaceContext<LakeFeature.Configuration> context) {
         WorldGenLevel level = context.level();
         RandomSource random = context.random();
         BlockPos surface = findSurface(level, context.origin());
@@ -35,8 +34,7 @@ public class AcidPoolFeature extends Feature<NoneFeatureConfiguration> {
             return false;
         }
 
-        FluidState acid = CAMaterials.Acid.getFluid().defaultFluidState();
-        BlockState acidBlock = acid.createLegacyBlock();
+        BlockState acidBlock = context.config().fluid().getState(random, surface);
         int flatRadius = detectFlatRadius(level, surface, 14);
         PoolShape baseShape = flatRadius >= 8 ? PoolShape.createLarge(random, flatRadius) : PoolShape.create(random);
         PoolShape shape = null;
@@ -71,7 +69,7 @@ public class AcidPoolFeature extends Feature<NoneFeatureConfiguration> {
             }
         }
 
-        placeBlackstoneRim(level, surface, shape);
+        placeRim(level, surface, shape, context.config().barrier().getState(random, surface));
 
         return true;
     }
@@ -173,8 +171,7 @@ public class AcidPoolFeature extends Feature<NoneFeatureConfiguration> {
         return true;
     }
 
-    private static void placeBlackstoneRim(WorldGenLevel level, BlockPos center, PoolShape shape) {
-        BlockState blackstone = Blocks.BLACKSTONE.defaultBlockState();
+    private static void placeRim(WorldGenLevel level, BlockPos center, PoolShape shape, BlockState blackstone) {
         for (int dx = -shape.bound - 1; dx <= shape.bound + 1; dx++) {
             for (int dz = -shape.bound - 1; dz <= shape.bound + 1; dz++) {
                 if (!shape.isRim(dx, dz)) {

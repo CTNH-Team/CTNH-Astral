@@ -7,7 +7,7 @@ import net.minecraft.tags.BiomeTags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import com.ctnh.ctnhastral.CTNHAstral;
-import com.ctnh.ctnhastral.data.worldgen.CABiomes;
+import com.ctnh.ctnhastral.data.worldgen.WorldgenKeys;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -20,6 +20,6 @@ public class CABiomeTagsProvider extends BiomeTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        tag(BiomeTags.IS_NETHER).add(CABiomes.ACID_VALLEY);
+        tag(BiomeTags.IS_NETHER).add(WorldgenKeys.Biomes.ACID_VALLEY);
     }
 }

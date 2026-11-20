@@ -16,7 +16,7 @@ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.api.loot.LootBuilder;
 import com.ctnh.ctnhastral.common.block.*;
-import com.ctnh.ctnhastral.data.worldgen.feature.CAConfiguredFeatures;
+import com.ctnh.ctnhastral.data.worldgen.WorldgenKeys;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import org.jetbrains.annotations.NotNull;
 
@@ -63,7 +63,7 @@ public class AstralBlocks {
 
                 protected ResourceKey<ConfiguredFeature<?, ?>> getConfiguredFeature(@NotNull RandomSource random,
                                                                                     boolean largeHive) {
-                    return CAConfiguredFeatures.ASTRAL_TREE;
+                    return WorldgenKeys.ConfiguredFeatures.ASTRAL_TREE;
                 }
             }, properties))
             .cnlang("星辉树苗")

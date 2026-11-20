@@ -14,7 +14,7 @@ public class MarsResearchGraveyardStructure extends Structure {
 
     public static final Codec<MarsResearchGraveyardStructure> CODEC = simpleCodec(MarsResearchGraveyardStructure::new);
 
-    public static StructureType<MarsResearchGraveyardStructure> TYPE;
+    public static final StructureType<MarsResearchGraveyardStructure> TYPE = () -> CODEC;
 
     public MarsResearchGraveyardStructure(StructureSettings settings) {
         super(settings);
@@ -33,11 +33,6 @@ public class MarsResearchGraveyardStructure extends Structure {
         int centerY = context.chunkGenerator().getBaseHeight(centerX, centerZ, Heightmap.Types.WORLD_SURFACE_WG,
                 context.heightAccessor(), context.randomState());
         piecesBuilder.addPiece(new MarsResearchGraveyardStructurePiece(new BlockPos(centerX, centerY, centerZ)));
-    }
-
-    public static void init() {
-        MarsResearchGraveyardStructurePiece.register();
-        TYPE = StructureType.register("ctnh_mars_research_graveyard", CODEC);
     }
 
     @Override
