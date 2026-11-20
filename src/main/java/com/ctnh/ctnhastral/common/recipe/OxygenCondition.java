@@ -1,5 +1,6 @@
 package com.ctnh.ctnhastral.common.recipe;
 
+import com.ctnh.ctnhastral.common.oxygen.OxygenMachineRules;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
