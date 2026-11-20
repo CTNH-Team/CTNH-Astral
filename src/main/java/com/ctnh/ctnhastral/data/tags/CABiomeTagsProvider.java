@@ -1,6 +1,5 @@
 package com.ctnh.ctnhastral.data.tags;
 
-import com.ctnh.ctnhastral.data.worldgen.WorldgenKeys;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.BiomeTagsProvider;
@@ -8,6 +7,7 @@ import net.minecraft.tags.BiomeTags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import com.ctnh.ctnhastral.CTNHAstral;
+import com.ctnh.ctnhastral.data.worldgen.WorldgenKeys;
 
 import java.util.concurrent.CompletableFuture;
 
