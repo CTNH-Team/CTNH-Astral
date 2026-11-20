@@ -20,7 +20,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.RegisterEvent;
 
 import com.ctnh.ctnhastral.CTNHAstral;
 import com.ctnh.ctnhastral.common.environment.EnvironmentType;
@@ -33,6 +32,13 @@ import com.ctnh.ctnhastral.data.CAMedicalConditions;
 import com.ctnh.ctnhastral.data.GTMateralAdjust;
 import com.ctnh.ctnhastral.data.lang.ChineseLangHandler;
 import com.ctnh.ctnhastral.data.lang.EnglishLangHandler;
+import com.ctnh.ctnhastral.data.tags.CABiomeTagsProvider;
+import com.ctnh.ctnhastral.data.worldgen.*;
+import com.ctnh.ctnhastral.data.worldgen.carver.CAConfiguredCarvers;
+import com.ctnh.ctnhastral.data.worldgen.feature.CAConfiguredFeatures;
+import com.ctnh.ctnhastral.data.worldgen.feature.CAPlacements;
+import com.ctnh.ctnhastral.data.worldgen.structure.CAStructureSets;
+import com.ctnh.ctnhastral.data.worldgen.structure.CAStructures;
 import com.ctnh.ctnhastral.data.worldgen.CAWorldgen;
 import com.ctnh.ctnhastral.registry.CACreativeModeTabs;
 import com.ctnh.ctnhastral.registry.CAEnvironments;
@@ -130,10 +136,27 @@ public class CommonProxy {
         if (event.includeClient()) {
             generator.addProvider(true,
                     new CASoundDefinitionsProvider(packOutput, CTNHAstral.MODID, event.getExistingFileHelper()));
-            // generator.addProvider(true,
-            // new CTNHBiomeTagsProvider(packOutput, registries, existingFileHelper));
         }
         if (event.includeServer()) {
+            var set = Set.of(CTNHAstral.MODID);
+            var datapackEntries = new DatapackBuiltinEntriesProvider(
+                    packOutput, registries, new RegistrySetBuilder()
+                            .add(Registries.CONFIGURED_CARVER, CAConfiguredCarvers::bootstrap)
+                            .add(Registries.BIOME, CABiomes::bootstrap)
+                            .add(Registries.CONFIGURED_FEATURE, CAConfiguredFeatures::bootstrap)
+                            .add(Registries.PLACED_FEATURE, CAPlacements::bootstrap)
+                            .add(Registries.DIMENSION_TYPE, CADimensionTypes::bootstrap)
+                            .add(Registries.LEVEL_STEM, CADimensions::bootstrap)
+                            .add(Registries.NOISE_SETTINGS, CANoiseSetting::bootstrap)
+                            // .add(Registries.DAMAGE_TYPE, CTNHDamageTypes::bootstrap)
+                            .add(Registries.STRUCTURE, CAStructures::bootstrap)
+                            .add(Registries.STRUCTURE_SET, CAStructureSets::bootstrap)
+                            .add(Registries.DENSITY_FUNCTION, CADensityFunctions::bootstrap),
+                    set);
+            generator.addProvider(true, datapackEntries);
+            generator.addProvider(true,
+                    new CABiomeTagsProvider(packOutput, datapackEntries.getRegistryProvider(),
+                            event.getExistingFileHelper()));
             // damage type 键位于 gtceu 命名空间（MedicalCondition API 硬约束），输出集需包含之
             var set = Set.of(CTNHAstral.MODID, com.gregtechceu.gtceu.GTCEu.MOD_ID);
             var builtinEntries = new DatapackBuiltinEntriesProvider(
