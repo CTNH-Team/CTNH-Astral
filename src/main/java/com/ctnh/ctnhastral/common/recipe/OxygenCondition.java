@@ -1,6 +1,5 @@
 package com.ctnh.ctnhastral.common.recipe;
 
-import com.ctnh.ctnhastral.common.oxygen.OxygenMachineRules;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
@@ -9,6 +8,7 @@ import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import net.minecraft.network.chat.Component;
 
+import com.ctnh.ctnhastral.common.oxygen.OxygenMachineRules;
 import com.ctnh.ctnhastral.registry.CARecipeConditions;
 import com.ctnhlang.CN;
 import com.ctnhlang.EN;
