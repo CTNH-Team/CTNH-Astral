@@ -143,7 +143,6 @@ public class CommonProxy {
             // 标签 provider 需要含 bootstrap 注册表的 lookup（对照 GT DamageTagsLoader 接线）
             generator.addProvider(true, new CADamageTypeTagsProvider(packOutput,
                     builtinEntries.getRegistryProvider(), event.getExistingFileHelper()));
-            generator.addProvider(true, builtinEntries);
             generator.addProvider(true,
                     new CABiomeTagsProvider(packOutput, builtinEntries.getRegistryProvider(),
                             event.getExistingFileHelper()));
